@@ -1,0 +1,3 @@
+{
+  "/api/tokens/balance/route": "app/api/tokens/balance/route.js"
+}

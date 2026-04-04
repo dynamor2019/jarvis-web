@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/airribbon/layout,_N_T_/airribbon/page,_N_T_/airribbon"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/airribbon/__PAGE__",
+    "/airribbon",
+    "/_index",
+    "/_head"
+  ]
+}

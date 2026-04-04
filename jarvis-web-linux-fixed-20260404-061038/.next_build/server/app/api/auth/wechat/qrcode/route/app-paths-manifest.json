@@ -1,0 +1,3 @@
+{
+  "/api/auth/wechat/qrcode/route": "app/api/auth/wechat/qrcode/route.js"
+}

@@ -1,0 +1,3 @@
+{
+  "/api/auth/alipay/qrcode/route": "app/api/auth/alipay/qrcode/route.js"
+}

@@ -1,0 +1,85 @@
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`
+C:\Jarvis\jarvis-web\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+C:\Jarvis\jarvis-web\node_modules\next\dist\server\base-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+C:\Jarvis\jarvis-web\node_modules\next\dist\server\next-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+C:\Jarvis\jarvis-web\node_modules\next\dist\server\dev\next-dev-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+C:\Jarvis\jarvis-web\node_modules\next\dist\trace\trace.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+C:\Jarvis\jarvis-web\node_modules\next\dist\server\lib\router-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+C:\Jarvis\jarvis-web\node_modules\next\dist\server\lib\start-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[AI Config] Error: Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.systemConfig.findUnique()` invocation:
+
+
+Inconsistent column data: Conversion failed: input contains invalid characters
+    at async getSystemConfig (src\lib\config.ts:17:18)
+    at async loadCustomModels (src\app\api\ai\get-config\route.ts:110:15)
+    at async GET (src\app\api\ai\get-config\route.ts:258:79)
+  15 |
+  16 | export async function getSystemConfig(key: string): Promise<string | null> {
+> 17 |   const config = await prisma.systemConfig.findUnique({
+     |                  ^
+  18 |     where: { key },
+  19 |   });
+  20 |   return config?.value || null; {
+  code: 'P2023',
+  clientVersion: '5.22.0',
+  meta: [Object]
+}
+C:\Jarvis\jarvis-web\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+C:\Jarvis\jarvis-web\node_modules\next\dist\server\base-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+C:\Jarvis\jarvis-web\node_modules\next\dist\server\next-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+C:\Jarvis\jarvis-web\node_modules\next\dist\server\dev\next-dev-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+C:\Jarvis\jarvis-web\node_modules\next\dist\trace\trace.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+C:\Jarvis\jarvis-web\node_modules\next\dist\server\lib\router-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+C:\Jarvis\jarvis-web\node_modules\next\dist\server\lib\start-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+[AI Config] Error: Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.systemConfig.findUnique()` invocation:
+
+
+Inconsistent column data: Conversion failed: input contains invalid characters
+    at async getSystemConfig (src\lib\config.ts:17:18)
+    at async loadCustomModels (src\app\api\ai\get-config\route.ts:110:15)
+    at async GET (src\app\api\ai\get-config\route.ts:258:79)
+  15 |
+  16 | export async function getSystemConfig(key: string): Promise<string | null> {
+> 17 |   const config = await prisma.systemConfig.findUnique({
+     |                  ^
+  18 |     where: { key },
+  19 |   });
+  20 |   return config?.value || null; {
+  code: 'P2023',
+  clientVersion: '5.22.0',
+  meta: [Object]
+}
+C:\Jarvis\jarvis-web\node_modules\next\dist\compiled\next-server\app-route.runtime.dev.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+C:\Jarvis\jarvis-web\node_modules\next\dist\server\base-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+C:\Jarvis\jarvis-web\node_modules\next\dist\server\next-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+C:\Jarvis\jarvis-web\node_modules\next\dist\server\dev\next-dev-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+C:\Jarvis\jarvis-web\node_modules\next\dist\trace\trace.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+C:\Jarvis\jarvis-web\node_modules\next\dist\server\lib\router-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+C:\Jarvis\jarvis-web\node_modules\next\dist\server\lib\start-server.js: Invalid source map. Only conformant source maps can be used to find the original code. Cause: Error: sourceMapURL could not be parsed
+Error fetching models: Error [PrismaClientKnownRequestError]: 
+Invalid `prisma.systemConfig.findUnique()` invocation:
+
+
+Inconsistent column data: Conversion failed: input contains invalid characters
+    at async getSystemConfig (src\lib\config.ts:17:18)
+    at async loadConfiguredModels (src\app\api\models\available\route.ts:72:27)
+    at async GET (src\app\api\models\available\route.ts:171:53)
+  15 |
+  16 | export async function getSystemConfig(key: string): Promise<string | null> {
+> 17 |   const config = await prisma.systemConfig.findUnique({
+     |                  ^
+  18 |     where: { key },
+  19 |   });
+  20 |   return config?.value || null; {
+  code: 'P2023',
+  clientVersion: '5.22.0',
+  meta: [Object]
+}
+Upstream API Error: {"error":{"message":"invalid temperature: only 1 is allowed for this model","type":"invalid_request_error"}}
+Generate API Error: SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+Generate API Error: SyntaxError: Expected property name or '}' in JSON at position 1 (line 1 column 2)
+    at JSON.parse (<anonymous>)
+[baseline-browser-mapping] The data in this module is over two months old.  To ensure accurate Baseline data, please update: `npm i baseline-browser-mapping@latest -D`

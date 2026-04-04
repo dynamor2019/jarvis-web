@@ -1,0 +1,3 @@
+{
+  "/api/broadcast/sse/route": "app/api/broadcast/sse/route.js"
+}

@@ -1,0 +1,3 @@
+{
+  "/api/auth/wechat/status/route": "app/api/auth/wechat/status/route.js"
+}

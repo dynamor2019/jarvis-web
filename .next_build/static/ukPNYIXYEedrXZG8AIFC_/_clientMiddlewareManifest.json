@@ -1,0 +1,10 @@
+[
+  {
+    "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/@vite(?:\\/((?:[^\\/#\\?]+?)(?:\\/(?:[^\\/#\\?]+?))*))?(\\.json)?[\\/#\\?]?$",
+    "originalSource": "/@vite/:path*"
+  },
+  {
+    "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/airribbon(\\.json)?[\\/#\\?]?$",
+    "originalSource": "/airribbon"
+  }
+]

@@ -1,0 +1,485 @@
+// Jarvis 鏁版嵁搴撴ā鍨?
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-1.1.x", "debian-openssl-3.0.x", "linux-musl", "linux-musl-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// 鐢ㄦ埛琛?
+model User {
+  id           String  @id @default(uuid())
+  email        String  @unique
+  username     String  @unique
+  password     String
+  name         String?
+  avatar       String?
+  role         String  @default("user") // 'user' | 'admin'
+  balance      Float   @default(0) // 浣欓锛堜汉姘戝竵锛?
+  tokenBalance Int     @default(0) // Token余额
+  trafficTokenBalance Int @default(0) // 流量 Token 余额
+  subscriptionTokenBalance Int @default(0) // 订阅 Token 余额
+  totalSpent   Float   @default(0)
+  isActive     Boolean @default(true)
+
+  // 鐢ㄦ埛绫诲瀷鏍囪瘑
+  userType String @default("real") // 'real' | 'virtual' - 鐪熷疄鐢ㄦ埛/铏氭嫙鐢ㄦ埛
+
+  // 鐢ㄦ埛鐢诲儚 - 鐢ㄤ簬缁熻鍜屽畾鍚戞帹骞?
+  age        Int? // 骞撮緞
+  gender     String? // 鎬у埆: 'male' | 'female' | 'other'
+  profession String? // 涓撲笟/鑱屼笟
+  industry   String? // 琛屼笟
+  education  String? // 瀛﹀巻: 'high_school' | 'bachelor' | 'master' | 'doctor' | 'other'
+  school     String? // 灏辫闄㈡牎
+
+  // 鍦板潃淇℃伅
+  country  String? @default("涓浗") // 鍥藉
+  province String? // 鐪佷唤
+  city     String? // 鍩庡競
+  address  String? // 璇︾粏鍦板潃
+
+  // 鑱旂郴鏂瑰紡
+  phone  String? // 鎵嬫満鍙?
+  wechat String? // 寰俊鍙?
+  qq     String? // QQ鍙?
+
+  // 浣跨敤鍋忓ソ
+  preferredLanguage String? @default("zh-CN") // 鍋忓ソ璇█
+  timezone          String? @default("Asia/Shanghai") // 鏃跺尯
+
+  // 钀ラ攢鏍囩
+  tags         String? // JSON鏁扮粍瀛楃涓诧紝濡? ["瀛︾敓", "璁烘枃鍐欎綔", "鐞嗗伐绉?]
+  source       String? // 鐢ㄦ埛鏉ユ簮: 'organic' | 'referral' | 'ad' | 'social' | 'other'
+  referralCode String? // 鎺ㄨ崘鐮?
+  referredBy   String? // 鎺ㄨ崘浜篒D
+
+  // 缁熻鏁版嵁
+  lastLoginAt DateTime? // 鏈€鍚庣櫥褰曟椂闂?
+  loginCount  Int       @default(0) // 鐧诲綍娆℃暟
+  registrationIp String? // 娉ㄥ唽IP鍦板潃
+
+  // 鎺堟潈淇℃伅
+  licenseType     String    @default("trial") // 'trial' | 'subscription' | 'lifetime'
+  licenseKey      String?   @unique // 鎺堟潈鐮?
+  subscriptionEnd DateTime? // 璁㈤槄鍒版湡鏃堕棿
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  transactions    Transaction[]
+  apiKeys         ApiKey[]
+  usageRecords    UsageRecord[]
+  systemDocs      SystemUserDoc[]
+  orders          Order[]
+  licenses        License[]
+  featureRequests FeatureRequest[]
+  featureVotes    FeatureVote[]
+  featureComments FeatureComment[]
+  referralCodes   ReferralCode[]
+  subscriptionConfigs SubscriptionConfig[]
+  featureUsageCounters UserFeatureUsage[]
+  habitSnapshots UserHabitSnapshot[]
+  supportTickets SupportTicket[]
+  supportTicketReplies SupportTicketReply[] @relation("SupportTicketReplyAuthor")
+}
+
+// 楠岃瘉鐮佽〃
+model VerificationCode {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  code      String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}
+
+// 浜ゆ槗璁板綍琛?
+model Transaction {
+  id            String   @id @default(uuid())
+  userId        String
+  type          String // 'recharge' | 'consume' | 'refund' | 'token_purchase'
+  amount        Float
+  tokens        Int? // Token鏁伴噺锛堝鏋滄槸Token浜ゆ槗锛?
+  balance       Float // 浜ゆ槗鍚庝綑棰?
+  tokenBalance  Int? // 浜ゆ槗鍚嶵oken浣欓
+  description   String
+  paymentMethod String? // 'alipay' | 'wechat' | 'balance'
+  status        String   @default("pending") // 'pending' | 'completed' | 'failed'
+  createdAt     DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([createdAt])
+}
+
+// API瀵嗛挜琛?
+model ApiKey {
+  id               String    @id @default(uuid())
+  userId           String
+  provider         String    @default("openai")
+  key              String    @unique // API瀵嗛挜鍝堝笇锛堜笉瀛樺偍鍘熷瀵嗛挜锛?
+  modelType        String // 妯″瀷绫诲瀷锛?deepseek' | 'kimi' | 'qwen' | 'doubao' | 'zhipu' | 'gemini' | 'gpt4'
+  isActive         Boolean   @default(true)
+  deviceFingerprint String?  // 璁惧鎸囩汗锛堝彲閫夛紝鐢ㄤ簬璁惧缁戝畾锛?
+  usageCount       Int       @default(0) // 浣跨敤娆℃暟
+  lastUsedAt       DateTime? // 鏈€鍚庝娇鐢ㄦ椂闂?
+  expiresAt        DateTime // 杩囨湡鏃堕棿
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  usageRecords UsageRecord[]
+  subscriptionConfig SubscriptionConfig?
+
+  @@index([userId])
+  @@index([key])
+  @@index([isActive])
+  @@index([expiresAt])
+}
+
+// 浣跨敤璁板綍琛?
+model UsageRecord {
+  id        String   @id @default(uuid())
+  userId    String
+  apiKeyId  String?  // 鍏宠仈鐨凙PI瀵嗛挜ID
+  model     String // 'gpt-4' | 'gemini-pro' 绛?
+  tokens    Int
+  cost      Float
+  operation String // 'rewrite' | 'continue' | 'summarize' 绛?
+  endpoint  String?  // API绔偣
+  responseTime Int? // 鍝嶅簲鏃堕棿锛堟绉掞級
+  status    String   @default("success") // 'success' | 'failed' | 'rate_limited'
+  errorMsg  String?  // 閿欒淇℃伅
+  createdAt DateTime @default(now())
+
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  apiKey ApiKey? @relation(fields: [apiKeyId], references: [id], onDelete: SetNull)
+
+  @@index([userId])
+  @@index([apiKeyId])
+  @@index([createdAt])
+  @@index([status])
+}
+
+// Per-user feature click counters (aggregated by feature name)
+model UserFeatureUsage {
+  id        String   @id @default(uuid())
+  userId    String
+  feature   String
+  count     Int      @default(0)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, feature])
+  @@index([feature])
+  @@index([count])
+}
+
+// Per-user/per-client latest habit snapshot for dashboard analytics
+model UserHabitSnapshot {
+  id                    String   @id @default(uuid())
+  userId                String
+  clientId              String
+  tokenConsumed         Int      @default(0)
+  tokenRemaining        Int      @default(0)
+  trafficRemaining      Int      @default(0)
+  subscriptionRemaining Int      @default(0)
+  lastSyncedAt          DateTime @default(now())
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, clientId])
+  @@index([userId])
+  @@index([lastSyncedAt])
+}
+
+// 绯荤粺鐢熸垚鐢ㄦ埛鏂囨。锛圡ongoDB椋庢牸鏂囨。缁撴瀯瀛樺偍鍦?JSON 瀛楁锛?
+model SystemUserDoc {
+  id              String   @id @default(uuid())
+  userId          String?  @unique // 鐪熷疄鐧诲綍鐢ㄦ埛鍙叧鑱?
+  sourceType      String // 'system_generated' | 'real_user'
+  gender          String // 'male' | 'female'
+  age             Int
+  provinceCode    String // GB/T 2260 琛屾斂鍖轰唬鐮侊紙鐪佺骇锛?
+  industryCode    String // 琛屼笟浠ｇ爜锛堣嚜瀹氫箟涓绘祦琛屼笟缂栫爜锛?
+  majorCode       String // 涓撲笟浠ｇ爜锛堣嚜瀹氫箟100涓笓涓氱紪鐮侊級
+  accessLevel     String? // 'full' 绛?
+  tokenReward     Int      @default(0)
+  profileComplete Boolean  @default(false)
+  createTime      DateTime @default(now())
+  dataVersion     Int      @default(1)
+  doc             String // 瀹屾暣鏂囨。瀛樺偍锛圡ongoDB鏂囨。缁撴瀯锛?
+  user User? @relation(fields: [userId], references: [id], onDelete: SetNull)
+
+  @@index([sourceType])
+  @@index([provinceCode])
+  @@index([industryCode])
+  @@index([majorCode])
+  @@index([createTime])
+}
+
+// 璁㈠崟琛?
+model Order {
+  id            String    @id @default(uuid())
+  userId        String
+  orderNo       String    @unique // 璁㈠崟鍙?
+  orderType     String // 'lifetime' | 'subscription' | 'token_pack'
+  productName   String // 浜у搧鍚嶇О
+  amount        Float // 閲戦
+  tokens        Int? // Token鏁伴噺锛堝鏋滄槸Token璁㈠崟锛?
+  duration      Int? // 璁㈤槄鏃堕暱锛堟湀锛?
+  modelType     String? // 閫夋嫨鐨凙I妯″瀷绫诲瀷
+  status        String    @default("pending") // 'pending' | 'paid' | 'cancelled' | 'refunded'
+  paymentMethod String? // 'alipay' | 'wechat'
+  paymentTime   DateTime? // 鏀粯鏃堕棿
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  subscriptionConfig SubscriptionConfig?
+
+  @@index([userId])
+  @@index([orderNo])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// 鎺堟潈琛?
+model License {
+  id          String    @id @default(uuid())
+  userId      String
+  licenseKey  String    @unique // 鎺堟潈鐮?
+  licenseType String // 'lifetime_personal' | 'lifetime_pro' | 'subscription'
+  status      String    @default("active") // 'active' | 'expired' | 'revoked'
+  activatedAt DateTime? // 婵€娲绘椂闂?
+  expiresAt   DateTime? // 杩囨湡鏃堕棿锛堣闃呯増锛?
+  deviceId    String? // 璁惧ID锛堥槻姝㈠璁惧浣跨敤锛?
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([licenseKey])
+  @@index([status])
+}
+
+// API姹犻厤缃〃
+model ApiPool {
+  id               String   @id @default(uuid())
+  provider         String // 'openai' | 'claude' | 'gemini' | 'doubao'
+  apiKey           String // 鍔犲瘑瀛樺偍
+  model            String // 妯″瀷鍚嶇О
+  costPer1kTokens  Float // 鎴愭湰浠凤紙姣忓崈Token锛?
+  pricePer1kTokens Float // 鍞环锛堟瘡鍗僒oken锛?
+  dailyLimit       Int      @default(1000000) // 姣忔棩闄愰
+  usedToday        Int      @default(0) // 浠婃棩宸茬敤
+  isActive         Boolean  @default(true)
+  priority         Int      @default(0) // 浼樺厛绾э紙鏁板瓧瓒婂ぇ瓒婁紭鍏堬級
+  lastResetDate    DateTime @default(now()) // 涓婃閲嶇疆鏃ユ湡
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  @@index([provider])
+  @@index([isActive])
+  @@index([priority])
+}
+
+
+// 闇€姹傚競鍦?- 鍔熻兘璇锋眰
+model FeatureRequest {
+  id          String @id @default(uuid())
+  userId      String
+  user        User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type        String // 'community' (浼楁湜鎵€褰? 鎴?'premium' (楂樼骇瀹氬埗)
+  title       String
+  description String // 璇︾粏鎻忚堪
+  category    String // 'ai', 'format', 'theme', 'plugin', 'other'
+  status      String @default("pending") // 'pending', 'in_progress', 'completed', 'rejected'
+  priority    Int    @default(0) // 浼樺厛绾у垎鏁?
+
+  // 浼楁湜鎵€褰掔浉鍏?
+  upvotes Int @default(0) // 鐐硅禐鏁?
+
+  // 楂樼骇瀹氬埗鐩稿叧
+  bounty Float   @default(0) // 鎮祻閲戦
+  isPaid Boolean @default(false) // 鏄惁宸叉敮浠?
+
+  // 寮€鍙戠浉鍏?
+  estimatedHours Int? // 棰勪及宸ユ椂
+  actualHours    Int? // 瀹為檯宸ユ椂
+  developerId    String? // 寮€鍙戣€匢D
+  completedAt    DateTime? // 瀹屾垚鏃堕棿
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  votes    FeatureVote[]
+  comments FeatureComment[]
+
+  @@index([userId])
+  @@index([type])
+  @@index([status])
+  @@index([upvotes])
+  @@index([bounty])
+  @@index([createdAt])
+}
+
+// 鍔熻兘璇锋眰鎶曠エ
+model FeatureVote {
+  id        String         @id @default(uuid())
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  requestId String
+  request   FeatureRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  createdAt DateTime       @default(now())
+
+  @@unique([userId, requestId])
+  @@index([requestId])
+}
+
+// 鍔熻兘璇锋眰璇勮
+model FeatureComment {
+  id        String         @id @default(uuid())
+  userId    String
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  requestId String
+  request   FeatureRequest @relation(fields: [requestId], references: [id], onDelete: Cascade)
+  content   String // 璇勮鍐呭
+  createdAt DateTime       @default(now())
+
+  @@index([requestId])
+  @@index([createdAt])
+}
+
+// 鎺ㄨ崘鐮佽〃
+model ReferralCode {
+  code      String    @id
+  creatorId String
+  creator   User      @relation(fields: [creatorId], references: [id], onDelete: Cascade)
+  uses      Int       @default(0)
+  maxUses   Int       @default(1)
+  usedAt    DateTime?
+  usedById  String?
+  source    String?
+  note      String?
+  createdAt DateTime  @default(now())
+
+  @@index([creatorId])
+}
+
+model SystemConfig {
+  key         String   @id
+  value       String
+  description String?
+  updatedAt   DateTime @updatedAt
+}
+
+// AI Model Configuration
+model AIModel {
+  id          String   @id @default(cuid())
+  name        String   // Display Name e.g. "Qwen 2.5 7B"
+  value       String   // API Model String e.g. "Qwen/Qwen2.5-7B-Instruct"
+  provider    String   // e.g. "siliconflow", "openai"
+  tier        String   // "free", "pro", "premium"
+  description String?
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([tier])
+  @@index([isActive])
+}
+
+// Token鍖呴厤缃〃
+model TokenPackage {
+  id          String   @id @default(uuid())
+  name        String // 鍖呭悕绉?
+  tokens      Int // Token鏁伴噺
+  bonusTokens Int      @default(0) // 璧犻€乀oken
+  price       Float // 浠锋牸
+  isActive    Boolean  @default(true)
+  sortOrder   Int      @default(0) // 鎺掑簭
+  
+  // 鍏宠仈鍙敤鐨勬ā鍨?(鍙€夛紝濡傛灉鏌愪簺鍖呭彧閽堝鐗瑰畾妯″瀷)
+  // 濡傛灉涓虹┖锛屽垯璇ュ寘閫傜敤浜庢墍鏈?Pro 绾фā鍨?
+  // models AIModel[] 
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([sortOrder])
+}
+
+// 璁㈤槄閰嶇疆琛?
+model SubscriptionConfig {
+  id               String   @id @default(uuid())
+  userId           String
+  orderId          String   @unique
+  apiKeyId         String   @unique
+  configId         String   @unique
+  deviceFingerprint String
+  encryptedData    String // 鍔犲瘑閰嶇疆鏁版嵁
+  expiresAt        DateTime // 杩囨湡鏃堕棿
+  downloadCount    Int      @default(0) // 涓嬭浇娆℃暟
+  lastDownloadedAt DateTime? // 鏈€鍚庝笅杞芥椂闂?
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  order  Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  apiKey ApiKey @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([configId])
+  @@index([expiresAt])
+}
+
+model SupportTicket {
+  id          String   @id @default(uuid())
+  userId      String
+  title       String
+  category    String   @default("other") // payment | subscription | account | other
+  content     String
+  status      String   @default("pending") // pending | processing | resolved
+  adminReply  String?
+  repliedAt   DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  user    User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+  replies SupportTicketReply[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+model SupportTicketReply {
+  id        String   @id @default(uuid())
+  ticketId  String
+  authorId  String
+  role      String   @default("admin") // user | admin
+  content   String
+  createdAt DateTime @default(now())
+
+  ticket SupportTicket @relation(fields: [ticketId], references: [id], onDelete: Cascade)
+  author User          @relation("SupportTicketReplyAuthor", fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([ticketId])
+  @@index([authorId])
+  @@index([createdAt])
+}
+
+

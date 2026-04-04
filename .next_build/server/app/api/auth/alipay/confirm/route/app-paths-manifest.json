@@ -1,0 +1,3 @@
+{
+  "/api/auth/alipay/confirm/route": "app/api/auth/alipay/confirm/route.js"
+}

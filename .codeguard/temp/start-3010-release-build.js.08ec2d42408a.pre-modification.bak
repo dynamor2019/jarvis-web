@@ -1,0 +1,30 @@
+const path = require('path');
+const http = require('http');
+const next = require('next');
+
+const appDir = path.join(__dirname, 'release-standalone-fixed-20260403-090151');
+const port = Number(process.env.PORT || 3010);
+const host = process.env.HOST || '0.0.0.0';
+
+const app = next({
+  dev: false,
+  dir: appDir,
+  conf: {
+    distDir: '.next_build',
+    output: 'standalone',
+    experimental: {
+      mcpServer: false,
+    },
+  },
+});
+
+app.prepare().then(() => {
+  const handle = app.getRequestHandler();
+  const server = http.createServer((req, res) => handle(req, res));
+  server.listen(port, host, () => {
+    console.log(`RELEASE_BUILD_SERVER_UP http://${host}:${port}`);
+  });
+}).catch((err) => {
+  console.error('RELEASE_BUILD_SERVER_FAIL', err && err.stack ? err.stack : err);
+  process.exit(1);
+});

@@ -1,0 +1,241 @@
+{
+  "versions": {},
+  "last_version": {},
+  "current_state": {},
+  "protected_features": {},
+  "index_state": {
+    "start.sh": {
+      "source": "inline",
+      "updated_at": "2026-04-02T18:34:53",
+      "file_hash": "bf3972db614f02aabc3da84bea3f862a7ae6a080418b2b0807aee6b7b24b7a47",
+      "line_count": 403,
+      "entry_signatures": [
+        {
+          "feature": "set -e",
+          "line": 13,
+          "signature": "36d2e25f79d4"
+        },
+        {
+          "feature": "else",
+          "line": 31,
+          "signature": "c7776e75d23c"
+        },
+        {
+          "feature": "return 1",
+          "line": 32,
+          "signature": "03cbb3771ad6"
+        },
+        {
+          "feature": "sleep 2",
+          "line": 56,
+          "signature": "71c9418706e4"
+        },
+        {
+          "feature": "esac",
+          "line": 111,
+          "signature": "f2ff9c2fa62b"
+        },
+        {
+          "feature": "exit 1",
+          "line": 194,
+          "signature": "2ca3cd2a2924"
+        },
+        {
+          "feature": "done",
+          "line": 332,
+          "signature": "1016af67d15b"
+        }
+      ]
+    },
+    "src/app/login/page.tsx": {
+      "source": "inline",
+      "updated_at": "2026-04-02T20:21:39",
+      "file_hash": "4efd599b89c8ad24070d097dcd61a0bdc77b79df039b4b276c1d447a9a6f2e31",
+      "line_count": 888,
+      "entry_signatures": [
+        {
+          "feature": "LoginContent",
+          "line": 29,
+          "signature": "621a7824cf0c"
+        },
+        {
+          "feature": "handleSkipWait",
+          "line": 81,
+          "signature": "aed3c18cbfeb"
+        },
+        {
+          "feature": "hash",
+          "line": 206,
+          "signature": "d8a56ea4db98"
+        },
+        {
+          "feature": "checkWechatStatus",
+          "line": 226,
+          "signature": "b878f9fdf638"
+        },
+        {
+          "feature": "handleWechatLogin",
+          "line": 259,
+          "signature": "eb3e665e6c3e"
+        },
+        {
+          "feature": "checkAlipayStatus",
+          "line": 296,
+          "signature": "29eaa34d6a27"
+        },
+        {
+          "feature": "checkReferralCode",
+          "line": 379,
+          "signature": "29a37f5c4641"
+        },
+        {
+          "feature": "handleSubmit",
+          "line": 414,
+          "signature": "505f00311843"
+        }
+      ]
+    },
+    "src/i18n/messages/zh-CN.json": {
+      "source": "sidecar",
+      "updated_at": "2026-04-03T12:19:16",
+      "file_hash": "504fe311288058f2c2dc24123e273c7dcf9fa5ccae6017fa29d62b98457aa839",
+      "line_count": 1235,
+      "entry_signatures": [
+        {
+          "feature": "common.back",
+          "line": 2,
+          "signature": "f941d4bdc227"
+        },
+        {
+          "feature": "features.status.completed",
+          "line": 178,
+          "signature": "a9879f4ed116"
+        },
+        {
+          "feature": "admin.features.subtitle",
+          "line": 354,
+          "signature": "8a46b9c7387b"
+        },
+        {
+          "feature": "admin.users.stats.virtual",
+          "line": 530,
+          "signature": "7c53b9c2b9f8"
+        },
+        {
+          "feature": "quick.special.prefix",
+          "line": 706,
+          "signature": "0f638add8fae"
+        },
+        {
+          "feature": "docs.section.content-tools.sub.pdf-tools.feat.0",
+          "line": 882,
+          "signature": "35bda9460193"
+        },
+        {
+          "feature": "login.msg.alipay_scan_guide",
+          "line": 1058,
+          "signature": "398715a01319"
+        },
+        {
+          "feature": "store.model.siliconflow.name",
+          "line": 1234,
+          "signature": "39eb4f5c0fa4"
+        }
+      ]
+    },
+    "src/app/api/auth/wechat/status/route.ts": {
+      "source": "inline",
+      "updated_at": "2026-04-03T20:48:47",
+      "file_hash": "a5d3a3438cf4277f067b7ab6cf3f712727bcc68c0c8085edf6b02a19b83e3f79",
+      "line_count": 277,
+      "entry_signatures": [
+        {
+          "feature": "resolveReferrer",
+          "line": 38,
+          "signature": "078612582cab"
+        },
+        {
+          "feature": "raw",
+          "line": 39,
+          "signature": "93ee409a0443"
+        },
+        {
+          "feature": "GET",
+          "line": 66,
+          "signature": "9c765e5a8d1e"
+        },
+        {
+          "feature": "referralCode",
+          "line": 103,
+          "signature": "77132a13adc0"
+        },
+        {
+          "feature": "refNewTrafficBal",
+          "line": 166,
+          "signature": "dfb2773a036b"
+        }
+      ]
+    },
+    "src/i18n/messages/fr-FR.json": {
+      "source": "sidecar",
+      "updated_at": "2026-04-04T00:16:46",
+      "file_hash": "f5048e8a11194b762a01b1770a8fa05af8c4f9c3d1754469463a0d0eaf29d9fe",
+      "line_count": 1235,
+      "entry_signatures": [
+        {
+          "feature": "common.back",
+          "line": 2,
+          "signature": "14bb714facbc"
+        },
+        {
+          "feature": "features.action.view_comments",
+          "line": 178,
+          "signature": "c7e7e1f513cb"
+        },
+        {
+          "feature": "admin.features.filter.type",
+          "line": 354,
+          "signature": "449a2899c5bf"
+        },
+        {
+          "feature": "admin.users.stats.admin",
+          "line": 530,
+          "signature": "67da6d8179e5"
+        },
+        {
+          "feature": "quick.special.0.title",
+          "line": 706,
+          "signature": "f6a0394e3882"
+        },
+        {
+          "feature": "docs.section.content-tools.sub.pdf-tools.feat.2",
+          "line": 882,
+          "signature": "c80188191f37"
+        },
+        {
+          "feature": "payment.order_no",
+          "line": 1058,
+          "signature": "c0e695f5f022"
+        },
+        {
+          "feature": "store.subscription.model_siliconflow",
+          "line": 1234,
+          "signature": "16ebd60edbe8"
+        }
+      ]
+    },
+    "pack-web.ps1": {
+      "source": "sidecar",
+      "updated_at": "2026-04-04T04:43:32",
+      "file_hash": "03240e16e7a66875a27283d27a15617c918f70c488c6427b469189d00774f2f7",
+      "line_count": 257,
+      "entry_signatures": [
+        {
+          "feature": "Remove-Item -Force -ErrorAction SilentlyContinue",
+          "line": 43,
+          "signature": "917fa8bd87d6"
+        }
+      ]
+    }
+  }
+}
