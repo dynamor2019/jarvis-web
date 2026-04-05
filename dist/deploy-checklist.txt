@@ -1,5 +1,5 @@
 ﻿Jarvis Web Deploy Checklist
-Generated: 2026-04-04 08:54:21
+Generated: 2026-04-05 17:39:11
 
 1. Extract package to target directory (example: /www/wwwroot/jarvis-web).
 2. Ensure only one web process listens on 3000.

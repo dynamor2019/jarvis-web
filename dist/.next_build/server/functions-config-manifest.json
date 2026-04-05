@@ -1,11 +1,11 @@
 {
   "version": 1,
   "functions": {
-    "/ai/generate-local": {},
     "/ai/get-key": {},
-    "/api/ai/generate-local": {},
+    "/ai/generate-local": {},
     "/api/user/status": {},
     "/tokens/sync": {},
+    "/api/ai/generate-local": {},
     "/_middleware": {
       "runtime": "nodejs",
       "matchers": [

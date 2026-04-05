@@ -30,14 +30,17 @@ function LoginContent() {
     const router = useRouter();
     const intl = useIntl();
     const searchParams = useSearchParams();
+    const brand_title = intl.locale?.toLowerCase().startsWith('zh') ? '小贾AI' : 'JarvisAI';
     const [isLogin, setIsLogin] = useState(true);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
     const [showWechat, setShowWechat] = useState(false);
     const [qrCode, setQrCode] = useState('');
+    const [wechatAuthUrl, setWechatAuthUrl] = useState('');
     const [qrLoading, setQrLoading] = useState(false);
     const [ticket, setTicket] = useState('');
     const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
+    const wechatLoginContainerRef = useRef<HTMLDivElement | null>(null);
     
     // 支付宝登录状态
     const [showAlipay, setShowAlipay] = useState(false);
@@ -264,6 +267,7 @@ function LoginContent() {
             }
             
             setQrCode(data.qrCode);
+            setWechatAuthUrl(data.dev ? '' : (data.authUrl || ''));
             setTicket(data.ticket || '');
             setShowWechat(true);
             
@@ -362,6 +366,54 @@ function LoginContent() {
             }
         };
     }, []);
+
+    useEffect(() => {
+        if (!showWechat || !wechatAuthUrl || !wechatLoginContainerRef.current) {
+            return;
+        }
+
+        const authUrl = new URL(wechatAuthUrl);
+        const appId = authUrl.searchParams.get('appid');
+        const redirectUri = authUrl.searchParams.get('redirect_uri');
+        const scope = authUrl.searchParams.get('scope') || 'snsapi_login';
+        const stateValue = authUrl.searchParams.get('state') || '';
+
+        if (!appId || !redirectUri) {
+            return;
+        }
+
+        const container = wechatLoginContainerRef.current;
+        const renderWidget = () => {
+            container.innerHTML = '';
+            new (window as any).WxLogin({
+                id: container.id,
+                appid: appId,
+                scope,
+                redirect_uri: decodeURIComponent(redirectUri),
+                state: stateValue,
+                style: 'black',
+                href: '',
+            });
+        };
+
+        if ((window as any).WxLogin) {
+            renderWidget();
+            return;
+        }
+
+        const script = document.createElement('script');
+        script.src = 'https://res.wx.qq.com/connect/zh_CN/htmledition/js/wxLogin.js';
+        script.async = true;
+
+        const handleLoad = () => renderWidget();
+        script.addEventListener('load', handleLoad, { once: true });
+        document.body.appendChild(script);
+
+        return () => {
+            script.removeEventListener('load', handleLoad);
+            script.remove();
+        };
+    }, [showWechat, wechatAuthUrl]);
 
     // 检查推荐码
     useEffect(() => {
@@ -519,9 +571,9 @@ function LoginContent() {
     }
 
     return (
-        <div className="min-h-screen bg-gradient-to-br from-[#4F46E5] to-[#7C3AED] flex items-center justify-center p-2">
-            <div className={`bg-white rounded-2xl shadow-2xl ${isWordPlugin ? 'p-3 max-w-sm' : 'p-5 max-w-md'} w-full`}>
-                <div className={`text-center ${isWordPlugin ? 'mb-2' : 'mb-4'}`}>
+        <div className="min-h-screen bg-gradient-to-br from-[#4F46E5] to-[#7C3AED] flex items-center justify-center p-3">
+            <div className={`bg-white rounded-[2rem] shadow-2xl w-full overflow-hidden ${isWordPlugin ? 'p-3 max-w-sm' : isLogin ? 'max-w-[352px] px-6 pt-6 pb-5' : 'max-w-[352px] min-h-[620px] aspect-[9/16] px-6 pt-6 pb-5 flex flex-col'}`}>
+                <div className={`text-center ${isWordPlugin ? 'mb-2' : isLogin ? 'mb-5' : 'min-h-[92px] flex flex-col items-center justify-center mb-0'}`}>
                     <div className="flex justify-center mb-2">
                         <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#4F46E5] to-[#EC4899] flex items-center justify-center text-white shadow-md">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
@@ -529,27 +581,33 @@ function LoginContent() {
                             </svg>
                         </div>
                     </div>
-                    <h1 className={`${isWordPlugin ? 'text-xl' : 'text-3xl'} font-bold text-gray-900 mb-1`}>Jarvis</h1>
+                    <h1 className={`${isWordPlugin ? 'text-xl' : 'text-3xl'} font-bold text-gray-900 mb-1`}>{brand_title}</h1>
                     <p className="text-gray-600 text-sm">{isLogin ? <FormattedMessage id="login.title.login" defaultMessage="登录您的账户" /> : <FormattedMessage id="login.title.register" defaultMessage="创建新账户" />}</p>
                 </div>
 
+                <div className={isWordPlugin ? '' : isLogin ? 'pt-1' : 'flex flex-1 flex-col justify-start pt-2 pb-1'}>
                 {error && (
                     <div className="mb-3 p-2 bg-red-50 border border-red-200 rounded-lg text-red-700 text-xs">
                         {error}
                     </div>
                 )}
 
-                <form onSubmit={handleSubmit} className="space-y-3">
-                    <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            <FormattedMessage id="login.label.email_username" defaultMessage="邮箱/用户名" />
-                        </label>
+                <form onSubmit={handleSubmit} className={isLogin ? 'flex flex-col gap-3 pt-0' : 'space-y-3'}>
+                    <div className={isLogin ? 'pt-0' : ''}>
+                        {isLogin && (
+                            <label className="mb-1 block text-center text-sm font-semibold text-gray-800">
+                                <FormattedMessage id="login.label.email_username" defaultMessage="邮箱/用户名" />
+                            </label>
+                        )}
                         <input
                             type="text"
                             required
                             value={formData.email}
                             onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent"
+                            className={isLogin
+                                ? 'w-full px-4 py-1.5 border border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent'
+                                : 'w-full px-4 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent'}
+                            aria-label={intl.formatMessage({ id: 'login.label.email_username', defaultMessage: '邮箱/用户名' })}
                             placeholder={intl.formatMessage({ id: 'login.placeholder.email_username', defaultMessage: '邮箱或用户名' })}
                         />
                     </div>
@@ -557,62 +615,54 @@ function LoginContent() {
                     {!isLogin && (
                         <>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    <FormattedMessage id="register.code.label" defaultMessage="验证码" />
-                                </label>
                                 <div className="flex gap-2">
                                     <input
                                         type="text"
                                         required
                                         value={formData.code}
                                         onChange={(e) => setFormData({ ...formData, code: e.target.value.trim() })}
-                                        className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent"
+                                        className="flex-1 px-4 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent"
+                                        aria-label={intl.formatMessage({ id: 'register.code.label', defaultMessage: '验证码' })}
                                         placeholder={intl.formatMessage({ id: 'login.placeholder.input_code', defaultMessage: '请输入验证码' })}
                                     />
                                     <button
                                         type="button"
                                         onClick={handleSendCode}
                                         disabled={sendingCode || countdown > 0}
-                                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap min-w-[100px]"
+                                        className="px-4 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap min-w-[100px]"
                                     >
                                         {countdown > 0 ? `${countdown}s` : <FormattedMessage id="login.btn.send_code" defaultMessage="发送验证码" />}
                                     </button>
                                 </div>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    <FormattedMessage id="login.label.username" defaultMessage="用户名" />
-                                </label>
                                 <input
                                     type="text"
                                     required
                                     value={formData.username}
                                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent"
+                                    className="w-full px-4 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent"
+                                    aria-label={intl.formatMessage({ id: 'login.label.username', defaultMessage: '用户名' })}
                                     placeholder={intl.formatMessage({ id: 'login.placeholder.username', defaultMessage: '用户名' })}
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    <FormattedMessage id="login.label.nickname" defaultMessage="昵称（可选）" />
-                                </label>
                                 <input
                                     type="text"
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent"
+                                    className="w-full px-4 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent"
+                                    aria-label={intl.formatMessage({ id: 'login.label.nickname', defaultMessage: '昵称（可选）' })}
                                     placeholder={intl.formatMessage({ id: 'login.placeholder.nickname', defaultMessage: '显示名称' })}
                                 />
                             </div>
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">
-                                    <FormattedMessage id="register.referral.label" defaultMessage="推荐码（可选）" />
-                                </label>
                                 <input
                                     type="text"
                                     value={formData.referralCode}
                                     onChange={(e) => setFormData({ ...formData, referralCode: e.target.value.trim() })}
-                                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent"
+                                    className="w-full px-4 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent"
+                                    aria-label={intl.formatMessage({ id: 'register.referral.label', defaultMessage: '推荐码（可选）' })}
                                     placeholder={intl.formatMessage({ id: 'login.placeholder.referral', defaultMessage: '推荐码（可选）' })}
                                 />
                                 {referralStatus === 'idle' && (
@@ -636,15 +686,20 @@ function LoginContent() {
                     )}
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                            <FormattedMessage id="login.label.password" defaultMessage="密码" />
-                        </label>
+                        {isLogin && (
+                            <label className="mb-1 block text-center text-sm font-semibold text-gray-800">
+                                <FormattedMessage id="login.label.password" defaultMessage="密码" />
+                            </label>
+                        )}
                         <input
                             type="password"
                             required
                             value={formData.password}
                             onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent"
+                            className={isLogin
+                                ? 'w-full px-4 py-1.5 border border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent'
+                                : 'w-full px-4 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent'}
+                            aria-label={intl.formatMessage({ id: 'login.label.password', defaultMessage: '密码' })}
                             placeholder={intl.formatMessage({ id: 'login.label.password', defaultMessage: '密码' })}
                         />
                     </div>
@@ -652,7 +707,9 @@ function LoginContent() {
                     <button
                         type="submit"
                         disabled={loading || (isLogin ? false : referralStatus === 'checking')}
-                        className="w-full bg-[#4F46E5] text-white py-2 rounded-lg hover:bg-[#4338ca] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                        className={isLogin
+                            ? 'w-full bg-[#4F46E5] text-white py-2 rounded-lg text-base font-semibold hover:bg-[#4338ca] transition-colors disabled:opacity-50 disabled:cursor-not-allowed'
+                            : 'w-full bg-[#4F46E5] text-white py-2 rounded-lg text-base font-semibold hover:bg-[#4338ca] transition-colors disabled:opacity-50 disabled:cursor-not-allowed'}
                     >
                         {loading ? (
                             <span className="flex items-center justify-center">
@@ -669,7 +726,7 @@ function LoginContent() {
                 </form>
 
                 {!isWordPlugin && (
-                    <div className="mt-4">
+                    <div className={isLogin ? 'mt-4' : 'mt-4'}>
                         <div className="relative">
                             <div className="absolute inset-0 flex items-center">
                                 <div className="w-full border-t border-gray-300"></div>
@@ -679,7 +736,7 @@ function LoginContent() {
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 gap-3 mt-4">
+                        <div className="grid grid-cols-2 gap-3 mt-3">
                             <button
                                 type="button"
                                 onClick={handleWechatLogin}
@@ -706,8 +763,9 @@ function LoginContent() {
                         </div>
                     </div>
                 )}
+                </div>
 
-                <div className="mt-4 text-center">
+                <div className={`${isWordPlugin ? 'mt-4' : isLogin ? 'mt-4 pt-1' : 'mt-auto pt-2'} text-center`}>
                     <button
                         onClick={() => {
                             const newIsLogin = !isLogin;
@@ -732,7 +790,7 @@ function LoginContent() {
                         }}
                         className="text-[#4F46E5] hover:text-[#4338ca] text-sm"
                     >
-                        {isLogin ? <FormattedMessage id="login.link.no_account" defaultMessage="没有账户？去注册" /> : <FormattedMessage id="login.link.has_account" defaultMessage="已有账户？去登录" />}
+                        {isLogin ? <FormattedMessage id="login.link.no_account" defaultMessage="还没有账户？立即注册" /> : <FormattedMessage id="login.link.has_account" defaultMessage="已有账户？立即登录" />}
                     </button>
                 </div>
             </div>
@@ -836,7 +894,21 @@ function LoginContent() {
                     <div className="bg-white rounded-xl p-8 max-w-sm w-full mx-4" onClick={(e) => e.stopPropagation()}>
                         <div className="text-center">
                             <h3 className="text-xl font-bold mb-4"><FormattedMessage id="login.title.wechat_scan" defaultMessage="微信扫码登录" /></h3>
-                            {qrCode ? (
+                            {wechatAuthUrl ? (
+                                <>
+                                    <div
+                                        id="wechat-login-widget"
+                                        ref={wechatLoginContainerRef}
+                                        className="mx-auto mb-4 min-h-[240px] flex items-center justify-center"
+                                    />
+                                    <p className="text-sm text-gray-600 mb-2"><FormattedMessage id="login.msg.wechat_scan_guide" defaultMessage="请使用微信扫描二维码登录" /></p>
+                                    <p className="text-xs text-gray-500"><FormattedMessage id="login.msg.qr_validity" defaultMessage="二维码5分钟内有效" /></p>
+                                    <div className="mt-3 flex items-center justify-center gap-2 text-xs text-gray-500">
+                                        <div className="animate-pulse w-2 h-2 bg-green-500 rounded-full"></div>
+                                        <span><FormattedMessage id="login.msg.waiting_scan" defaultMessage="等待扫码中..." /></span>
+                                    </div>
+                                </>
+                            ) : qrCode ? (
                                 <>
                                     <div className="relative inline-block">
                                         <Image src={qrCode} alt={intl.formatMessage({ id: 'login.alt.wechat_qr', defaultMessage: '微信登录二维码' })} width={240} height={240} unoptimized className="mx-auto mb-4 rounded-lg" />

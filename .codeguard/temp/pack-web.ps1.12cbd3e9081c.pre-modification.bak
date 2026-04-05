@@ -1,3 +1,15 @@
+# [CodeGuard Feature Index]
+# - Write-DefaultEnvTemplate -> line 60
+# - clean package artifacts -> line 97
+# - copy runtime whitelist -> line 109
+# - copy .next_build runtime artifacts -> line 122
+# - copy source and startup files -> line 141
+# - prepare runtime database -> line 222
+# - package preflight -> line 267
+# - generate deploy checklist -> line 302
+# - create zip archive -> line 324
+# [/CodeGuard Feature Index]
+
 $ErrorActionPreference = "Stop"
 
 $source = Split-Path -Parent $MyInvocation.MyCommand.Path
@@ -64,6 +76,18 @@ function Write-DefaultEnvTemplate {
     Set-Content -Path $PathToEnv -Value $template -Encoding UTF8
 }
 
+function Copy-OptionalRuntimePath {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$SourcePath,
+        [Parameter(Mandatory = $true)]
+        [string]$DestinationPath
+    )
+    if (Test-Path $SourcePath) {
+        Copy-Item -Path $SourcePath -Destination $DestinationPath -Recurse -Force
+    }
+}
+
 # Clean dist
 if (Test-Path $distDir) { Remove-Item $distDir -Recurse -Force }
 New-Item -ItemType Directory -Path $distDir | Out-Null
@@ -95,13 +119,26 @@ Write-Host "Cleaning old package artifacts..."
 
 # Copy runtime content with a strict whitelist (prevent recursive self-packaging)
 Write-Host "Copying runtime files (whitelist)..."
-$runtimeEntries = @("server.js", "package.json", "node_modules")
+$runtimeEntries = @("server.js", "package.json")
 foreach ($entry in $runtimeEntries) {
     $fromPath = Join-Path $packageSourceRoot $entry
     if (Test-Path $fromPath) {
         Copy-Item -Path $fromPath -Destination (Join-Path $distDir $entry) -Recurse -Force
     }
 }
+
+# Use the full workspace node_modules for runtime stability.
+# Standalone-traced node_modules has been incomplete on Linux deploys.
+$fullNodeModulesSource = Join-Path $source "node_modules"
+$fullNodeModulesDest = Join-Path $distDir "node_modules"
+if (-not (Test-Path $fullNodeModulesSource)) {
+    throw "Missing workspace node_modules at $fullNodeModulesSource"
+}
+Write-Host "Copying full workspace node_modules for runtime stability..."
+if (Test-Path $fullNodeModulesDest) {
+    Remove-Item $fullNodeModulesDest -Recurse -Force
+}
+Copy-Item -Path $fullNodeModulesSource -Destination $fullNodeModulesDest -Recurse -Force
 
 # Copy only runtime-required .next_build artifacts (avoid recursive standalone bloat)
 if (-not (Test-Path "$source\.next_build")) {
@@ -130,6 +167,38 @@ Assert-NotExists -PathToCheck "$distDir\.next_build\standalone" -Message "Packag
 Write-Host "Copying public folder..."
 Copy-Item -Path "$source\public" -Destination "$distDir\public" -Recurse -Force
 
+# Copy src for runtime paths that still resolve source files.
+if (Test-Path "$source\src") {
+    Write-Host "Copying src folder..."
+    Copy-Item -Path "$source\src" -Destination "$distDir\src" -Recurse -Force
+}
+
+# Copy runtime data folders that routes read directly from process.cwd().
+foreach ($runtimeDir in @("data", "plugins", "certs")) {
+    $fromPath = Join-Path $source $runtimeDir
+    $toPath = Join-Path $distDir $runtimeDir
+    if (Test-Path $fromPath) {
+        Write-Host "Copying $runtimeDir folder..."
+        Copy-OptionalRuntimePath -SourcePath $fromPath -DestinationPath $toPath
+    }
+}
+
+# Copy payment certificate files kept at project root.
+$rootRuntimeFiles = @(
+    "alipayCertPublicKey_RSA2.crt",
+    "alipayPublicKey_RSA2.txt",
+    "alipayRootCert.crt",
+    "appCertPublicKey_2021006128602915.crt"
+)
+foreach ($runtimeFile in $rootRuntimeFiles) {
+    $fromPath = Join-Path $source $runtimeFile
+    $toPath = Join-Path $distDir $runtimeFile
+    if (Test-Path $fromPath) {
+        Write-Host "Copying $runtimeFile..."
+        Copy-Item -Path $fromPath -Destination $toPath -Force
+    }
+}
+
 # Ensure static assets in .next_build/static
 # static already copied in runtime .next_build block above.
 
@@ -147,51 +216,6 @@ if (Test-Path "$source\prisma") {
     Write-Host "Copying prisma folder..."
     if (Test-Path "$distDir\prisma") { Remove-Item "$distDir\prisma" -Recurse -Force }
     Copy-Item -Path "$source\prisma" -Destination "$distDir\prisma" -Recurse -Force
-}
-
-# Ensure Prisma CLI is present (Next.js standalone excludes devDependencies like prisma CLI)
-# We need this for 'prisma db push' in start.sh
-$prismaCliSrc = "$source\node_modules\prisma"
-$prismaCliDest = "$distDir\node_modules\prisma"
-if (Test-Path $prismaCliSrc) {
-    Write-Host "Copying Prisma CLI (needed for start.sh)..."
-    # Ensure parent node_modules exists
-    if (-not (Test-Path "$distDir\node_modules")) {
-        New-Item -ItemType Directory -Path "$distDir\node_modules" -Force | Out-Null
-    }
-    Copy-Item -Path $prismaCliSrc -Destination $prismaCliDest -Recurse -Force
-} else {
-    Write-Warning "Prisma CLI not found in node_modules. start.sh might fail to init DB."
-}
-
-# Ensure Prisma engines are present (required by Prisma CLI at runtime)
-$prismaEnginesSrc = "$source\node_modules\@prisma\engines"
-$prismaEnginesDest = "$distDir\node_modules\@prisma\engines"
-if (Test-Path $prismaEnginesSrc) {
-    Write-Host "Copying @prisma/engines..."
-    if (-not (Test-Path "$distDir\node_modules\@prisma")) {
-        New-Item -ItemType Directory -Path "$distDir\node_modules\@prisma" -Force | Out-Null
-    }
-    Copy-Item -Path $prismaEnginesSrc -Destination $prismaEnginesDest -Recurse -Force
-} else {
-    throw "Missing required dependency: $prismaEnginesSrc. Run 'npm install' before packaging."
-}
-
-# Copy Prisma engine runtime dependencies (engines requires these modules)
-$prismaRuntimeDeps = @(
-    "debug",
-    "fetch-engine",
-    "get-platform",
-    "engines-version"
-)
-foreach ($dep in $prismaRuntimeDeps) {
-    $depSrc = "$source\node_modules\@prisma\$dep"
-    $depDest = "$distDir\node_modules\@prisma\$dep"
-    if (-not (Test-Path $depSrc)) {
-        throw "Missing required Prisma runtime dependency: $depSrc. Run 'npm install' before packaging."
-    }
-    Write-Host "Copying @prisma/$dep..."
-    Copy-Item -Path $depSrc -Destination $depDest -Recurse -Force
 }
 
 # Include a non-empty runtime database to avoid missing-table startup failures.
@@ -234,6 +258,15 @@ if (-not $envCopied) {
     Write-DefaultEnvTemplate -PathToEnv "$distDir\.env.production"
 }
 
+# Remove build-time Next config files from runtime package.
+foreach ($runtimeConfig in @("next.config.ts", "next.config.js", "next.config.mjs")) {
+    $runtimeConfigPath = Join-Path $distDir $runtimeConfig
+    if (Test-Path $runtimeConfigPath) {
+        Write-Host "Removing runtime config file from package: $runtimeConfig"
+        Remove-Item -Path $runtimeConfigPath -Force
+    }
+}
+
 # Copy nginx.conf.example if exists
 if (Test-Path "$source\nginx.conf.example") {
     Write-Host "Copying nginx.conf.example..."
@@ -246,7 +279,11 @@ $mustExist = @(
     "$distDir\package.json",
     "$distDir\.next_build",
     "$distDir\node_modules",
-    "$distDir\public"
+    "$distDir\public",
+    "$distDir\src",
+    "$distDir\data",
+    "$distDir\plugins",
+    "$distDir\prisma"
 )
 foreach ($p in $mustExist) {
     Assert-Exists -PathToCheck $p -Message "Package preflight failed: missing required path: $p"
@@ -266,19 +303,6 @@ $cssAssets = Get-ChildItem -Path "$distDir\.next_build\static" -Recurse -Filter 
 $jsAssets = Get-ChildItem -Path "$distDir\.next_build\static\chunks" -Recurse -Filter "*.js" -ErrorAction SilentlyContinue
 if (($cssAssets.Count -eq 0) -and ($jsAssets.Count -eq 0)) {
     throw "Package preflight failed: missing both CSS and JS static assets under .next_build/static."
-}
-
-# Strict preflight for Prisma runtime dependencies
-$mustPrisma = @(
-    "$distDir\node_modules\prisma\build\index.js",
-    "$distDir\node_modules\@prisma\engines",
-    "$distDir\node_modules\@prisma\debug",
-    "$distDir\node_modules\@prisma\fetch-engine",
-    "$distDir\node_modules\@prisma\get-platform",
-    "$distDir\node_modules\@prisma\engines-version"
-)
-foreach ($p in $mustPrisma) {
-    Assert-Exists -PathToCheck $p -Message "Package preflight failed: missing Prisma runtime dependency: $p"
 }
 
 # Validate .env.production format when present (guard against accidental binary/corrupted files)
@@ -306,8 +330,10 @@ $checklist = @(
     "   .next_build/BUILD_ID",
     "   .next_build/routes-manifest.json",
     "   .next_build/prerender-manifest.json",
-    "   node_modules/prisma/build/index.js",
-    "   node_modules/@prisma/engines",
+    "   data/",
+    "   plugins/",
+    "   prisma/jarvis.db",
+    "   src/data/plugin-config.json",
     "5. Start service and verify:",
     "   curl -i http://127.0.0.1:3000/api/health",
     "   curl -i http://127.0.0.1:3000/api/models/available",

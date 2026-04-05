@@ -1,13 +1,11 @@
 #!/bin/bash
 
 # [CodeGuard Feature Index]
-# - set -e -> line 13
-# - else -> line 31
-# - return 1 -> line 32
-# - sleep 2 -> line 56
-# - esac -> line 111
-# - exit 1 -> line 194
-# - done -> line 332
+# - set -e -> line 11
+# - else -> line 29
+# - return 1 -> line 30
+# - sleep 2 -> line 54
+# - exit 1 -> line 162
 # [/CodeGuard Feature Index]
 
 set -e
@@ -53,8 +51,6 @@ if check_port; then
         pid=$(lsof -t -i:3000)
         [ -n "$pid" ] && kill -9 $pid >/dev/null 2>&1 || true
     fi
-    # Fallback for minimal Linux images without lsof/fuser.
-    pkill -f "node .*server.js" >/dev/null 2>&1 || true
     sleep 2
 fi
 
@@ -75,14 +71,13 @@ elif [ -f ".env" ]; then
 fi
 if [ -n "$ENV_FILE" ]; then
     echo "Using env file: $ENV_FILE"
-    ENV_LOAD_FILE="$ENV_FILE"
     TMP_ENV_FILE=""
-    # Handle Windows-generated env files: UTF-16 and/or CRLF can break `source`.
+    # Handle Windows-generated env files: UTF-16 and/or CRLF can break parsing.
     if command -v file >/dev/null 2>&1 && file -bi "$ENV_FILE" 2>/dev/null | grep -qi "charset=utf-16"; then
         if command -v iconv >/dev/null 2>&1; then
             TMP_ENV_FILE="$(mktemp)"
             if iconv -f UTF-16 -t UTF-8 "$ENV_FILE" > "$TMP_ENV_FILE" 2>/dev/null; then
-                ENV_LOAD_FILE="$TMP_ENV_FILE"
+                ENV_FILE="$TMP_ENV_FILE"
                 echo "Converted UTF-16 env file to UTF-8."
             else
                 rm -f "$TMP_ENV_FILE"
@@ -93,64 +88,34 @@ if [ -n "$ENV_FILE" ]; then
             echo "Warning: iconv not found. Cannot auto-convert UTF-16 env file."
         fi
     fi
-    if [ -n "$TMP_ENV_FILE" ]; then
-        TMP_ENV_CRLF="$(mktemp)"
-        tr -d '\r' < "$ENV_LOAD_FILE" > "$TMP_ENV_CRLF" 2>/dev/null || cp "$ENV_LOAD_FILE" "$TMP_ENV_CRLF"
-        mv "$TMP_ENV_CRLF" "$ENV_LOAD_FILE"
-    else
-        TMP_ENV_FILE="$(mktemp)"
-        tr -d '\r' < "$ENV_LOAD_FILE" > "$TMP_ENV_FILE" 2>/dev/null || cp "$ENV_LOAD_FILE" "$TMP_ENV_FILE"
-        ENV_LOAD_FILE="$TMP_ENV_FILE"
-    fi
-    LOADED_ENV_COUNT=0
-    while IFS= read -r line || [ -n "$line" ]; do
-        # Strip UTF-8 BOM and leading spaces.
-        line="${line#$'\xEF\xBB\xBF'}"
-        line="${line#"${line%%[![:space:]]*}"}"
-        [ -z "$line" ] && continue
-        case "$line" in
-            \#*) continue ;;
-        esac
-        # Accept "KEY=VALUE" or "export KEY=VALUE", with optional spaces around "=".
-        if [[ "$line" =~ ^(export[[:space:]]+)?([A-Za-z_][A-Za-z0-9_]*)[[:space:]]*=(.*)$ ]]; then
-            key="${BASH_REMATCH[2]}"
-            val="${BASH_REMATCH[3]}"
-            export "$key=$val"
-            LOADED_ENV_COUNT=$((LOADED_ENV_COUNT + 1))
-        fi
-    done < "$ENV_LOAD_FILE"
+    TMP_ENV_CRLF="$(mktemp)"
+    tr -d '\r' < "$ENV_FILE" > "$TMP_ENV_CRLF" 2>/dev/null || cp "$ENV_FILE" "$TMP_ENV_CRLF"
+    ENV_FILE="$TMP_ENV_CRLF"
+    # Parse and export environment variables
+    while IFS='=' read -r key val; do
+        # Skip comments and invalid keys
+        [[ $key =~ ^# ]] && continue
+        [[ $key =~ ^[A-Z_][A-Z0-9_]*$ ]] || continue
+        export "$key=$val"
+    done < "$ENV_FILE"
     [ -n "$TMP_ENV_FILE" ] && rm -f "$TMP_ENV_FILE"
-    echo "Environment variables loaded. ($LOADED_ENV_COUNT vars)"
-    if [ "$LOADED_ENV_COUNT" -eq 0 ]; then
-        echo "Warning: No valid KEY=VALUE pairs found in $ENV_FILE."
-    fi
+    rm -f "$TMP_ENV_CRLF"
+    echo "Environment variables loaded."
 else
     echo "No .env file found. Proceeding with current environment."
 fi
 
 # 3. Database Initialization
-# Resolve DB path from DATABASE_URL when using sqlite, fallback to jarvis.db.
-DB_PATH=""
-if [ -n "${DATABASE_URL:-}" ] && [[ "$DATABASE_URL" == file:* ]]; then
-    DB_FILE="${DATABASE_URL#file:}"
-    if [[ "$DB_FILE" == ./* ]]; then
-        DB_PATH="$(pwd)/${DB_FILE#./}"
-    elif [[ "$DB_FILE" == /* ]]; then
-        DB_PATH="$DB_FILE"
-    else
-        DB_PATH="$(pwd)/$DB_FILE"
-    fi
-fi
-if [ -z "$DB_PATH" ]; then
-    DB_PATH="$(pwd)/prisma/jarvis.db"
-fi
-# Keep Prisma datasource stable regardless of runtime cwd.
-export DATABASE_URL="file:$DB_PATH"
+# Explicitly use the user-provided absolute path for the existing database
+DB_PATH="/www/wwwroot/jarvis-web/prisma/jarvis.db"
 
 echo "================================================================"
 echo "Jarvis Web Startup Script"
 echo "Target Database: $DB_PATH"
 echo "================================================================"
+
+# Keep Prisma datasource stable regardless of runtime cwd.
+export DATABASE_URL="file:$DB_PATH"
 
 # Always try to find prisma CLI for generate/push
 PRISMA_CMD=""
@@ -162,51 +127,26 @@ elif [ -f "./node_modules/.bin/prisma" ]; then
 elif command -v prisma >/dev/null 2>&1; then
     PRISMA_CMD="prisma"
 fi
-if [ -n "$PRISMA_CMD" ] && [ ! -d "./node_modules/@prisma/engines" ]; then
-    echo "Prisma engines not found in package. Skipping prisma CLI steps."
-    PRISMA_CMD=""
-fi
-if [ -n "$PRISMA_CMD" ]; then
-    if ! node -e "require('@prisma/engines'); require('@prisma/debug')" >/dev/null 2>&1; then
-        echo "Prisma CLI runtime deps are incomplete. Skipping prisma CLI steps."
-        PRISMA_CMD=""
-    fi
-fi
-PRISMA_CAN_GENERATE=1
-if [ -n "$PRISMA_CMD" ] && [ ! -f "./node_modules/@prisma/client/generator-build/index.js" ]; then
-    echo "Prisma client generator is not packaged. Skipping prisma generate in runtime."
-    PRISMA_CAN_GENERATE=0
-fi
-
-# Runtime safety switch: do not mutate schema by default.
-# Set APPLY_PRISMA_DB_PUSH=1 only when you explicitly want runtime schema sync.
-APPLY_PRISMA_DB_PUSH="${APPLY_PRISMA_DB_PUSH:-0}"
 
 # 1. Always generate Prisma Client (safe, needed for code to run)
-if [ -n "$PRISMA_CMD" ] && [ "$PRISMA_CAN_GENERATE" -eq 1 ]; then
+if [ -n "$PRISMA_CMD" ]; then
     echo "Generating Prisma Client..."
     $PRISMA_CMD generate || echo "Prisma generate warning."
 fi
 
 # 2. Check Database Existence
-if [ -f "$DB_PATH" ] && [ -s "$DB_PATH" ]; then
+if [ -f "$DB_PATH" ]; then
     echo "✅ Success: Found existing database at $DB_PATH"
     echo "Database Size: $(du -h "$DB_PATH" | cut -f1)"
     
     # Sync Schema Only (Safe update)
-    if [ -n "$PRISMA_CMD" ] && [ "$APPLY_PRISMA_DB_PUSH" = "1" ]; then
-        echo "Syncing database schema (prisma db push --skip-generate)..."
-        $PRISMA_CMD db push --accept-data-loss --skip-generate || echo "Schema sync warning: Check logs if app fails."
-    else
-        echo "Skipping runtime prisma db push (APPLY_PRISMA_DB_PUSH=$APPLY_PRISMA_DB_PUSH)."
+    if [ -n "$PRISMA_CMD" ]; then
+        echo "Syncing database schema (prisma db push)..."
+        $PRISMA_CMD db push --accept-data-loss || echo "Schema sync warning: Check logs if app fails."
     fi
 else
-    if [ -f "$DB_PATH" ] && [ ! -s "$DB_PATH" ]; then
-        echo "⚠️  WARNING: Database file exists but is empty (0 bytes): $DB_PATH"
-    else
-        echo "⚠️  WARNING: Database file NOT found at $DB_PATH"
-    fi
-    echo "Attempting to recover/create database at this location..."
+    echo "⚠️  WARNING: Database file NOT found at $DB_PATH"
+    echo "Attempting to create a new database at this location..."
     
     # Check if directory exists
     DB_DIR=$(dirname "$DB_PATH")
@@ -215,23 +155,9 @@ else
         mkdir -p "$DB_DIR" || echo "Failed to create directory. Check permissions."
     fi
 
-    DB_RECOVERED=0
-    for candidate in "./prisma/jarvis.db" "./prisma/dev.db" "./jarvis.db"; do
-        if [ -f "$candidate" ] && [ -s "$candidate" ]; then
-            if [ "$(readlink -f "$candidate" 2>/dev/null)" != "$(readlink -f "$DB_PATH" 2>/dev/null)" ]; then
-                cp "$candidate" "$DB_PATH"
-                echo "Recovered database from $candidate -> $DB_PATH"
-            else
-                echo "Recovery source equals target; skip copy: $candidate"
-            fi
-            DB_RECOVERED=1
-            break
-        fi
-    done
-
-    if [ "$DB_RECOVERED" -eq 0 ] && [ -n "$PRISMA_CMD" ] && [ "$APPLY_PRISMA_DB_PUSH" = "1" ]; then
+    if [ -n "$PRISMA_CMD" ]; then
         echo "Pushing schema to create new DB..."
-        $PRISMA_CMD db push --accept-data-loss --skip-generate || {
+        $PRISMA_CMD db push --accept-data-loss || {
             echo "❌ CRITICAL: Failed to initialize database."
             exit 1
         }
@@ -241,21 +167,9 @@ else
             echo "Running initial data seeding..."
             node init-all-data.js || echo "Data seeding failed."
         fi
-    elif [ "$DB_RECOVERED" -eq 0 ]; then
-        # Fallback: use packaged database when prisma CLI is unavailable in runtime package.
-        if [ -f "./prisma/jarvis.db" ] && [ -s "./prisma/jarvis.db" ]; then
-            cp "./prisma/jarvis.db" "$DB_PATH"
-            echo "Copied packaged prisma/jarvis.db to $DB_PATH"
-        elif [ -f "./prisma/dev.db" ] && [ -s "./prisma/dev.db" ]; then
-            cp "./prisma/dev.db" "$DB_PATH"
-            echo "Copied packaged prisma/dev.db to $DB_PATH"
-        elif [ -f "./jarvis.db" ] && [ -s "./jarvis.db" ]; then
-            cp "./jarvis.db" "$DB_PATH"
-            echo "Copied packaged jarvis.db to $DB_PATH"
-        else
-            echo "❌ CRITICAL: Prisma CLI unavailable and no packaged database found."
-            exit 1
-        fi
+    else
+        echo "❌ CRITICAL: Prisma CLI not found and DB missing. Cannot start."
+        exit 1
     fi
 fi
 
@@ -289,24 +203,6 @@ fi
 
 # 5. Prepare Standalone Environment (Fix for 404 on static assets)
 echo "Preparing standalone environment..."
-if [ ! -e ".next" ] && [ -d ".next_build" ]; then
-    ln -s .next_build .next 2>/dev/null || true
-fi
-if [ ! -d ".next" ] && [ -d ".next_build" ]; then
-    mkdir -p .next
-    echo "Created .next directory as fallback."
-fi
-if [ -d ".next_build" ] && [ -d ".next" ]; then
-    for mf in BUILD_ID routes-manifest.json prerender-manifest.json; do
-        if [ -f ".next_build/$mf" ] && [ ! -f ".next/$mf" ]; then
-            cp ".next_build/$mf" ".next/$mf"
-        fi
-    done
-    if [ -d ".next_build/static" ] && [ ! -d ".next/static" ]; then
-        mkdir -p ".next/static"
-        cp -R ".next_build/static/"* ".next/static/" 2>/dev/null || true
-    fi
-fi
 if [ -n "$SERVER_FILE" ]; then
     STANDALONE_DIR=$(dirname "$SERVER_FILE")
     
@@ -354,13 +250,10 @@ if [ -n "$SERVER_FILE" ]; then
             fi
             echo "Prisma files copied to $STANDALONE_DIR/prisma"
             
-            # Keep runtime database inside prisma/ to avoid root-level clutter.
-            if [ -f "jarvis.db" ]; then
-                cp "jarvis.db" "$STANDALONE_DIR/prisma/jarvis.db"
-                echo "Database copied to standalone prisma/ for runtime access."
-            elif [ -f "prisma/jarvis.db" ]; then
-                cp "prisma/jarvis.db" "$STANDALONE_DIR/prisma/jarvis.db"
-                echo "Database copied from prisma/ to standalone prisma/ for runtime access."
+            # Ensure database is accessible at standalone root if configured that way
+            if [ -f "prisma/jarvis.db" ]; then
+                cp "prisma/jarvis.db" "$STANDALONE_DIR/jarvis.db"
+                echo "Database copied to standalone root for runtime access."
             fi
 
             if [ -f "backup-service.js" ]; then
@@ -375,28 +268,6 @@ fi
 
 # 6. Start Server with PM2
 echo "Starting server with PM2..."
-
-# 5.5 Validate required Next.js production manifests.
-# Do not fabricate manifests/BUILD_ID from dev output; this can cause runtime crashes.
-if [ -d ".next_build" ]; then
-    for mf in BUILD_ID routes-manifest.json prerender-manifest.json; do
-        if [ ! -f ".next_build/$mf" ] && [ -f ".next/$mf" ]; then
-            cp ".next/$mf" ".next_build/$mf"
-            echo "Recovered .next_build/$mf from .next/$mf"
-        fi
-    done
-    MISSING_MANIFESTS=""
-    for mf in BUILD_ID routes-manifest.json prerender-manifest.json; do
-        if [ ! -f ".next_build/$mf" ]; then
-            MISSING_MANIFESTS="$MISSING_MANIFESTS $mf"
-        fi
-    done
-    if [ -n "$MISSING_MANIFESTS" ]; then
-        echo "CRITICAL: Missing Next.js production manifests in .next_build:$MISSING_MANIFESTS"
-        echo "Please deploy a complete build package (contains .next_build with BUILD_ID and manifest files)."
-        exit 1
-    fi
-fi
 
 if [ -n "$SERVER_FILE" ]; then
     echo "Using standalone build: $SERVER_FILE"
@@ -438,29 +309,12 @@ if [ -n "$SERVER_FILE" ]; then
         echo ">>> Server started successfully!"
         echo ">>> Access logs with: $PM2_CMD logs jarvis-web"
     else
-        LOG_DIR="./logs"
-        PID_DIR="."
-        if [ "$STANDALONE_DIR" != "." ]; then
-            LOG_DIR="../../logs"
-            PID_DIR="../.."
-        fi
-
-        mkdir -p "$LOG_DIR"
-        (cd "$STANDALONE_DIR" && nohup node "$SERVER_SCRIPT" > "$LOG_DIR/out.log" 2> "$LOG_DIR/err.log" & echo $! > "$PID_DIR/jarvis-web.pid")
-        if [ ! -f "$PID_DIR/jarvis-web.pid" ]; then
-            echo "CRITICAL: Failed to create jarvis-web.pid. Server did not start."
-            exit 1
-        fi
-        WEB_PID=$(cat "$PID_DIR/jarvis-web.pid" 2>/dev/null || true)
-        if [ -z "$WEB_PID" ] || ! kill -0 "$WEB_PID" >/dev/null 2>&1; then
-            echo "CRITICAL: Node process is not running after startup attempt."
-            echo "Check logs at $LOG_DIR/err.log"
-            exit 1
-        fi
+        mkdir -p ./logs
+        (cd "$STANDALONE_DIR" && nohup node "$SERVER_SCRIPT" > ../../logs/out.log 2> ../../logs/err.log & echo $! > ../../jarvis-web.pid)
         
         # Start Backup Service
         if [ -f "$STANDALONE_DIR/backup-service.js" ]; then
-            (cd "$STANDALONE_DIR" && nohup node backup-service.js > "$LOG_DIR/backup-out.log" 2> "$LOG_DIR/backup-err.log" & echo $! > "$PID_DIR/jarvis-backup.pid")
+            (cd "$STANDALONE_DIR" && nohup node backup-service.js > ../../logs/backup-out.log 2> ../../logs/backup-err.log & echo $! > ../../jarvis-backup.pid)
             echo ">>> Backup service started."
         fi
 

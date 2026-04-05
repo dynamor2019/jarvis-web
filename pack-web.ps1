@@ -119,7 +119,7 @@ Write-Host "Cleaning old package artifacts..."
 
 # Copy runtime content with a strict whitelist (prevent recursive self-packaging)
 Write-Host "Copying runtime files (whitelist)..."
-$runtimeEntries = @("server.js", "package.json", "node_modules")
+$runtimeEntries = @("server.js", "package.json")
 foreach ($entry in $runtimeEntries) {
     $fromPath = Join-Path $packageSourceRoot $entry
     if (Test-Path $fromPath) {
@@ -127,17 +127,44 @@ foreach ($entry in $runtimeEntries) {
     }
 }
 
-# Copy only runtime-required .next_build artifacts (avoid recursive standalone bloat)
-if (-not (Test-Path "$source\.next_build")) {
-    throw "Current workspace build folder missing: $source\.next_build"
+# Use standalone-traced node_modules first to keep package small.
+# Fallback to workspace node_modules only when standalone copy is absent.
+$standaloneNodeModulesSource = Join-Path $packageSourceRoot "node_modules"
+$workspaceNodeModulesSource = Join-Path $source "node_modules"
+$nodeModulesSource = $null
+$nodeModulesDest = Join-Path $distDir "node_modules"
+if (Test-Path $standaloneNodeModulesSource) {
+    $nodeModulesSource = $standaloneNodeModulesSource
+    Write-Host "Copying standalone-traced node_modules..."
+} elseif (Test-Path $workspaceNodeModulesSource) {
+    $nodeModulesSource = $workspaceNodeModulesSource
+    Write-Warning "standalone node_modules missing; falling back to workspace node_modules (larger package)."
+} else {
+    throw "Missing node_modules in both standalone source and workspace."
 }
-Write-Host "Copying runtime .next_build artifacts..."
+if (Test-Path $nodeModulesDest) {
+    Remove-Item $nodeModulesDest -Recurse -Force
+}
+Copy-Item -Path $nodeModulesSource -Destination $nodeModulesDest -Recurse -Force
+
+# Copy only runtime-required .next_build artifacts (avoid recursive standalone bloat)
+$runtimeNextBuildSource = Join-Path $packageSourceRoot ".next_build"
+if (-not (Test-Path $runtimeNextBuildSource)) {
+    $runtimeNextBuildSource = "$source\.next_build"
+}
+if (-not (Test-Path $runtimeNextBuildSource)) {
+    throw "Current workspace build folder missing: .next_build"
+}
+Write-Host "Copying runtime .next_build artifacts from: $runtimeNextBuildSource"
 New-Item -ItemType Directory -Path "$distDir\.next_build" -Force | Out-Null
-Get-ChildItem -Path "$source\.next_build" -File | ForEach-Object {
+Get-ChildItem -Path $runtimeNextBuildSource -File | ForEach-Object {
     Copy-Item -Path $_.FullName -Destination "$distDir\.next_build" -Force
 }
 foreach ($runtimeDir in @("server", "static")) {
-    $from = Join-Path "$source\.next_build" $runtimeDir
+    $from = Join-Path $runtimeNextBuildSource $runtimeDir
+    if (-not (Test-Path $from)) {
+        $from = Join-Path "$source\.next_build" $runtimeDir
+    }
     $to = Join-Path "$distDir\.next_build" $runtimeDir
     if (Test-Path $from) {
         Copy-Item -Path $from -Destination $to -Recurse -Force
@@ -146,9 +173,12 @@ foreach ($runtimeDir in @("server", "static")) {
     }
 }
 
-# Guard: package must keep one-layer build only.
+# Guard: package must keep one-layer build only and exclude non-runtime artifacts.
 Assert-NotExists -PathToCheck "$distDir\.next_build\.next_build" -Message "Package preflight failed: nested .next_build detected under dist/.next_build."
 Assert-NotExists -PathToCheck "$distDir\.next_build\standalone" -Message "Package preflight failed: standalone folder leaked into dist/.next_build."
+if (Test-Path "$distDir\output") {
+    Remove-Item "$distDir\output" -Recurse -Force
+}
 
 # Copy public
 Write-Host "Copying public folder..."
@@ -245,6 +275,15 @@ if (-not $envCopied) {
     Write-DefaultEnvTemplate -PathToEnv "$distDir\.env.production"
 }
 
+# Remove build-time Next config files from runtime package.
+foreach ($runtimeConfig in @("next.config.ts", "next.config.js", "next.config.mjs")) {
+    $runtimeConfigPath = Join-Path $distDir $runtimeConfig
+    if (Test-Path $runtimeConfigPath) {
+        Write-Host "Removing runtime config file from package: $runtimeConfig"
+        Remove-Item -Path $runtimeConfigPath -Force
+    }
+}
+
 # Copy nginx.conf.example if exists
 if (Test-Path "$source\nginx.conf.example") {
     Write-Host "Copying nginx.conf.example..."
@@ -266,6 +305,7 @@ $mustExist = @(
 foreach ($p in $mustExist) {
     Assert-Exists -PathToCheck $p -Message "Package preflight failed: missing required path: $p"
 }
+Assert-NotExists -PathToCheck "$distDir\output" -Message "Package preflight failed: dist/output must not be included."
 
 # Strict preflight for Next.js production manifests
 $mustManifests = @(

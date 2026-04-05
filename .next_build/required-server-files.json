@@ -208,7 +208,7 @@
       "mcpServer": true,
       "serverActions": {
         "allowedOrigins": [
-          "http://localhost:3010"
+          "https://www.jarvisai.com.cn"
         ]
       },
       "optimizePackageImports": [

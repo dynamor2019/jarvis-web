@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import QRCode from 'qrcode';
-import { env } from '@/lib/env';
+import { getPaymentConfig, getSystemConfig } from '@/lib/config';
 
 declare global {
   var alipayTickets: Record<string, any> | undefined;
@@ -26,10 +26,25 @@ export async function GET(request: NextRequest) {
     
     // 开发环境：生成模拟登录链接
     const isLocal = request.nextUrl.hostname === 'localhost' || request.nextUrl.hostname === '127.0.0.1';
-    const isDev = !process.env.ALIPAY_APP_ID;
+    const paymentConfig = await getPaymentConfig();
+    const alipayAppId = paymentConfig.alipay.appId || process.env.ALIPAY_APP_ID || '';
+    const isDev = !alipayAppId;
     const origin = request.nextUrl.origin;
     // 优先使用环境变量
-    const baseUrl = isLocal ? origin : env.NEXT_PUBLIC_BASE_URL;
+    const forwardedProto = (request.headers.get('x-forwarded-proto') || '').split(',')[0].trim();
+    const forwardedHost = (request.headers.get('x-forwarded-host') || request.headers.get('host') || '').split(',')[0].trim();
+    const configuredBaseUrl = (process.env.NEXT_PUBLIC_BASE_URL || '').trim().replace(/\/+$/, '');
+    const inferredBaseUrl = forwardedHost
+      ? `${forwardedProto || 'https'}://${forwardedHost}`.replace(/\/+$/, '')
+      : origin.replace(/\/+$/, '');
+    const baseUrl = isLocal ? origin : (configuredBaseUrl || inferredBaseUrl || origin.replace(/\/+$/, ''));
+    const configuredAlipayRedirectUri =
+      ((await getSystemConfig('alipay_login_redirect_uri')) || process.env.ALIPAY_LOGIN_REDIRECT_URI || '')
+        .trim();
+    const fallbackAlipayRedirectUri = 'https://www.jarvisai.com.cn/api/auth/alipay/callback';
+    const normalizedRedirectUri = (configuredAlipayRedirectUri || `${baseUrl}/api/auth/alipay/callback` || fallbackAlipayRedirectUri)
+      .replace(/^http:\/\//i, 'https://')
+      .replace(/\/+$/, '');
     
     let qrContent;
     if (isDev) {
@@ -37,8 +52,8 @@ export async function GET(request: NextRequest) {
       qrContent = `${baseUrl}/api/auth/alipay/confirm?ticket=${ticket}`;
     } else {
       // 生产环境：支付宝开放平台登录URL
-      const appId = process.env.ALIPAY_APP_ID;
-      const redirectUri = encodeURIComponent(`${baseUrl}/api/auth/alipay/callback`);
+      const appId = alipayAppId.trim();
+      const redirectUri = encodeURIComponent(normalizedRedirectUri || fallbackAlipayRedirectUri);
       qrContent = `https://openauth.alipay.com/oauth2/publicAppAuthorize.htm?app_id=${appId}&scope=auth_user&redirect_uri=${redirectUri}&state=${ticket}`;
     }
     
@@ -53,6 +68,7 @@ export async function GET(request: NextRequest) {
       qrCode,
       ticket,
       dev: isDev,
+      authUrl: !isDev ? qrContent : undefined,
       expiresIn: 300, // 5分钟
     });
   } catch (error: unknown) {

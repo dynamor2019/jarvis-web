@@ -1,0 +1,23 @@
+﻿Jarvis Web Deploy Checklist
+Generated: 2026-04-04 21:22:21
+
+1. Extract package to target directory (example: /www/wwwroot/jarvis-web).
+2. Ensure only one web process listens on 3000.
+3. Export runtime env vars:
+   NODE_ENV=production
+   HOSTNAME=0.0.0.0
+   PORT=3000
+   DATABASE_URL=file:/www/wwwroot/jarvis-web/prisma/jarvis.db
+4. Verify required files exist:
+   .next_build/BUILD_ID
+   .next_build/routes-manifest.json
+   .next_build/prerender-manifest.json
+   data/
+   plugins/
+   prisma/jarvis.db
+   src/data/plugin-config.json
+5. Start service and verify:
+   curl -i http://127.0.0.1:3000/api/health
+   curl -i http://127.0.0.1:3000/api/models/available
+6. Nginx reverse proxy must pass Host header as $host.
+

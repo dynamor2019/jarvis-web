@@ -6,44 +6,39 @@
   "index_state": {
     "start.sh": {
       "source": "inline",
-      "updated_at": "2026-04-02T18:34:53",
-      "file_hash": "bf3972db614f02aabc3da84bea3f862a7ae6a080418b2b0807aee6b7b24b7a47",
-      "line_count": 403,
+      "updated_at": "2026-04-05T16:56:56",
+      "file_hash": "c936f3067e265ce818d60546a4cc17fb3db71176cc374c7f5725a2cdec724b9e",
+      "line_count": 472,
       "entry_signatures": [
         {
           "feature": "set -e",
-          "line": 13,
+          "line": 12,
           "signature": "36d2e25f79d4"
         },
         {
           "feature": "else",
-          "line": 31,
+          "line": 30,
           "signature": "c7776e75d23c"
         },
         {
           "feature": "return 1",
-          "line": 32,
+          "line": 31,
           "signature": "03cbb3771ad6"
         },
         {
+          "feature": "return 0",
+          "line": 148,
+          "signature": "920c30eba449"
+        },
+        {
           "feature": "sleep 2",
-          "line": 56,
+          "line": 192,
           "signature": "71c9418706e4"
         },
         {
-          "feature": "esac",
-          "line": 111,
-          "signature": "f2ff9c2fa62b"
-        },
-        {
           "feature": "exit 1",
-          "line": 194,
+          "line": 300,
           "signature": "2ca3cd2a2924"
-        },
-        {
-          "feature": "done",
-          "line": 332,
-          "signature": "1016af67d15b"
         }
       ]
     },
@@ -226,14 +221,14 @@
     },
     "pack-web.ps1": {
       "source": "sidecar",
-      "updated_at": "2026-04-04T04:43:32",
-      "file_hash": "03240e16e7a66875a27283d27a15617c918f70c488c6427b469189d00774f2f7",
-      "line_count": 257,
+      "updated_at": "2026-04-05T17:38:46",
+      "file_hash": "ecbee497b0ebcd8f658e450abb93a8023885de25fe97411edb6733f28af74811",
+      "line_count": 371,
       "entry_signatures": [
         {
           "feature": "Remove-Item -Force -ErrorAction SilentlyContinue",
-          "line": 43,
-          "signature": "917fa8bd87d6"
+          "line": 117,
+          "signature": "1a01c5ebde18"
         }
       ]
     }

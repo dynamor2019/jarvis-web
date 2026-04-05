@@ -1,5 +1,4 @@
 "use client";
-import ChinaHeatmap from '@/components/ChinaHeatmap';
 import NextImage from 'next/image';
 import { FormattedMessage } from 'react-intl';
 
@@ -48,14 +47,53 @@ export default function Hero({ downloadUrl }: HeroProps) {
                         </div>
                     </div>
 
-                    {/* Right: Active Users Map */}
+                    {/* Right: Stable visual block for production deploys */}
                     <div className="relative">
-                        <div className="relative w-full">
-                            <ChinaHeatmap
-                                source="combined"
-                                height={380}
-                                promo
-                            />
+                        <div className="relative w-full overflow-hidden rounded-[28px] border border-[#4F46E5]/10 bg-white/85 p-6 shadow-[0_24px_80px_rgba(79,70,229,0.12)]">
+                            <div className="mb-4 flex items-center justify-between">
+                                <div>
+                                    <p className="text-xs font-semibold uppercase tracking-[0.28em] text-[#4F46E5]">
+                                        <FormattedMessage id="hero.panel.label" defaultMessage="JarvisAI" />
+                                    </p>
+                                    <h3 className="mt-2 text-2xl font-bold text-gray-900">
+                                        <FormattedMessage id="hero.panel.title" defaultMessage="智能写作工作台" />
+                                    </h3>
+                                </div>
+                                <div className="rounded-full bg-[#4F46E5]/10 px-3 py-1 text-sm font-medium text-[#4F46E5]">
+                                    <FormattedMessage id="hero.panel.status" defaultMessage="实时可用" />
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div className="rounded-2xl bg-gradient-to-br from-[#EEF2FF] to-[#FDF2F8] p-4">
+                                    <p className="text-sm text-gray-500">
+                                        <FormattedMessage id="hero.panel.card1.label" defaultMessage="文档助手" />
+                                    </p>
+                                    <p className="mt-2 text-3xl font-bold text-gray-900">24/7</p>
+                                    <p className="mt-3 text-sm text-gray-600">
+                                        <FormattedMessage id="hero.panel.card1.desc" defaultMessage="润色、续写、摘要、翻译一体化" />
+                                    </p>
+                                </div>
+                                <div className="rounded-2xl bg-gradient-to-br from-[#ECFDF5] to-[#F0F9FF] p-4">
+                                    <p className="text-sm text-gray-500">
+                                        <FormattedMessage id="hero.panel.card2.label" defaultMessage="公式支持" />
+                                    </p>
+                                    <p className="mt-2 text-3xl font-bold text-gray-900">LaTeX</p>
+                                    <p className="mt-3 text-sm text-gray-600">
+                                        <FormattedMessage id="hero.panel.card2.desc" defaultMessage="复杂公式转换与专业排版" />
+                                    </p>
+                                </div>
+                            </div>
+
+                            <div className="mt-4 rounded-2xl bg-gray-50 p-4">
+                                <div className="flex items-center justify-between text-sm text-gray-500">
+                                    <span><FormattedMessage id="hero.panel.footer.left" defaultMessage="当前能力" /></span>
+                                    <span><FormattedMessage id="hero.panel.footer.right" defaultMessage="稳定运行" /></span>
+                                </div>
+                                <div className="mt-3 h-2 rounded-full bg-gray-200">
+                                    <div className="h-2 w-[78%] rounded-full bg-gradient-to-r from-[#4F46E5] to-[#EC4899]" />
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
