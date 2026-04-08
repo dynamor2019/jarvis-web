@@ -1,30 +1,28 @@
+// [CodeGuard Feature Index]
+// - GET -> line 11
+// - PUT -> line 94
+// - newTraffic -> line 230
+// [/CodeGuard Feature Index]
+
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
-import { verifyToken } from '@/lib/auth';
+import { hashPassword, verifyPassword, verifyToken } from '@/lib/auth';
 
 export async function GET(request: NextRequest) {
   try {
-    // 从请求头获取 token
     const token = request.headers.get('authorization')?.replace('Bearer ', '');
-    
+
     if (!token) {
-      return NextResponse.json(
-        { error: '未授权' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // 验证 token
     const payload = verifyToken(token);
     if (!payload) {
-      return NextResponse.json(
-        { error: 'Token 无效或已过期' },
-        { status: 401 }
-      );
+      return NextResponse.json({ error: 'Token is invalid' }, { status: 401 });
     }
 
-    // 获取用户信息
-    let user: any = null
+    // Use tiered selects so older DB schemas don't fail with 500 when newer columns are missing.
+    let user: any = null;
     try {
       user = await prisma.user.findUnique({
         where: { id: payload.userId },
@@ -34,6 +32,7 @@ export async function GET(request: NextRequest) {
           username: true,
           name: true,
           avatar: true,
+          role: true,
           tokenBalance: true,
           trafficTokenBalance: true,
           subscriptionTokenBalance: true,
@@ -47,41 +46,59 @@ export async function GET(request: NextRequest) {
         },
       });
     } catch {
-      user = await prisma.user.findUnique({
-        where: { id: payload.userId },
-        select: {
-          id: true,
-          email: true,
-          username: true,
-          name: true,
-          avatar: true,
-          tokenBalance: true,
-          trafficTokenBalance: true,
-          subscriptionTokenBalance: true,
-          balance: true,
-          totalSpent: true,
-          school: true,
-          country: true,
-          referredBy: true,
-          createdAt: true,
-        },
-      });
+      try {
+        user = await prisma.user.findUnique({
+          where: { id: payload.userId },
+          select: {
+            id: true,
+            email: true,
+            username: true,
+            name: true,
+            avatar: true,
+            role: true,
+            tokenBalance: true,
+            balance: true,
+            totalSpent: true,
+            createdAt: true,
+          },
+        });
+      } catch {
+        user = await prisma.user.findUnique({
+          where: { id: payload.userId },
+          select: {
+            id: true,
+            email: true,
+            username: true,
+            name: true,
+            avatar: true,
+            balance: true,
+            createdAt: true,
+          },
+        });
+      }
     }
 
     if (!user) {
-      return NextResponse.json(
-        { error: '用户不存在' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
     }
 
-    return NextResponse.json({ user });
+    const normalizedUser = {
+      ...user,
+      role: user.role ?? 'user',
+      tokenBalance: user.tokenBalance ?? 0,
+      trafficTokenBalance: user.trafficTokenBalance ?? 0,
+      subscriptionTokenBalance: user.subscriptionTokenBalance ?? 0,
+      totalSpent: user.totalSpent ?? 0,
+      school: user.school ?? null,
+      country: user.country ?? null,
+      referralCode: user.referralCode ?? null,
+      referredBy: user.referredBy ?? null,
+    };
+
+    return NextResponse.json({ user: normalizedUser });
   } catch (error) {
-    console.error('获取用户信息错误:', error);
-    return NextResponse.json(
-      { error: '获取用户信息失败' },
-      { status: 500 }
-    );
+    console.error('Failed to fetch profile:', error);
+    return NextResponse.json({ error: 'Failed to fetch profile' }, { status: 500 });
   }
 }
 
@@ -89,12 +106,12 @@ export async function PUT(request: NextRequest) {
   try {
     const token = request.headers.get('authorization')?.replace('Bearer ', '');
     if (!token) {
-      return NextResponse.json({ error: '未授权' }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     const payload = verifyToken(token);
     if (!payload) {
-      return NextResponse.json({ error: 'Token 无效或已过期' }, { status: 401 });
+      return NextResponse.json({ error: 'Token is invalid' }, { status: 401 });
     }
 
     const body = await request.json();
@@ -104,10 +121,10 @@ export async function PUT(request: NextRequest) {
 
     if ('email' in body) {
       if (!nextEmail) {
-        return NextResponse.json({ error: '邮箱不能为空' }, { status: 400 });
+        return NextResponse.json({ error: 'Email cannot be empty' }, { status: 400 });
       }
       if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(nextEmail)) {
-        return NextResponse.json({ error: '邮箱格式不正确' }, { status: 400 });
+        return NextResponse.json({ error: 'Invalid email format' }, { status: 400 });
       }
       allowed.email = nextEmail;
     }
@@ -127,9 +144,54 @@ export async function PUT(request: NextRequest) {
     if ('country' in body) allowed.country = body.country ?? null;
     if ('tags' in body) allowed.tags = body.tags ?? null;
 
-    const prev = await prisma.user.findUnique({ where: { id: payload.userId }, select: { email: true, name: true, phone: true, preferredLanguage: true, timezone: true, province: true, city: true, country: true } });
+    const prev = await prisma.user.findUnique({
+      where: { id: payload.userId },
+      select: {
+        email: true,
+        name: true,
+        phone: true,
+        preferredLanguage: true,
+        timezone: true,
+        province: true,
+        city: true,
+        country: true,
+        password: true,
+      },
+    });
     if (!prev) {
-      return NextResponse.json({ error: '用户不存在' }, { status: 404 });
+      return NextResponse.json({ error: 'User not found' }, { status: 404 });
+    }
+
+    if ('password' in body) {
+      const nextPassword = typeof body.password === 'string' ? body.password.trim() : '';
+      if (!nextPassword) {
+        return NextResponse.json({ error: 'New password is required' }, { status: 400 });
+      }
+      if (nextPassword.length < 6) {
+        return NextResponse.json(
+          { error: 'New password must be at least 6 characters' },
+          { status: 400 }
+        );
+      }
+
+      const currentPassword =
+        typeof body.currentPassword === 'string' ? body.currentPassword.trim() : '';
+      const savedPassword = typeof prev.password === 'string' ? prev.password : '';
+      const isSocialPlaceholder =
+        savedPassword === 'wechat_login' || savedPassword === 'alipay_login' || !savedPassword;
+      const isHashedPassword = savedPassword.startsWith('$2');
+
+      if (isHashedPassword && !isSocialPlaceholder) {
+        if (!currentPassword) {
+          return NextResponse.json({ error: 'Current password is required' }, { status: 400 });
+        }
+        const isValid = await verifyPassword(currentPassword, savedPassword);
+        if (!isValid) {
+          return NextResponse.json({ error: 'Current password is incorrect' }, { status: 400 });
+        }
+      }
+
+      allowed.password = await hashPassword(nextPassword);
     }
 
     if ('email' in body && nextEmail && nextEmail !== (prev.email || '').toLowerCase()) {
@@ -138,7 +200,7 @@ export async function PUT(request: NextRequest) {
         select: { id: true },
       });
       if (emailOwner && emailOwner.id !== payload.userId) {
-        return NextResponse.json({ error: '该邮箱已被使用' }, { status: 409 });
+        return NextResponse.json({ error: 'Email already in use' }, { status: 409 });
       }
     }
     const updated = await prisma.user.update({
@@ -183,7 +245,7 @@ export async function PUT(request: NextRequest) {
           const newBal = newTraffic + (userNow?.subscriptionTokenBalance || 0);
           await prisma.$transaction([
             prisma.user.update({ where: { id: payload.userId }, data: { trafficTokenBalance: newTraffic, tokenBalance: newBal } }),
-            prisma.transaction.create({ data: { userId: payload.userId, type: 'profile_bonus', amount: 0, tokens: bonus, balance: 0, tokenBalance: newBal, description: '完善个人信息奖励' } }),
+            prisma.transaction.create({ data: { userId: payload.userId, type: 'profile_bonus', amount: 0, tokens: bonus, balance: 0, tokenBalance: newBal, description: `Profile completion bonus: +${bonus} Token` } }),
           ]);
         }
       }
@@ -191,7 +253,7 @@ export async function PUT(request: NextRequest) {
 
     return NextResponse.json({ success: true, user: updated });
   } catch (error) {
-    console.error('更新用户信息错误:', error);
-    return NextResponse.json({ error: '保存失败，请稍后重试' }, { status: 500 });
+    console.error('闂備礁鎼ú銈夋偤閵娾晛钃熷┑鐘叉处閸嬨劑鏌曟繝蹇曠暠闁绘挻娲栬彁闁搞儻绲芥晶鎻捗归悡搴㈠殗闁哄被鍔岄埢搴ㄥ箳濠靛棙顔€:', error);
+    return NextResponse.json({ error: 'Profile update failed' }, { status: 500 });
   }
 }

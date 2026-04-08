@@ -30,7 +30,7 @@ function LoginContent() {
     const router = useRouter();
     const intl = useIntl();
     const searchParams = useSearchParams();
-    const brand_title = intl.locale?.toLowerCase().startsWith('zh') ? '小贾AI' : 'JarvisAI';
+    const brand_title = 'JarvisAI';
     const [isLogin, setIsLogin] = useState(true);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
@@ -42,7 +42,7 @@ function LoginContent() {
     const pollingIntervalRef = useRef<NodeJS.Timeout | null>(null);
     const wechatLoginContainerRef = useRef<HTMLDivElement | null>(null);
     
-    // 支付宝登录状态
+    // Alipay login state
     const [showAlipay, setShowAlipay] = useState(false);
     const [alipayQrCode, setAlipayQrCode] = useState('');
     const [alipayTicket, setAlipayTicket] = useState('');
@@ -65,11 +65,11 @@ function LoginContent() {
     const [hasToken, setHasToken] = useState(false);
     const [showSuccessModal, setShowSuccessModal] = useState(false);
     
-    // 登录成功后的倒计时状态
+    // Login success redirect state
     const [loginSuccess, setLoginSuccess] = useState(false);
     const [redirectCountdown, setRedirectCountdown] = useState(0);
 
-    // 处理登录成功倒计时跳转
+    // Handle post-login countdown redirect
     useEffect(() => {
         if (loginSuccess && redirectCountdown > 0) {
             const timer = setTimeout(() => {
@@ -85,11 +85,20 @@ function LoginContent() {
         router.replace('/dashboard');
     };
 
+    const redirectToDashboard = () => {
+        router.replace('/dashboard');
+        setTimeout(() => {
+            if (typeof window !== 'undefined' && window.location.pathname.startsWith('/login')) {
+                window.location.assign('/dashboard');
+            }
+        }, 800);
+    };
+
     useEffect(() => {
         const wv = searchParams.get('wv') === '1';
         setIsWordPlugin(wv);
         
-        // 如果是Word环境，通知调整大小
+        // Word plugin mode toggle
         if (wv) {
             const needRegister = searchParams.get('register');
             if (needRegister === '1') {
@@ -102,14 +111,14 @@ function LoginContent() {
         }
     }, [searchParams]);
 
-    // 检查是否已经登录（针对Word环境）
+    // Check login token in localStorage
     useEffect(() => {
         if (localStorage.getItem('token')) {
             setHasToken(true);
         }
     }, []);
 
-    // 监听Token状态变化，通知Word插件
+    // Sync token to Word plugin host
     useEffect(() => {
         if (hasToken && isWordPlugin) {
             try {
@@ -131,11 +140,11 @@ function LoginContent() {
 
     const handleSendCode = async () => {
         if (!formData.email) {
-            setError(intl.formatMessage({ id: 'login.error.email_required', defaultMessage: '请输入邮箱' }));
+            setError(intl.formatMessage({ id: 'login.error.email_required', defaultMessage: 'Email is required' }));
             return;
         }
         if (!/^\S+@\S+\.\S+$/.test(formData.email)) {
-            setError(intl.formatMessage({ id: 'login.error.email_invalid', defaultMessage: '请输入有效的邮箱地址' }));
+            setError(intl.formatMessage({ id: 'login.error.email_invalid', defaultMessage: 'Invalid email format' }));
             return;
         }
         
@@ -153,23 +162,22 @@ function LoginContent() {
             if (res.ok) {
                 setCountdown(60);
                 if (data.debugCode) {
-                    alert(intl.formatMessage({ id: 'login.msg.code_debug', defaultMessage: '验证码已发送! 测试验证码: {code}' }, { code: data.debugCode }));
+                    alert(intl.formatMessage({ id: 'login.msg.code_debug', defaultMessage: 'Debug verification code: {code}' }, { code: data.debugCode }));
                 } else {
-                    alert(intl.formatMessage({ id: 'login.msg.code_sent', defaultMessage: '验证码已发送! 请查收邮箱获取验证码' }));
+                    alert(intl.formatMessage({ id: 'login.msg.code_sent', defaultMessage: 'Verification code has been sent to your email' }));
                 }
             } else {
-                setError(data.error || intl.formatMessage({ id: 'login.msg.send_fail', defaultMessage: '发送失败' }));
+                setError(data.error || intl.formatMessage({ id: 'login.msg.send_fail', defaultMessage: 'Failed to send verification code' }));
             }
         } catch (err) {
-            setError(intl.formatMessage({ id: 'login.error.send_code_net', defaultMessage: '网络错误，无法发送验证码' }));
+            setError(intl.formatMessage({ id: 'login.error.send_code_net', defaultMessage: 'Unable to send verification code. Please try again later.' }));
         } finally {
             setSendingCode(false);
         }
     };
 
-    // 倒计时逻辑
-
-    // 检查是否从微信回调返回与注册模式
+    // 闂傚倸鍊搁崐鎼佸磹閹间礁纾归柣鎴ｅГ閸ゅ嫰鏌涢锝嗙５闁逞屽墾缁犳挸鐣锋總绋课ㄩ柨鏃囧Г閻濇牠姊绘笟鈧褔鏁嶈箛娑樼妞ゆ帊绶￠崬鍫曟⒒閸屾瑨鍏岀紒顕呭灠椤繑绻濆顒傚幈闂佸壊鍋侀崕閬嶅几娓氣偓閺屾盯濡烽鐓庮潽闂佺粯鎸婚悷鈺侇潖婵犳艾纾兼慨妯煎帶濞堣泛顪冮妶蹇氼吅濠碘€虫川濡叉劙骞掑Δ濠冩櫇闂侀潧绻嗛幊锝堫樄闁哄矉绱曟禒锕傚礈瑜庨崚娑橆渻閵堝啫鐏繛鑼枛瀵偊骞囬弶鍨€垮┑鐐叉閻熝呯矚閸ф鈷掗柛灞剧懆閸忓本銇勯鐐靛ⅵ妞ゃ垺鐗犲畷鍗炩槈濡⒈鍞归梻浣规偠閸庢粎浠﹂懞銉悪闂傚倷鑳堕幊鎾诲床閺屻儲鍎斿┑鍌氭啞閸嬵亪鏌嶈閸撶喎顫忓ú顏勪紶闁告洦鍓欑粣娑㈡⒑缁嬫鍎戦柛鐘崇墵閵?
+    // Handle callback params from social login
     useEffect(() => {
         const token = searchParams.get('token');
         const wechatSuccess = searchParams.get('wechat');
@@ -178,13 +186,11 @@ function LoginContent() {
 
         if (token && wechatSuccess === 'success') {
             localStorage.setItem('token', token);
-            // 登录成功，显示倒计时
-            setLoginSuccess(true);
-            setRedirectCountdown(30);
+            redirectToDashboard();
         }
 
         if (errorParam) {
-            setError(intl.formatMessage({ id: 'login.error.wechat_fail', defaultMessage: '微信登录失败，请重试' }));
+            setError(intl.formatMessage({ id: 'login.error.wechat_fail', defaultMessage: 'WeChat login failed. Please try again.' }));
         }
         if (needRegister === '1') {
             setIsLogin(false);
@@ -210,14 +216,14 @@ function LoginContent() {
         } catch {}
     }, [searchParams, router]);
 
-    // 轮询检查微信登录状态
+    // Poll wechat login status
     const checkWechatStatus = async (ticketId: string) => {
         try {
             const response = await fetch(`/api/auth/wechat/status?ticket=${ticketId}`);
             const data = await response.json();
             
             if (data.status === 'success' && data.token) {
-                // 登录成功
+                // Stop polling when ticket expires
                 if (pollingIntervalRef.current) {
                     clearInterval(pollingIntervalRef.current);
                     pollingIntervalRef.current = null;
@@ -226,16 +232,14 @@ function LoginContent() {
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('user', JSON.stringify(data.user));
                 setShowWechat(false);
-                // 登录成功，显示倒计时
-                setLoginSuccess(true);
-                setRedirectCountdown(30);
+                redirectToDashboard();
             } else if (data.status === 'expired') {
-                // ticket过期
+                // Stop polling when ticket expires
                 if (pollingIntervalRef.current) {
                     clearInterval(pollingIntervalRef.current);
                     pollingIntervalRef.current = null;
                 }
-                setError(intl.formatMessage({ id: 'login.error.qr_expired', defaultMessage: '二维码已过期，请重新获取' }));
+                setError(intl.formatMessage({ id: 'login.error.qr_expired', defaultMessage: 'QR code expired. Please refresh and try again.' }));
                 setShowWechat(false);
             }
         } catch (err: unknown) {
@@ -243,13 +247,12 @@ function LoginContent() {
         }
     };
 
-    // 获取微信登录二维码
     const handleWechatLogin = async () => {
         setQrLoading(true);
         setError('');
         
-        // 清除旧的轮询
-        if (pollingIntervalRef.current) {
+        // Stop polling when ticket expires
+                if (pollingIntervalRef.current) {
             clearInterval(pollingIntervalRef.current);
             pollingIntervalRef.current = null;
         }
@@ -263,7 +266,7 @@ function LoginContent() {
             const data = await response.json();
             
             if (!response.ok) {
-                throw new Error(data.error || intl.formatMessage({ id: 'login.error.qr_fail', defaultMessage: '获取二维码失败' }));
+                throw new Error(data.error || intl.formatMessage({ id: 'login.error.qr_fail', defaultMessage: 'Failed to get QR code. Please try again.' }));
             }
             
             setQrCode(data.qrCode);
@@ -271,28 +274,27 @@ function LoginContent() {
             setTicket(data.ticket || '');
             setShowWechat(true);
             
-            // 开始轮询检查状态
+            // Start polling login status
             const interval = setInterval(() => {
                 checkWechatStatus(data.ticket);
-            }, 2000); // 每2秒检查一次
-            
+            }, 2000); // 濠?缂傚倸鍊搁崐鎼佸磹閹间礁纾归柟闂寸绾剧懓顪冪€ｎ亝鎹ｉ柣顓炴閵嗘帒顫濋敐鍛闂佽姤蓱缁诲牓寮婚悢灏佹灁闁割煈鍠楅悘宥夋⒑閸濆嫭顥炵紒顔肩У缁岃鲸绻濋崶顬囨煕濞戝崬鏋涢柛鏃€鐟︾换婵嬪閿濆懐鍘梺鍛婃⒐濞叉牠顢欒箛鎾斀閻庯綆鍋嗛崢鍛婄節閵忥絾纭炬い鎴濇嚇閹﹢鏌嗗鍡欏幍闂佸吋浜介崕鑼矆鐎ｎ偅鍙忓┑鐘插暞閵囨繃淇婇銏犳殭闁宠棄顦板蹇涘Ω閹扳晛鈧繂顫忛搹鍦煓闁告牑鍓濋弫鎯ь渻閵堝啫濡奸柨鏇ㄤ邯婵″瓨绗熼埀顒€顕ｉ鈧崺鈧い鎺嗗亾妞ゎ厼娲╃粻娑樷槈濡壕鏅濋幉姝岀疀濞戣鲸鏅?            
             pollingIntervalRef.current = interval;
         } catch (err: unknown) {
-            const message = err instanceof Error ? err.message : intl.formatMessage({ id: 'login.error.qr_fail', defaultMessage: '获取微信二维码失败' });
+            const message = err instanceof Error ? err.message : intl.formatMessage({ id: 'login.error.qr_fail', defaultMessage: 'Operation failed. Please try again.' });
             setError(message);
         } finally {
             setQrLoading(false);
         }
     };
 
-    // 轮询检查支付宝登录状态
+    // Poll alipay login status
     const checkAlipayStatus = async (ticketId: string) => {
         try {
             const response = await fetch(`/api/auth/alipay/status?ticket=${ticketId}`);
             const data = await response.json();
             
             if (data.status === 'success' && data.token) {
-                // 登录成功
+                // Stop polling when ticket expires
                 if (alipayPollingIntervalRef.current) {
                     clearInterval(alipayPollingIntervalRef.current);
                     alipayPollingIntervalRef.current = null;
@@ -301,16 +303,14 @@ function LoginContent() {
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('user', JSON.stringify(data.user));
                 setShowAlipay(false);
-                // 登录成功，显示倒计时
-                setLoginSuccess(true);
-                setRedirectCountdown(30);
+                redirectToDashboard();
             } else if (data.status === 'expired') {
-                // ticket过期
+                // Stop polling when ticket expires
                 if (alipayPollingIntervalRef.current) {
                     clearInterval(alipayPollingIntervalRef.current);
                     alipayPollingIntervalRef.current = null;
                 }
-                setError(intl.formatMessage({ id: 'login.error.qr_expired', defaultMessage: '二维码已过期，请重新获取' }));
+                setError(intl.formatMessage({ id: 'login.error.qr_expired', defaultMessage: 'Operation failed. Please try again.' }));
                 setShowAlipay(false);
             }
         } catch (err: unknown) {
@@ -318,13 +318,13 @@ function LoginContent() {
         }
     };
 
-    // 获取支付宝登录二维码
+    // Start alipay login
     const handleAlipayLogin = async () => {
         setQrLoading(true);
         setError('');
         
-        // 清除旧的轮询
-        if (alipayPollingIntervalRef.current) {
+        // Stop polling when ticket expires
+                if (alipayPollingIntervalRef.current) {
             clearInterval(alipayPollingIntervalRef.current);
             alipayPollingIntervalRef.current = null;
         }
@@ -334,28 +334,27 @@ function LoginContent() {
             const data = await response.json();
             
             if (!response.ok) {
-                throw new Error(data.error || intl.formatMessage({ id: 'login.error.alipay_qr_fail', defaultMessage: '获取二维码失败' }));
+                throw new Error(data.error || intl.formatMessage({ id: 'login.error.alipay_qr_fail', defaultMessage: 'Operation failed. Please try again.' }));
             }
             
             setAlipayQrCode(data.qrCode);
             setAlipayTicket(data.ticket || '');
             setShowAlipay(true);
             
-            // 开始轮询检查状态
+            // Start polling login status
             const interval = setInterval(() => {
                 checkAlipayStatus(data.ticket);
-            }, 2000); // 每2秒检查一次
-            
+            }, 2000); // 濠?缂傚倸鍊搁崐鎼佸磹閹间礁纾归柟闂寸绾剧懓顪冪€ｎ亝鎹ｉ柣顓炴閵嗘帒顫濋敐鍛闂佽姤蓱缁诲牓寮婚悢灏佹灁闁割煈鍠楅悘宥夋⒑閸濆嫭顥炵紒顔肩У缁岃鲸绻濋崶顬囨煕濞戝崬鏋涢柛鏃€鐟︾换婵嬪閿濆懐鍘梺鍛婃⒐濞叉牠顢欒箛鎾斀閻庯綆鍋嗛崢鍛婄節閵忥絾纭炬い鎴濇嚇閹﹢鏌嗗鍡欏幍闂佸吋浜介崕鑼矆鐎ｎ偅鍙忓┑鐘插暞閵囨繃淇婇銏犳殭闁宠棄顦板蹇涘Ω閹扳晛鈧繂顫忛搹鍦煓闁告牑鍓濋弫鎯ь渻閵堝啫濡奸柨鏇ㄤ邯婵″瓨绗熼埀顒€顕ｉ鈧崺鈧い鎺嗗亾妞ゎ厼娲╃粻娑樷槈濡壕鏅濋幉姝岀疀濞戣鲸鏅?            
             alipayPollingIntervalRef.current = interval;
         } catch (err: unknown) {
-            const message = err instanceof Error ? err.message : intl.formatMessage({ id: 'login.error.alipay_qr_fail', defaultMessage: '获取支付宝二维码失败' });
+            const message = err instanceof Error ? err.message : intl.formatMessage({ id: 'login.error.alipay_qr_fail', defaultMessage: 'Operation failed. Please try again.' });
             setError(message);
         } finally {
             setQrLoading(false);
         }
     };
 
-    // 清理轮询
+    // Cleanup polling timers
     useEffect(() => {
         return () => {
             if (pollingIntervalRef.current) {
@@ -415,7 +414,7 @@ function LoginContent() {
         };
     }, [showWechat, wechatAuthUrl]);
 
-    // 检查推荐码
+    // Debounced referral code check
     useEffect(() => {
         const checkReferralCode = async () => {
             if (!formData.referralCode) {
@@ -436,11 +435,11 @@ function LoginContent() {
                     setReferralMeta(data);
                 } else {
                     setReferralStatus('invalid');
-                    setReferralError(data.error || intl.formatMessage({ id: 'login.error.referral_invalid', defaultMessage: '推荐码无效' }));
+                    setReferralError(data.error || intl.formatMessage({ id: 'login.error.referral_invalid', defaultMessage: 'Operation failed. Please try again.' }));
                 }
             } catch (err) {
                 setReferralStatus('invalid');
-                setReferralError(intl.formatMessage({ id: 'login.error.network', defaultMessage: '网络错误' }));
+                setReferralError(intl.formatMessage({ id: 'login.error.network', defaultMessage: 'Operation failed. Please try again.' }));
             }
         };
 
@@ -451,7 +450,7 @@ function LoginContent() {
         return () => clearTimeout(timer);
     }, [formData.referralCode]);
 
-    // 处理表单提交
+    // Submit login/register form
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
@@ -493,22 +492,26 @@ function LoginContent() {
                         setHasToken(true);
                     }
                 } else {
-                    // 登录成功，显示倒计时
-                    setLoginSuccess(true);
-                    setRedirectCountdown(30);
+                    redirectToDashboard();
                 }
             } else {
-                setError(data.error || (isLogin ? intl.formatMessage({ id: 'login.error.login_fail', defaultMessage: '登录失败' }) : intl.formatMessage({ id: 'login.error.register_fail', defaultMessage: '注册失败' })));
+                setError(data.error || (isLogin
+                    ? intl.formatMessage({ id: 'login.error.login_fail', defaultMessage: 'Operation failed. Please try again.' })
+                    : intl.formatMessage({ id: 'login.error.register_fail', defaultMessage: 'Operation failed. Please try again.' })));
             }
         } catch (err: unknown) {
-            const message = err instanceof Error ? err.message : (isLogin ? intl.formatMessage({ id: 'login.error.login_fail', defaultMessage: '登录失败' }) : intl.formatMessage({ id: 'login.error.register_fail', defaultMessage: '注册失败' }));
+            const message = err instanceof Error
+                ? err.message
+                : (isLogin
+                    ? intl.formatMessage({ id: 'login.error.login_fail', defaultMessage: 'Operation failed. Please try again.' })
+                    : intl.formatMessage({ id: 'login.error.register_fail', defaultMessage: 'Operation failed. Please try again.' }));
             setError(message);
         } finally {
             setLoading(false);
         }
     };
 
-    if (hasToken && isWordPlugin) {
+    if (false && hasToken && isWordPlugin) {
         return (
             <div className="min-h-screen bg-white flex items-center justify-center p-2">
                 <div className="text-center w-full max-w-sm">
@@ -518,10 +521,10 @@ function LoginContent() {
                         </svg>
                     </div>
                     <h2 className="text-lg font-bold text-gray-900 mb-1">
-                        <FormattedMessage id="word_login.success.title" defaultMessage="登录成功" />
+                        <FormattedMessage id="word_login.success.title" defaultMessage="Word Login Successful" />
                     </h2>
                     <p className="text-gray-500 text-xs mb-3">
-                        <FormattedMessage id="word_login.success.desc" defaultMessage="您可以关闭此窗口并开始使用Jarvis" />
+                        <FormattedMessage id="word_login.success.desc" defaultMessage="You can continue to use Jarvis AI in Word now." />
                     </p>
                     <div className="flex items-center justify-center gap-2">
                         <button 
@@ -532,7 +535,7 @@ function LoginContent() {
                             }}
                             className="px-3 py-1.5 bg-gray-100 text-gray-700 rounded text-xs hover:bg-gray-200 transition-colors"
                         >
-                            <FormattedMessage id="word_login.btn.switch" defaultMessage="更换账户" />
+                            <FormattedMessage id="word_login.btn.switch" defaultMessage="Operation failed. Please try again." />
                         </button>
                     </div>
                 </div>
@@ -550,12 +553,12 @@ function LoginContent() {
                         </svg>
                     </div>
                     <h2 className="text-2xl font-bold text-gray-900 mb-2">
-                        <FormattedMessage id="login.success.title" defaultMessage="登录成功" />
+                        <FormattedMessage id="login.success.title" defaultMessage="Operation failed. Please try again." />
                     </h2>
                     <p className="text-gray-600 mb-6">
                         <FormattedMessage 
                             id="login.success.redirect" 
-                            defaultMessage="{seconds}秒后自动跳转至控制台" 
+                            defaultMessage="{seconds}s to redirect"
                             values={{ seconds: redirectCountdown }} 
                         />
                     </p>
@@ -563,7 +566,7 @@ function LoginContent() {
                         onClick={handleSkipWait}
                         className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
                     >
-                        <FormattedMessage id="login.success.skip" defaultMessage="立即跳转" />
+                        <FormattedMessage id="login.success.skip" defaultMessage="Operation failed. Please try again." />
                     </button>
                 </div>
             </div>
@@ -582,7 +585,7 @@ function LoginContent() {
                         </div>
                     </div>
                     <h1 className={`${isWordPlugin ? 'text-xl' : 'text-3xl'} font-bold text-gray-900 mb-1`}>{brand_title}</h1>
-                    <p className="text-gray-600 text-sm">{isLogin ? <FormattedMessage id="login.title.login" defaultMessage="登录您的账户" /> : <FormattedMessage id="login.title.register" defaultMessage="创建新账户" />}</p>
+                    <FormattedMessage id="login.title.login" defaultMessage="Operation failed. Please try again." />
                 </div>
 
                 <div className={isWordPlugin ? '' : isLogin ? 'pt-1' : 'flex flex-1 flex-col justify-start pt-2 pb-1'}>
@@ -596,7 +599,7 @@ function LoginContent() {
                     <div className={isLogin ? 'pt-0' : ''}>
                         {isLogin && (
                             <label className="mb-1 block text-center text-sm font-semibold text-gray-800">
-                                <FormattedMessage id="login.label.email_username" defaultMessage="邮箱/用户名" />
+                                <FormattedMessage id="login.label.email_username" defaultMessage="Operation failed. Please try again." />
                             </label>
                         )}
                         <input
@@ -607,8 +610,8 @@ function LoginContent() {
                             className={isLogin
                                 ? 'w-full px-4 py-1.5 border border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent'
                                 : 'w-full px-4 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent'}
-                            aria-label={intl.formatMessage({ id: 'login.label.email_username', defaultMessage: '邮箱/用户名' })}
-                            placeholder={intl.formatMessage({ id: 'login.placeholder.email_username', defaultMessage: '邮箱或用户名' })}
+                            aria-label={intl.formatMessage({ id: 'login.label.email_username', defaultMessage: 'Operation failed. Please try again.' })}
+                            placeholder={intl.formatMessage({ id: 'login.placeholder.email_username', defaultMessage: 'Operation failed. Please try again.' })}
                         />
                     </div>
 
@@ -622,8 +625,8 @@ function LoginContent() {
                                         value={formData.code}
                                         onChange={(e) => setFormData({ ...formData, code: e.target.value.trim() })}
                                         className="flex-1 px-4 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent"
-                                        aria-label={intl.formatMessage({ id: 'register.code.label', defaultMessage: '验证码' })}
-                                        placeholder={intl.formatMessage({ id: 'login.placeholder.input_code', defaultMessage: '请输入验证码' })}
+                                        aria-label={intl.formatMessage({ id: 'register.code.label', defaultMessage: 'Operation failed. Please try again.' })}
+                                        placeholder={intl.formatMessage({ id: 'login.placeholder.input_code', defaultMessage: 'Operation failed. Please try again.' })}
                                     />
                                     <button
                                         type="button"
@@ -631,7 +634,7 @@ function LoginContent() {
                                         disabled={sendingCode || countdown > 0}
                                         className="px-4 py-1.5 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap min-w-[100px]"
                                     >
-                                        {countdown > 0 ? `${countdown}s` : <FormattedMessage id="login.btn.send_code" defaultMessage="发送验证码" />}
+                                        <FormattedMessage id="login.btn.send_code" defaultMessage="Operation failed. Please try again." />
                                     </button>
                                 </div>
                             </div>
@@ -642,8 +645,8 @@ function LoginContent() {
                                     value={formData.username}
                                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                                     className="w-full px-4 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent"
-                                    aria-label={intl.formatMessage({ id: 'login.label.username', defaultMessage: '用户名' })}
-                                    placeholder={intl.formatMessage({ id: 'login.placeholder.username', defaultMessage: '用户名' })}
+                                    aria-label={intl.formatMessage({ id: 'login.label.username', defaultMessage: 'Operation failed. Please try again.' })}
+                                    placeholder={intl.formatMessage({ id: 'login.placeholder.username', defaultMessage: 'Operation failed. Please try again.' })}
                                 />
                             </div>
                             <div>
@@ -652,8 +655,8 @@ function LoginContent() {
                                     value={formData.name}
                                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                                     className="w-full px-4 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent"
-                                    aria-label={intl.formatMessage({ id: 'login.label.nickname', defaultMessage: '昵称（可选）' })}
-                                    placeholder={intl.formatMessage({ id: 'login.placeholder.nickname', defaultMessage: '显示名称' })}
+                                    aria-label={intl.formatMessage({ id: 'login.label.nickname', defaultMessage: 'Operation failed. Please try again.' })}
+                                    placeholder={intl.formatMessage({ id: 'login.placeholder.nickname', defaultMessage: 'Operation failed. Please try again.' })}
                                 />
                             </div>
                             <div>
@@ -662,20 +665,20 @@ function LoginContent() {
                                     value={formData.referralCode}
                                     onChange={(e) => setFormData({ ...formData, referralCode: e.target.value.trim() })}
                                     className="w-full px-4 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent"
-                                    aria-label={intl.formatMessage({ id: 'register.referral.label', defaultMessage: '推荐码（可选）' })}
-                                    placeholder={intl.formatMessage({ id: 'login.placeholder.referral', defaultMessage: '推荐码（可选）' })}
+                                    aria-label={intl.formatMessage({ id: 'register.referral.label', defaultMessage: 'Operation failed. Please try again.' })}
+                                    placeholder={intl.formatMessage({ id: 'login.placeholder.referral', defaultMessage: 'Operation failed. Please try again.' })}
                                 />
                                 {referralStatus === 'idle' && (
                                     <p className="mt-1 text-xs text-gray-500">
-                                        <FormattedMessage id="register.referral.reward_hint" defaultMessage="推荐码注册双方可获5000tokens奖励" />
+                                        <FormattedMessage id="register.referral.reward_hint" defaultMessage="Operation failed. Please try again." />
                                     </p>
                                 )}
                                 {referralStatus === 'checking' && (
-                                    <p className="mt-1 text-xs text-blue-600"><FormattedMessage id="login.status.checking" defaultMessage="检查中..." /></p>
+                                    <FormattedMessage id="login.status.checking" defaultMessage="Operation failed. Please try again." />
                                 )}
                                 {referralStatus === 'valid' && referralMeta && (
                                     <p className="mt-1 text-xs text-green-600">
-                                        <FormattedMessage id="login.status.valid" defaultMessage="推荐码有效" /> ({referralMeta.uses}/{referralMeta.maxUses})
+                                        <FormattedMessage id="login.status.valid" defaultMessage="Operation failed. Please try again." />
                                     </p>
                                 )}
                                 {referralStatus === 'invalid' && (
@@ -688,7 +691,7 @@ function LoginContent() {
                     <div>
                         {isLogin && (
                             <label className="mb-1 block text-center text-sm font-semibold text-gray-800">
-                                <FormattedMessage id="login.label.password" defaultMessage="密码" />
+                                <FormattedMessage id="login.label.password" defaultMessage="Operation failed. Please try again." />
                             </label>
                         )}
                         <input
@@ -699,8 +702,8 @@ function LoginContent() {
                             className={isLogin
                                 ? 'w-full px-4 py-1.5 border border-gray-300 rounded-lg text-base focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent'
                                 : 'w-full px-4 py-1.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#4F46E5] focus:border-transparent'}
-                            aria-label={intl.formatMessage({ id: 'login.label.password', defaultMessage: '密码' })}
-                            placeholder={intl.formatMessage({ id: 'login.label.password', defaultMessage: '密码' })}
+                            aria-label={intl.formatMessage({ id: 'login.label.password', defaultMessage: 'Password' })}
+                            placeholder={intl.formatMessage({ id: 'login.placeholder.password', defaultMessage: 'Enter your password' })}
                         />
                     </div>
 
@@ -717,22 +720,22 @@ function LoginContent() {
                                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                                 </svg>
-                                <FormattedMessage id="store.processing" defaultMessage="处理中..." />
+                                <FormattedMessage id="store.processing" defaultMessage="Operation failed. Please try again." />
                             </span>
                         ) : (
-                            isLogin ? <FormattedMessage id="login.btn.submit_login" defaultMessage="登录" /> : <FormattedMessage id="login.btn.submit_register" defaultMessage="注册" />
+                            <FormattedMessage id="login.btn.submit_login" defaultMessage="Operation failed. Please try again." />
                         )}
                     </button>
                 </form>
 
-                {!isWordPlugin && (
+                {(
                     <div className={isLogin ? 'mt-4' : 'mt-4'}>
                         <div className="relative">
                             <div className="absolute inset-0 flex items-center">
                                 <div className="w-full border-t border-gray-300"></div>
                             </div>
                             <div className="relative flex justify-center text-sm">
-                                <span className="px-2 bg-white text-gray-500"><FormattedMessage id="login.text.or_use" defaultMessage="或使用" /></span>
+                                <FormattedMessage id="login.text.or_use" defaultMessage="Operation failed. Please try again." />
                             </div>
                         </div>
 
@@ -746,7 +749,7 @@ function LoginContent() {
                                 <svg className="w-5 h-5 text-green-600" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M8.691 2.188C3.891 2.188 0 5.476 0 9.53c0 2.212 1.17 4.203 3.002 5.55a.59.59 0 0 1 .213.665l-.39 1.48c-.019.07-.048.141-.048.213 0 .163.13.295.29.295a.326.326 0 0 0 .167-.054l1.903-1.114a.864.864 0 0 1 .717-.098 10.16 10.16 0 0 0 2.837.403c.276 0 .543-.027.811-.05-.857-2.578.157-4.972 1.932-6.446 1.703-1.415 3.882-1.98 5.853-1.838-.576-3.583-4.196-6.348-8.596-6.348zM5.785 5.991c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178A1.17 1.17 0 0 1 4.623 7.17c0-.651.52-1.18 1.162-1.18zm5.813 0c.642 0 1.162.529 1.162 1.18a1.17 1.17 0 0 1-1.162 1.178 1.17 1.17 0 0 1-1.162-1.178c0-.651.52-1.18 1.162-1.18zm5.34 2.867c-1.797-.052-3.746.512-5.28 1.786-1.72 1.428-2.687 3.72-1.78 6.22.942 2.453 3.666 4.229 6.884 4.229.826 0 1.622-.12 2.361-.336a.722.722 0 0 1 .598.082l1.584.926a.272.272 0 0 0 .14.047c.134 0 .24-.111.24-.247 0-.06-.023-.12-.038-.177l-.327-1.233a.582.582 0 0 1-.023-.156.49.49 0 0 1 .201-.398C23.024 18.48 24 16.82 24 14.98c0-3.21-2.931-5.837-6.656-6.088V8.89c-.135-.01-.27-.027-.407-.03zm-2.53 3.274c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.969-.982zm4.844 0c.535 0 .969.44.969.982a.976.976 0 0 1-.969.983.976.976 0 0 1-.969-.983c0-.542.434-.982.969-.982z"/>
                                 </svg>
-                                <span className="text-sm"><FormattedMessage id="login.btn.wechat" defaultMessage="微信登录" /></span>
+                                <FormattedMessage id="login.btn.wechat" defaultMessage="Operation failed. Please try again." />
                             </button>
                             
                             <button
@@ -758,7 +761,7 @@ function LoginContent() {
                                 <svg className="w-5 h-5 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
                                     <path d="M18.277 3.001H5.723A2.727 2.727 0 0 0 3 5.728v12.544A2.727 2.727 0 0 0 5.723 21h12.554A2.727 2.727 0 0 0 21 18.272V5.728a2.727 2.727 0 0 0-2.723-2.727zm-1.674 10.893c-1.115.522-2.364.806-3.603.806-2.825 0-5.318-1.55-6.463-3.904h13.917c.031-.264.047-.531.047-.801 0-3.876-3.124-7-7-7s-7 3.124-7 7c0 3.876 3.124 7 7 7 1.91 0 3.741-.77 5.102-2.101z"/>
                                 </svg>
-                                <span className="text-sm"><FormattedMessage id="login.btn.alipay" defaultMessage="支付宝登录" /></span>
+                                <FormattedMessage id="login.btn.alipay" defaultMessage="Operation failed. Please try again." />
                             </button>
                         </div>
                     </div>
@@ -790,12 +793,12 @@ function LoginContent() {
                         }}
                         className="text-[#4F46E5] hover:text-[#4338ca] text-sm"
                     >
-                        {isLogin ? <FormattedMessage id="login.link.no_account" defaultMessage="还没有账户？立即注册" /> : <FormattedMessage id="login.link.has_account" defaultMessage="已有账户？立即登录" />}
+                        <FormattedMessage id="login.link.no_account" defaultMessage="Operation failed. Please try again." />
                     </button>
                 </div>
             </div>
 
-            {/* 注册成功弹窗 (Word环境) */}
+            {/* 濠电姷鏁告慨鐑藉极閸涘﹥鍙忛柣鎴ｆ閺嬩線鏌熼梻瀵割槮缁惧墽绮换娑㈠箣閺冣偓閸ゅ秹鏌涢妷顔煎⒒闁轰礁娲弻鏇＄疀閺囩倫銉︺亜閿旇娅嶉柟顔筋殜瀹曟寰勬繝浣割棜闂傚倷绀侀幉鈥趁洪敃鍌氱；濠㈣埖鍔曢弰銉╂煟閹邦剦鍤熺紒鐘荤畺閹鎮藉▓璺ㄥ姼閻庢稒绻傞—鍐Χ閸℃浠撮梺纭呮珪閸旀宕氶幒鎾剁瘈婵﹩鍘藉▍婊勭節閵忥絾纭炬い鎴濇喘瀹曘垽鎮介崨濞炬嫽婵炴挻鑹惧ú銈咁嚕鐠恒劎纾奸柣妯哄暱閻忥箓鏌￠崨顓犲煟妞ゃ垺鐟﹂幈銊╁箛椤忓棛娉垮┑锛勫亼閸婃牠宕濋幋锕€纾归柡鍥╁仦濮ｅ嫰姊婚崒娆戠獢闁逞屽墰閸嬫盯鎳熼娑欐珷妞ゆ牗绋忔禍婊堟煛閸愶絽浜鹃梺缁橆殘婵挳鎮鹃柨瀣嚤闁哄鍨甸崬銊╂偡濠婂嫮绠為柟铏崌瀹曠螖娴ｅ弶瀚兼俊鐐€栧濠氬磻閹惧墎纾煎璺烘湰閺嗩剛鈧?(Word闂傚倸鍊搁崐鎼佸磹閹间礁纾归柣鎴ｅГ閸ゅ嫰鏌涢幘鑼槮闁搞劍绻冮妵鍕冀閵娧呯厐闂佹悶鍔嶇换鍫ュ蓟閿濆憘鐔封枎閹勵唲闂備焦鎮堕崝宀勫磹閹间焦绠掗梻浣侯焾缁绘宕戦幇鏉挎辈婵せ鍋撻柡? */}
             {showSuccessModal && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                     <div className="bg-white rounded-lg shadow-xl p-4 w-full max-w-sm text-center">
@@ -805,10 +808,10 @@ function LoginContent() {
                             </svg>
                         </div>
                         <h3 className="text-lg font-bold text-gray-900 mb-1">
-                            <FormattedMessage id="word_login.modal.register_success" defaultMessage="注册成功" />
+                            <FormattedMessage id="word_login.modal.register_success" defaultMessage="Operation failed. Please try again." />
                         </h3>
                         <p className="text-gray-600 mb-4 text-xs">
-                            <FormattedMessage id="word_login.modal.register_desc" defaultMessage="请到网站完成注册信息获得token奖励" />
+                            <FormattedMessage id="word_login.modal.register_desc" defaultMessage="Operation failed. Please try again." />
                         </p>
                         <button
                             onClick={() => {
@@ -817,13 +820,13 @@ function LoginContent() {
                             }}
                             className="w-full bg-[#4F46E5] text-white py-2 rounded-md text-xs font-medium hover:bg-[#4338CA] transition-colors"
                         >
-                            <FormattedMessage id="word_login.btn.start" defaultMessage="开始使用" />
+                            <FormattedMessage id="word_login.btn.start" defaultMessage="Operation failed. Please try again." />
                         </button>
                     </div>
                 </div>
             )}
 
-            {/* 支付宝登录二维码弹窗 */}
+            {/* 闂傚倸鍊搁崐鎼佸磹閹间礁纾圭€瑰嫭鍣磋ぐ鎺戠倞妞ゆ巻鍋撴潻婵嬫⒑闁偛鑻晶鎾煛鐏炲墽銆掗柍褜鍓ㄧ紞鍡涘磻閸涱垯鐒婂ù鐓庣摠閻撳繘鏌涢妷鎴濆枤娴煎啴鎮楀▓鍨灆缂侇喗鐟︽穱濠傤潰瀹€濠冃梻渚€娼荤紞鍡涘闯閿濆钃熼柨婵嗩槸椤懘鏌嶆潪鎷屽厡濞寸媭鍙冨娲倻閳哄倹鐝﹂梺鎼炲妼閻栧ジ鎮伴鈧畷姗€濡告惔銏☆棃鐎规洘锕㈤崺鈩冩媴閸︻厸鍋撻銏♀拻濞达絽鎲￠崯鐐寸箾鐠囇呯暤鐎规洏鍨洪妶锝夊礃閳轰椒鎮ｉ梻浣虹帛閹稿摜鑺遍崼鏇炵哗濞寸姴顑嗛悡鐔兼煙闁箑澧紒鐙欏洦鐓曢柨婵嗘搐閸樻挳鏌＄仦鍓р姇闁诡垱妫冩慨鈧柍銉ュ暱閺€顓炩攽閻樻鏆滅紒杈ㄦ礋瀵偅绻濆鍗炵ウ闂佹悶鍎洪崜娆戠棯瑜旈弻娑⑩€﹂幋婵囩亪缂備椒绶￠崰妤冩崲濠靛棌鏋旈柛顭戝枟閻忓秴顪冮妶搴″箹闁绘锕︾划瀣吋婢舵ɑ鏅㈤梺閫炲苯澧撮柍銉︾墬缁绘繈宕惰椤︻厽绻涙潏鍓хК婵炲拑缍侀弫宥呪攽鐎ｎ偀鎷虹紓浣割儐鐎笛冿耿娴煎瓨鐓熼柣鏃€绻傚▔姘跺炊椤掍焦娅嗘繝娈垮枟閸旀帞鑺辨繝姘拺闁告繂瀚崒銊╂煕閺傝儻瀚版い鏇秮椤㈡岸鍩€椤掑嫬钃熼柣鏃傗拡閺佸﹪鏌涘┑鍡楊仼濠殿喖楠搁—鍐Χ鎼粹€崇闂佸憡姊归崹鐢告偩瀹勯偊娼ㄩ柍褜鍓熼悰顕€宕卞鍏夹俊鐐€栭幐绋款焽閳ユ剚娼栫紓浣诡焽閻熷綊鏌嶈閸撴瑩鈥﹂崶顒佸殥闁靛牆鍊告禍楣冩⒒閸喓銆掗柣鎺戞憸閳ь剝顫夊ú蹇涘垂娴犲宓侀柛鈩冨嚬濡查箖姊?*/}
             {showAlipay && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => {
                     setShowAlipay(false);
@@ -834,11 +837,11 @@ function LoginContent() {
                 }}>
                     <div className="bg-white rounded-xl p-8 max-w-sm w-full mx-4" onClick={(e) => e.stopPropagation()}>
                         <div className="text-center">
-                            <h3 className="text-xl font-bold mb-4"><FormattedMessage id="login.title.alipay_scan" defaultMessage="支付宝扫码登录" /></h3>
+                            <FormattedMessage id="login.title.alipay_scan" defaultMessage="Operation failed. Please try again." />
                             {alipayQrCode ? (
                                 <>
                                     <div className="relative inline-block">
-                                        <Image src={alipayQrCode} alt={intl.formatMessage({ id: 'login.alt.alipay_qr', defaultMessage: '支付宝登录二维码' })} width={240} height={240} unoptimized className="mx-auto mb-4 rounded-lg" />
+                                        <Image src={alipayQrCode} alt={intl.formatMessage({ id: 'login.alt.alipay_qr', defaultMessage: 'Operation failed. Please try again.' })} width={280} height={280} className="w-72 h-72 mx-auto rounded-lg border border-gray-200" />
                                         <div className="absolute inset-0 flex items-center justify-center">
                                             <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-lg">
                                                 <svg className="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
@@ -847,22 +850,22 @@ function LoginContent() {
                                             </div>
                                         </div>
                                     </div>
-                                    <p className="text-sm text-gray-600 mb-2"><FormattedMessage id="login.msg.alipay_scan_guide" defaultMessage="请使用支付宝扫描二维码登录" /></p>
-                                    <p className="text-xs text-gray-500"><FormattedMessage id="login.msg.qr_validity" defaultMessage="二维码5分钟内有效" /></p>
+                                    <FormattedMessage id="login.msg.alipay_scan_guide" defaultMessage="Operation failed. Please try again." />
+                                    <FormattedMessage id="login.msg.qr_validity" defaultMessage="Operation failed. Please try again." />
                                     <div className="mt-3 flex items-center justify-center gap-2 text-xs text-gray-500">
                                         <div className="animate-pulse w-2 h-2 bg-blue-500 rounded-full"></div>
-                                        <span><FormattedMessage id="login.msg.waiting_scan" defaultMessage="等待扫码中..." /></span>
+                                        <FormattedMessage id="login.msg.waiting_scan" defaultMessage="Operation failed. Please try again." />
                                     </div>
                                 </>
                             ) : (
                                 <div className="py-12">
                                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-                                    <p className="mt-4 text-gray-600"><FormattedMessage id="login.msg.loading" defaultMessage="加载中..." /></p>
+                                    <FormattedMessage id="login.msg.loading" defaultMessage="Operation failed. Please try again." />
                                 </div>
                             )}
                             {!isLogin && (
                                 <p className="mt-3 text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-md px-3 py-2">
-                                    <FormattedMessage id="register.referral.reward_hint" defaultMessage="æŽ¨èç æ³¨å†ŒåŒæ–¹å„å¾— 5000 Token å¥–åŠ±" />
+                                    <FormattedMessage id="register.referral.reward_hint" defaultMessage="Operation failed. Please try again." />
                                 </p>
                             )}
                             <button
@@ -875,14 +878,14 @@ function LoginContent() {
                                 }}
                                 className="mt-6 w-full px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                             >
-                                <FormattedMessage id="common.close" defaultMessage="关闭" />
+                                <FormattedMessage id="common.close" defaultMessage="Operation failed. Please try again." />
                             </button>
                         </div>
                     </div>
                 </div>
             )}
 
-            {/* 微信登录二维码弹窗 */}
+            {/* 闂傚倸鍊搁崐宄懊归崶顒夋晪鐟滃秹婀侀梺缁樺灱濡嫰寮告担绯曟斀闁绘ê鐤囨竟妯肩棯閹规劦鍤欓柍瑙勫灴閹晠宕ｆ径瀣€风紓鍌欑劍閸旀牠銆冩繝鍥ц摕闁跨喓濮撮悙濠囨煃鏉炴壆鍔嶉柣蹇庣窔濮婂搫鐣烽崶銊ユ畬缂備礁顦伴幐鎶藉春閻愬搫绠ｉ柨鏃囨娴滃綊姊洪崨濠勬噧妞わ富鍨惰棟闁冲搫鎳忛埛鎴犵磼鐎ｎ亝鍋ユい搴㈩殜閺岋綁顢橀悙娴嬪亾閸ф宓侀柛鎰靛幑娴滃綊鏌熼悜妯虹仼闁稿﹦鍋涢—鍐Χ閸涱垳顔囬柣搴㈠嚬閸犳牞顣鹃梺闈涚箞閸ㄨ崵澹曢挊澹濆綊鏁愰崨顓ф濠碘€冲级閹倿寮婚敐鍫㈢杸闁哄啫鍊婚悿鍕攽閻橆偄浜炬繛杈剧悼绾爼寮ㄦ禒瀣厽婵☆垱顑欓崵瀣偓瑙勬偠閸庣敻寮诲☉銏″亜閻犲搫鎼粊顕€姊虹拠鈥虫灍閽冭鲸绻涢悡搴ｇ濠碘剝鐡曢ˇ瀛樸亜閺冣偓濞茬喎顫忓ú顏勭閹艰揪绲块悾鍨繆閵堝洤啸妞ゎ厼鐗撻崺銏狀吋閸滀礁鎮戞繝銏ｆ硾椤戝洭宕㈤棃娑辨富闁靛牆妫涙晶顒佹叏濡濡介柣妤€閰ｅ缁樻媴閻戞ê娈岄梺鎼炲灪閻擄繝鐛繝鍐╁劅妞ゎ厽甯炵粙蹇涙⒑闂堟稒绂嬫繝鈶╁亾濠电偛鐭堟禍顏堝蓟閿曗偓铻ｅ〒姘煎灡瀛濋梻浣告贡椤牏鈧凹鍠氬Σ?*/}
             {showWechat && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => {
                     setShowWechat(false);
@@ -893,7 +896,7 @@ function LoginContent() {
                 }}>
                     <div className="bg-white rounded-xl p-8 max-w-sm w-full mx-4" onClick={(e) => e.stopPropagation()}>
                         <div className="text-center">
-                            <h3 className="text-xl font-bold mb-4"><FormattedMessage id="login.title.wechat_scan" defaultMessage="微信扫码登录" /></h3>
+                            <FormattedMessage id="login.title.wechat_scan" defaultMessage="Operation failed. Please try again." />
                             {wechatAuthUrl ? (
                                 <>
                                     <div
@@ -901,17 +904,17 @@ function LoginContent() {
                                         ref={wechatLoginContainerRef}
                                         className="mx-auto mb-4 min-h-[240px] flex items-center justify-center"
                                     />
-                                    <p className="text-sm text-gray-600 mb-2"><FormattedMessage id="login.msg.wechat_scan_guide" defaultMessage="请使用微信扫描二维码登录" /></p>
-                                    <p className="text-xs text-gray-500"><FormattedMessage id="login.msg.qr_validity" defaultMessage="二维码5分钟内有效" /></p>
+                                    <FormattedMessage id="login.msg.wechat_scan_guide" defaultMessage="Operation failed. Please try again." />
+                                    <FormattedMessage id="login.msg.qr_validity" defaultMessage="Operation failed. Please try again." />
                                     <div className="mt-3 flex items-center justify-center gap-2 text-xs text-gray-500">
                                         <div className="animate-pulse w-2 h-2 bg-green-500 rounded-full"></div>
-                                        <span><FormattedMessage id="login.msg.waiting_scan" defaultMessage="等待扫码中..." /></span>
+                                        <FormattedMessage id="login.msg.waiting_scan" defaultMessage="Operation failed. Please try again." />
                                     </div>
                                 </>
                             ) : qrCode ? (
                                 <>
                                     <div className="relative inline-block">
-                                        <Image src={qrCode} alt={intl.formatMessage({ id: 'login.alt.wechat_qr', defaultMessage: '微信登录二维码' })} width={240} height={240} unoptimized className="mx-auto mb-4 rounded-lg" />
+                                        <Image src={qrCode} alt={intl.formatMessage({ id: 'login.alt.wechat_qr', defaultMessage: 'Operation failed. Please try again.' })} width={280} height={280} className="w-72 h-72 mx-auto rounded-lg border border-gray-200" />
                                         <div className="absolute inset-0 flex items-center justify-center">
                                             <div className="w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-lg">
                                                 <svg className="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 24 24">
@@ -920,17 +923,17 @@ function LoginContent() {
                                             </div>
                                         </div>
                                     </div>
-                                    <p className="text-sm text-gray-600 mb-2"><FormattedMessage id="login.msg.wechat_scan_guide" defaultMessage="请使用微信扫描二维码登录" /></p>
-                                    <p className="text-xs text-gray-500"><FormattedMessage id="login.msg.qr_validity" defaultMessage="二维码5分钟内有效" /></p>
+                                    <FormattedMessage id="login.msg.wechat_scan_guide" defaultMessage="Operation failed. Please try again." />
+                                    <FormattedMessage id="login.msg.qr_validity" defaultMessage="Operation failed. Please try again." />
                                     <div className="mt-3 flex items-center justify-center gap-2 text-xs text-gray-500">
                                         <div className="animate-pulse w-2 h-2 bg-green-500 rounded-full"></div>
-                                        <span><FormattedMessage id="login.msg.waiting_scan" defaultMessage="等待扫码中..." /></span>
+                                        <FormattedMessage id="login.msg.waiting_scan" defaultMessage="Operation failed. Please try again." />
                                     </div>
                                 </>
                             ) : (
                                 <div className="py-12">
                                     <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#4F46E5] mx-auto"></div>
-                                    <p className="mt-4 text-gray-600"><FormattedMessage id="login.msg.loading" defaultMessage="加载中..." /></p>
+                                    <FormattedMessage id="login.msg.loading" defaultMessage="Operation failed. Please try again." />
                                 </div>
                             )}
                             <button
@@ -943,7 +946,7 @@ function LoginContent() {
                                 }}
                                 className="mt-6 w-full px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
                             >
-                                <FormattedMessage id="common.close" defaultMessage="关闭" />
+                                <FormattedMessage id="common.close" defaultMessage="Operation failed. Please try again." />
                             </button>
                         </div>
                     </div>

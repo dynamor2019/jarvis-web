@@ -51,6 +51,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const ticket = searchParams.get('ticket');
+    const redirectMode = searchParams.get('redirect') === '1';
     
     if (!ticket) {
       return NextResponse.json(
@@ -228,6 +229,12 @@ export async function GET(request: NextRequest) {
       
       
       
+      if (redirectMode) {
+        return NextResponse.redirect(
+          new URL(`/login?wechat=success&token=${encodeURIComponent(token)}`, process.env.NEXT_PUBLIC_BASE_URL || request.url)
+        );
+      }
+
       return NextResponse.json({
         success: true,
         status: 'success',
@@ -246,6 +253,12 @@ export async function GET(request: NextRequest) {
       });
     }
     
+    if (redirectMode) {
+      return NextResponse.redirect(
+        new URL('/login?error=wechat_pending', process.env.NEXT_PUBLIC_BASE_URL || request.url)
+      );
+    }
+
     return NextResponse.json({
       success: true,
       status: ticketData.status,

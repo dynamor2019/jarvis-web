@@ -270,7 +270,7 @@ function ProfileTab({ user, onSave, saving }: { user: UserInfo; onSave: (data: P
 }
 
 // 账户安全标签
-function SecurityTab({ user, onSave, saving }: { user: UserInfo; onSave: (data: { password: string }) => void; saving: boolean }) {
+function SecurityTab({ user, onSave, saving }: { user: UserInfo; onSave: (data: { password: string; currentPassword?: string }) => void; saving: boolean }) {
   const intl = useIntl();
   const [passwords, setPasswords] = useState<SecurityFormData>({
     current: '',
@@ -283,7 +283,10 @@ function SecurityTab({ user, onSave, saving }: { user: UserInfo; onSave: (data: 
       alert(intl.formatMessage({ id: 'settings.security.error_password_mismatch', defaultMessage: '两次输入的密码不一致' }));
       return;
     }
-    onSave({ password: passwords.new });
+    onSave({
+      password: passwords.new,
+      currentPassword: passwords.current.trim() || undefined,
+    });
   };
 
   return (
@@ -620,7 +623,7 @@ export default function SettingsPage() {
     }
   };
 
-  const handleSave = async (updates: Partial<UserInfo>) => {
+  const handleSave = async (updates: Partial<UserInfo> & { currentPassword?: string }) => {
     if (!user) return;
     setSaving(true);
     try {
@@ -635,7 +638,8 @@ export default function SettingsPage() {
       });
       const data = await response.json();
       if (data.success) {
-        setUser({ ...user, ...updates });
+        const { currentPassword: _currentPassword, ...safeUpdates } = updates;
+        setUser({ ...user, ...safeUpdates });
         if (typeof updates.preferredLanguage === 'string' && updates.preferredLanguage) {
           localStorage.setItem('preferredLanguage', updates.preferredLanguage);
           window.dispatchEvent(new Event('jarvis-languagechange'));

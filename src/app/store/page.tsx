@@ -153,7 +153,7 @@ export function Store({ enableMock = false }: { enableMock?: boolean }) {
   const intl = useIntl();
   const [activeTab, setActiveTab] = useState<'plugins' | 'lifetime' | 'subscription' | 'tokens' | 'purchased' | 'models'>('subscription');
   const [payOpen, setPayOpen] = useState(false);
-  const [payInfo, setPayInfo] = useState<{ paymentId: string; title: string; amount: number; tokens?: number; pluginId?: string } | null>(null);
+  const [payInfo, setPayInfo] = useState<{ paymentId: string; title: string; amount: number; tokens?: number; pluginId?: string; modelType?: string; usageDurationLabel?: string; durationMonths?: number } | null>(null);
   const [isInWordPlugin, setIsInWordPlugin] = useState(false);
   const [channel, setChannel] = useState<'mock'|'wechat'|'alipay'>(enableMock ? 'mock' : 'wechat')
 
@@ -465,10 +465,17 @@ function PurchasedList() {
   )
 }
 
-function PaymentModal({ info, channel, isInWordPlugin, onClose }: { info: { paymentId: string; title: string; amount: number; tokens?: number; pluginId?: string; modelType?: string }; channel: 'mock'|'wechat'|'alipay'; isInWordPlugin: boolean; onClose: () => void }) {
+function PaymentModal({ info, channel, isInWordPlugin, onClose }: { info: { paymentId: string; title: string; amount: number; tokens?: number; pluginId?: string; modelType?: string; usageDurationLabel?: string; durationMonths?: number }; channel: 'mock'|'wechat'|'alipay'; isInWordPlugin: boolean; onClose: () => void }) {
   const intl = useIntl();
   const [qr, setQr] = useState<string>('')
   const [status, setStatus] = useState<'pending'|'success'|'failed'>('pending')
+  const [paymentMeta, setPaymentMeta] = useState<{
+    orderNo?: string;
+    amount?: number;
+    createdAt?: string;
+    paymentMethod?: string;
+    email?: string | null;
+  } | null>(null)
   const [balance, setBalance] = useState<number | null>(null)
   const [mockLoading, setMockLoading] = useState(false)
   const [configData, setConfigData] = useState<any>(null)
@@ -483,7 +490,22 @@ function PaymentModal({ info, channel, isInWordPlugin, onClose }: { info: { paym
       try {
         const r = await fetch('/api/payment/qrcode', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orderNo: info.paymentId, channel }) })
         const j = await r.json()
-        const text = j?.qr_text || `${window.location.origin}/pay?pid=${encodeURIComponent(info.paymentId)}`
+        const text = j?.qr_text || j?.qrCodeUrl || `${window.location.origin}/pay?pid=${encodeURIComponent(info.paymentId)}`
+        if (j?.success && j?.order) {
+          setPaymentMeta({
+            orderNo: j.order.orderNo || j.orderNo || info.paymentId,
+            amount: typeof j.order.amount === 'number' ? j.order.amount : info.amount,
+            createdAt: j.order.createdAt,
+            paymentMethod: j.order.paymentMethod || j.paymentMethod || channel,
+            email: j.order.email ?? null,
+          })
+        } else {
+          setPaymentMeta({
+            orderNo: j?.orderNo || info.paymentId,
+            amount: typeof j?.amount === 'number' ? j.amount : info.amount,
+            paymentMethod: j?.paymentMethod || channel,
+          })
+        }
         const d = await QRCode.toDataURL(text, { width: 256 })
         if (alive) setQr(d)
       } catch {}
@@ -700,11 +722,90 @@ function PaymentModal({ info, channel, isInWordPlugin, onClose }: { info: { paym
     t = setInterval(poll, 2000)
     return () => { alive = false; clearInterval(t) }
   }, [info.paymentId])
+
+  const isZh = (intl.locale || '').toLowerCase().startsWith('zh')
+
+  const paymentMethodLabel =
+    (paymentMeta?.paymentMethod || channel) === 'wechat'
+      ? (isZh ? '微信支付' : 'WeChat')
+      : (paymentMeta?.paymentMethod || channel) === 'alipay'
+        ? (isZh ? '支付宝' : 'Alipay')
+        : (isZh ? '模拟支付' : 'Mock')
+
+  const fallbackCreatedAtFromOrderNo = (() => {
+    const rawOrderNo = (paymentMeta?.orderNo || info.paymentId || '').trim()
+    const match = rawOrderNo.match(/(\d{13})/)
+    if (!match) return null
+    const ms = Number(match[1])
+    if (!Number.isFinite(ms)) return null
+    const d = new Date(ms)
+    if (Number.isNaN(d.getTime())) return null
+    return d
+  })()
+
+  const createdAtLabel = paymentMeta?.createdAt
+    ? new Date(paymentMeta.createdAt).toLocaleString(isZh ? 'zh-CN' : 'en-US', { hour12: false })
+    : fallbackCreatedAtFromOrderNo
+      ? fallbackCreatedAtFromOrderNo.toLocaleString(isZh ? 'zh-CN' : 'en-US', { hour12: false })
+      : '-'
+
+  const baseCreatedAt = paymentMeta?.createdAt
+    ? new Date(paymentMeta.createdAt)
+    : fallbackCreatedAtFromOrderNo
+
+  const expiresAtDate = (() => {
+    const months = info.durationMonths || 0
+    if (!baseCreatedAt || !months || months <= 0) return null
+    const d = new Date(baseCreatedAt)
+    d.setMonth(d.getMonth() + months)
+    return d
+  })()
+
+  const modelNameMap: Record<string, string> = {
+    deepseek: 'DeepSeek',
+    kimi: 'Kimi',
+    qwen: '通义千问',
+    doubao: '豆包',
+    zhipu: '智谱',
+    gemini: 'Gemini',
+    gpt4: 'ChatGPT',
+    siliconflow: '硅基流动',
+    claude: 'Claude',
+  }
+
+  const selectedModelLabel = info.modelType
+    ? (modelNameMap[info.modelType] || info.modelType)
+    : '-'
+
+  const expiresAtLabel = expiresAtDate
+    ? expiresAtDate.toLocaleString(isZh ? 'zh-CN' : 'en-US', { hour12: false })
+    : (
+      (info.durationMonths === 0 || info.tokens || (info.usageDurationLabel || '').toLowerCase().includes('life'))
+        ? (isZh ? '永久有效' : 'Never expires')
+        : '-'
+    )
+
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
       <div className="bg-white rounded-2xl p-8 w-[420px]">
         <div className="text-xl font-bold mb-1">{info.title}</div>
         <div className="text-gray-600 mb-4">¥{info.amount}</div>
+        <div className="mb-4 rounded-xl border border-gray-200 bg-gray-50 p-4 text-sm">
+          <div className="grid grid-cols-2 gap-y-2">
+            <span className="text-gray-500">{isZh ? '订单号' : 'Order No'}</span>
+            <span className="text-gray-900 text-right whitespace-nowrap overflow-hidden text-ellipsis max-w-[220px] justify-self-end">{paymentMeta?.orderNo || info.paymentId}</span>
+            <span className="text-gray-500">{isZh ? '金额' : 'Amount'}</span>
+            <span className="text-gray-900 text-right">¥{(paymentMeta?.amount ?? info.amount).toFixed(2)}</span>
+            <span className="text-gray-500">{isZh ? '创建时间' : 'Created At'}</span>
+            <span className="text-gray-900 text-right">{createdAtLabel}</span>
+            <span className="text-gray-500">{isZh ? '支付方式' : 'Method'}</span>
+            <span className="text-gray-900 text-right">{paymentMethodLabel}</span>
+            <span className="text-gray-500">{isZh ? '所选模型' : 'Selected Model'}</span>
+            <span className="text-gray-900 text-right">{selectedModelLabel}</span>
+            <span className="text-gray-500">{isZh ? '到期时间' : 'Expires At'}</span>
+            <span className="text-gray-900 text-right">{expiresAtLabel}</span>
+          </div>
+        </div>
         {qr && <img src={qr} alt="qr" className="w-64 h-64 mx-auto" />}
         <div className="text-center mt-4 text-sm text-gray-600"><FormattedMessage id="store.msg.scan_qr" defaultMessage="请使用支付工具扫描二维码或等待自动确认" /></div>
         <div className="mt-6 flex gap-3">
@@ -934,7 +1035,7 @@ function SubscriptionPlans({ onOpenPay, channel }: { onOpenPay: (p: { paymentId:
     const loadAvailableModels = async () => {
       setIsLoadingModels(true);
       try {
-        const token = localStorage.getItem('token');
+      const token = localStorage.getItem('token');
         const response = await fetch('/api/models/available', {
           headers: token ? { Authorization: `Bearer ${token}` } : {}
         });
@@ -1236,7 +1337,7 @@ type PricingCardProps = {
   popular?: boolean;
   type: 'subscription' | 'lifetime';
   modelType?: string;
-  onOpenPay?: (p: { paymentId: string; title: string; amount: number; tokens?: number; modelType?: string }) => void;
+  onOpenPay?: (p: { paymentId: string; title: string; amount: number; tokens?: number; modelType?: string; usageDurationLabel?: string; durationMonths?: number }) => void;
   channel?: 'mock'|'wechat'|'alipay';
 };
 
@@ -1248,6 +1349,15 @@ function PricingCard({ name, price, period, tokens, features, badge, popular, ty
   const handlePurchase = async () => {
     setLoading(true);
     try {
+      const periodText = String(period || '').toLowerCase()
+      const durationMonths =
+        periodText.includes('\u5b63') || periodText.includes('quarter')
+          ? 3
+          : periodText.includes('\u5e74') || periodText.includes('year')
+            ? 12
+            : periodText.includes('\u6708') || periodText.includes('month')
+              ? 1
+              : 0
       const token = localStorage.getItem('token');
       if (!token) {
         alert(intl.formatMessage({ id: 'store.error.login_required', defaultMessage: '请先登录' }));
@@ -1266,7 +1376,7 @@ function PricingCard({ name, price, period, tokens, features, badge, popular, ty
           plugin_id: name,
           user_id: 'current',
           channel,
-          meta: { orderType: type, amount: price, tokens, duration: period === '月' ? 1 : period === '季' ? 3 : period === '年' ? 12 : 0, modelType }
+          meta: { orderType: type, amount: price, tokens, duration: durationMonths, modelType }
         })
       });
 
@@ -1277,7 +1387,7 @@ function PricingCard({ name, price, period, tokens, features, badge, popular, ty
         return;
       }
 
-      if (onOpenPay) onOpenPay({ paymentId: orderData.payment_id, title: name, amount: price, tokens, modelType });
+      if (onOpenPay) onOpenPay({ paymentId: orderData.payment_id, title: name, amount: price, tokens, modelType, usageDurationLabel: period, durationMonths });
     } catch (error) {
       
       alert(intl.formatMessage({ id: 'store.error.purchase_fail', defaultMessage: '购买失败，请重试' }));
@@ -1408,7 +1518,7 @@ function TokenPackCard({ tokens, price, bonus, desc, popular, onOpenPay, channel
         alert(intl.formatMessage({ id: 'store.error.create_order_fail', defaultMessage: '创建订单失败: ' }) + orderData.error);
         return;
       }
-      if (onOpenPay) onOpenPay({ paymentId: orderData.payment_id, title: `${(totalTokens / 10000).toFixed(0)}万Token流量包`, amount: price, tokens: totalTokens });
+      if (onOpenPay) onOpenPay({ paymentId: orderData.payment_id, title: `${(totalTokens / 10000).toFixed(0)}万Token流量包`, amount: price, tokens: totalTokens, usageDurationLabel: intl.formatMessage({ id: 'store.period.one_time', defaultMessage: '一次性' }), durationMonths: 0 });
     } catch (error) {
       
       alert(intl.formatMessage({ id: 'store.error.purchase_fail', defaultMessage: '购买失败，请重试' }));

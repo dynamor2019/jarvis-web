@@ -58,6 +58,7 @@ export default function Dashboard() {
     const [user, setUser] = useState<User | null>(null);
     const [transactions, setTransactions] = useState<Transaction[]>([]);
     const [loading, setLoading] = useState(true);
+    const [profileError, setProfileError] = useState('');
     const [activeTab, setActiveTab] = useState('overview');
 
     const fetchUserData = useCallback(async (token: string) => {
@@ -73,16 +74,16 @@ export default function Dashboard() {
                 return;
             }
 
-            if (!response.ok) throw new Error('Failed to fetch user');
+            if (!response.ok) {
+                throw new Error(`Failed to fetch user: ${response.status}`);
+            }
             
             const data = await response.json();
             setUser(data.user);
+            setProfileError('');
         } catch (error) {
-            
-            // Only redirect if we haven't already
-            if (localStorage.getItem('token')) {
-                router.push('/login');
-            }
+            const message = error instanceof Error ? error.message : 'Failed to load profile';
+            setProfileError(message);
         } finally {
             setLoading(false);
         }
@@ -193,7 +194,38 @@ export default function Dashboard() {
         );
     }
 
-    if (!user) return null;
+    if (!user) {
+        return (
+            <div className="min-h-screen flex items-center justify-center p-4">
+                <div className="max-w-md w-full bg-white border border-red-200 rounded-xl p-5">
+                    <div className="text-red-600 font-semibold mb-2">Dashboard load failed</div>
+                    <div className="text-sm text-gray-700 mb-4">{profileError || 'Unable to load user profile.'}</div>
+                    <div className="flex gap-2">
+                        <button
+                            onClick={() => {
+                                const token = localStorage.getItem('token');
+                                if (!token) {
+                                    router.push('/login');
+                                    return;
+                                }
+                                setLoading(true);
+                                fetchUserData(token);
+                            }}
+                            className="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                        >
+                            Retry
+                        </button>
+                        <button
+                            onClick={() => router.push('/login')}
+                            className="px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                        >
+                            Back to login
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    }
 
     const tabs = [
         { id: 'overview', name: intl.formatMessage({ id: 'dashboard.tabs.overview', defaultMessage: '概览' }), icon: '📊' },

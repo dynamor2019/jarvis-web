@@ -1,3 +1,0 @@
-{
-  "/api/payment/webhook/alipay/route": "app/api/payment/webhook/alipay/route.js"
-}

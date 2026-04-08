@@ -1,8 +1,114 @@
 {
-  "versions": {},
-  "last_version": {},
-  "current_state": {},
-  "protected_features": {},
+  "versions": {
+    "src/app/api/auth/wechat/callback/route.ts": [
+      {
+        "version": 1,
+        "feature": "wechat-login-redirect-fix",
+        "timestamp": "2026-04-06T20:37:17",
+        "hash": "4b7348877d0d90b03229bc3ad626e94fd6300e5becfab0f2dac4a24c91567b3f",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/route.ts.ad2ef864f6f6.v1.bak",
+        "original_path": "C:/Jarvis/jarvis-web/src/app/api/auth/wechat/callback/route.ts",
+        "file_key": "src/app/api/auth/wechat/callback/route.ts",
+        "reason": "Auto snapshot after confirm: Use status redirect flow and stable public base URL for callback redirects"
+      }
+    ],
+    "src/app/api/auth/wechat/status/route.ts": [
+      {
+        "version": 1,
+        "feature": "wechat-login-redirect-fix",
+        "timestamp": "2026-04-06T20:37:18",
+        "hash": "4e175acad74db3df7bb46f8151ec62ebd25a0a51365f3e4bda544b53f26b8c31",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/route.ts.52baa7dd7b60.v1.bak",
+        "original_path": "C:/Jarvis/jarvis-web/src/app/api/auth/wechat/status/route.ts",
+        "file_key": "src/app/api/auth/wechat/status/route.ts",
+        "reason": "Auto snapshot after confirm: Support redirect=1 mode to redirect login with token and pending error"
+      }
+    ],
+    "src/app/login/page.tsx": [
+      {
+        "version": 17,
+        "feature": "login_redirect_fix",
+        "timestamp": "2026-04-07T16:10:39",
+        "hash": "02776e5c4bfe30687523b07b134b4f5b165c362da837d5e213997190dbce1bf1",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/page.tsx.31585754d24e.v17.bak",
+        "original_path": "C:/Jarvis/jarvis-web/src/app/login/page.tsx",
+        "file_key": "src/app/login/page.tsx",
+        "reason": "sync codeguard hash after prior approved edits"
+      }
+    ],
+    "src/components/Hero.tsx": [
+      {
+        "version": 5,
+        "feature": "hero_singleline_title_stats_visual_upgrade",
+        "timestamp": "2026-04-08T16:06:13",
+        "hash": "0a0f6fe7f5b89db0dd0e504a48c30f93f109b283757a34df12006a85a3bd1d00",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/Hero.tsx.1cadf8397b73.v5.bak",
+        "original_path": "C:/Jarvis/jarvis-web/src/components/Hero.tsx",
+        "file_key": "src/components/Hero.tsx",
+        "reason": "Auto snapshot after confirm: user confirmed: remove citation wording, enforce single-line title, and enrich stats card visual design"
+      }
+    ]
+  },
+  "last_version": {
+    "src/app/api/auth/wechat/callback/route.ts": 1,
+    "src/app/api/auth/wechat/status/route.ts": 1,
+    "src/app/login/page.tsx": 17,
+    "src/components/Hero.tsx": 5
+  },
+  "current_state": {
+    "src/app/api/auth/wechat/callback/route.ts": {
+      "timestamp": "2026-04-06T20:37:17",
+      "feature": "wechat-login-redirect-fix",
+      "hash": "4b7348877d0d90b03229bc3ad626e94fd6300e5becfab0f2dac4a24c91567b3f",
+      "path": "C:/Jarvis/jarvis-web/src/app/api/auth/wechat/callback/route.ts",
+      "source": "snapshot",
+      "reason": "Auto snapshot after confirm: Use status redirect flow and stable public base URL for callback redirects"
+    },
+    "src/app/api/auth/wechat/status/route.ts": {
+      "timestamp": "2026-04-06T20:37:18",
+      "feature": "wechat-login-redirect-fix",
+      "hash": "4e175acad74db3df7bb46f8151ec62ebd25a0a51365f3e4bda544b53f26b8c31",
+      "path": "C:/Jarvis/jarvis-web/src/app/api/auth/wechat/status/route.ts",
+      "source": "snapshot",
+      "reason": "Auto snapshot after confirm: Support redirect=1 mode to redirect login with token and pending error"
+    },
+    "src/app/login/page.tsx": {
+      "timestamp": "2026-04-07T16:10:39",
+      "feature": "login_redirect_fix",
+      "hash": "02776e5c4bfe30687523b07b134b4f5b165c362da837d5e213997190dbce1bf1",
+      "path": "C:/Jarvis/jarvis-web/src/app/login/page.tsx",
+      "source": "snapshot",
+      "reason": "sync codeguard hash after prior approved edits"
+    },
+    "src/components/Hero.tsx": {
+      "timestamp": "2026-04-08T16:06:13",
+      "feature": "hero_singleline_title_stats_visual_upgrade",
+      "hash": "0a0f6fe7f5b89db0dd0e504a48c30f93f109b283757a34df12006a85a3bd1d00",
+      "path": "C:/Jarvis/jarvis-web/src/components/Hero.tsx",
+      "source": "snapshot",
+      "reason": "Auto snapshot after confirm: user confirmed: remove citation wording, enforce single-line title, and enrich stats card visual design"
+    }
+  },
+  "protected_features": {
+    "src/app/api/auth/wechat/callback/route.ts": [
+      "wechat-login-redirect-fix"
+    ],
+    "src/app/api/auth/wechat/status/route.ts": [
+      "wechat-login-redirect-fix"
+    ],
+    "src/app/login/page.tsx": [
+      "wechat-login-redirect-fix",
+      "login_parse_fix",
+      "login_redirect_fix"
+    ],
+    "src/components/Hero.tsx": [
+      "hero_showcase_layout_v1",
+      "hero_cta_docs_usecases_update",
+      "hero_crown_usecases_trim",
+      "hero_promise_cards_worker_needs_v1",
+      "hero_singleline_title_stats_visual_upgrade"
+    ]
+  },
   "index_state": {
     "start.sh": {
       "source": "inline",
@@ -229,6 +335,95 @@
           "feature": "Remove-Item -Force -ErrorAction SilentlyContinue",
           "line": 117,
           "signature": "1a01c5ebde18"
+        }
+      ]
+    },
+    "src/app/api/payment/qrcode/route.ts": {
+      "source": "inline",
+      "updated_at": "2026-04-06T21:22:40",
+      "file_hash": "f1f4421d5d7163ae904af280f52e7f1eb6f54fce04685a81aa7209fcbeefd847",
+      "line_count": 240,
+      "entry_signatures": [
+        {
+          "feature": "AlipaySdkConstructor",
+          "line": 16,
+          "signature": "2297cf3f1e04"
+        },
+        {
+          "feature": "POST",
+          "line": 18,
+          "signature": "8eeaf37f2464"
+        }
+      ]
+    },
+    "src/app/api/user/profile/route.ts": {
+      "source": "inline",
+      "updated_at": "2026-04-07T09:02:45",
+      "file_hash": "b065070a9a24cd70a7f1c954454d436f531ced1eec1d0296a44c91cd944c4b43",
+      "line_count": 245,
+      "entry_signatures": [
+        {
+          "feature": "GET",
+          "line": 11,
+          "signature": "d764817f9b8a"
+        },
+        {
+          "feature": "PUT",
+          "line": 94,
+          "signature": "903ea926954e"
+        },
+        {
+          "feature": "newTraffic",
+          "line": 230,
+          "signature": "55ec13a5f392"
+        }
+      ]
+    },
+    "src/components/Hero.tsx": {
+      "source": "inline",
+      "updated_at": "2026-04-08T16:03:16",
+      "file_hash": "0a0f6fe7f5b89db0dd0e504a48c30f93f109b283757a34df12006a85a3bd1d00",
+      "line_count": 317,
+      "entry_signatures": [
+        {
+          "feature": "use client",
+          "line": 12,
+          "signature": "2546fad9c87c"
+        },
+        {
+          "feature": "inputLines: ['OpenAI：方案主稿', 'Claude：语气校对', 'DeepSeek：成本优化', '...",
+          "line": 46,
+          "signature": "7d681cddcc8d"
+        },
+        {
+          "feature": "providers: ['OpenAI', 'Claude', 'Kimi",
+          "line": 79,
+          "signature": "f482f4c1013c"
+        },
+        {
+          "feature": "<div className=\"max-w-[620px] space-y-6\">",
+          "line": 122,
+          "signature": "0ed4ccd3fbdb"
+        },
+        {
+          "feature": "className=\"glow-button inline-flex items-center justify-cente...",
+          "line": 160,
+          "signature": "d61a1f6abf71"
+        },
+        {
+          "feature": "<div className=\"-mt-1 h-3 w-3 rotate-45 border-b border-r bor...",
+          "line": 211,
+          "signature": "e74a9fd25fa4"
+        },
+        {
+          "feature": "<div className=\"h-20 rounded-[20px] border border-dashed bord...",
+          "line": 257,
+          "signature": "69ac7c10c683"
+        },
+        {
+          "feature": "</section>",
+          "line": 315,
+          "signature": "40b2501422d5"
         }
       ]
     }

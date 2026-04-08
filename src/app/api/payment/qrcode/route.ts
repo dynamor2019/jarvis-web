@@ -1,3 +1,8 @@
+// [CodeGuard Feature Index]
+// - AlipaySdkConstructor -> line 16
+// - POST -> line 18
+// [/CodeGuard Feature Index]
+
 import { NextRequest, NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getPaymentConfig } from '@/lib/config';
@@ -19,9 +24,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: '无效的请求数据' }, { status: 400 });
     }
 
-    const { orderId, paymentMethod, amount } = body;
+    const { orderId, orderNo, paymentMethod, channel } = body;
+    const resolvedPaymentMethod = paymentMethod || channel;
 
-    if (!orderId || !paymentMethod || !amount) {
+    if ((!orderId && !orderNo) || !resolvedPaymentMethod) {
       return NextResponse.json(
         { success: false, error: '参数不完整' },
         { status: 400 }
@@ -30,7 +36,14 @@ export async function POST(request: NextRequest) {
 
     // 查找订单
     const order = await prisma.order.findUnique({
-      where: { id: orderId }
+      where: orderId ? { id: orderId } : { orderNo },
+      include: {
+        user: {
+          select: {
+            email: true,
+          },
+        },
+      },
     });
 
     if (!order) {
@@ -53,8 +66,9 @@ export async function POST(request: NextRequest) {
 
     // 生成支付二维码
     let qrCodeUrl = '';
+    let qrText = '';
     
-    if (paymentMethod === 'alipay') {
+    if (resolvedPaymentMethod === 'alipay') {
       // 检查配置是否存在
       if (config.alipay.appId && config.alipay.privateKey) {
         try {
@@ -94,7 +108,7 @@ export async function POST(request: NextRequest) {
           if (result && typeof result === 'object' && result.code === '10000') {
              // code 10000 is success for Alipay responses
              if (result.qr_code) {
-               qrCodeUrl = result.qr_code;
+               qrText = result.qr_code;
              } else {
                
                // Fallback or error? Usually alipay.trade.precreate returns qr_code on success.
@@ -104,14 +118,14 @@ export async function POST(request: NextRequest) {
              }
           } else if (result && result.qr_code) {
              // Some SDK versions might return the direct response object
-             qrCodeUrl = result.qr_code;
+             qrText = result.qr_code;
           } else {
              console.error('Alipay SDK error response:', result);
              const subMsg = result?.sub_msg || result?.msg || 'Unknown Alipay error';
              throw new Error(`Alipay error: ${subMsg}`);
           }
 
-          if (!qrCodeUrl) {
+          if (!qrText) {
              throw new Error('Failed to retrieve QR code from Alipay response');
           }
 
@@ -125,10 +139,10 @@ export async function POST(request: NextRequest) {
       } else {
         // 无配置，使用模拟/占位符
         
-        qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=alipay://pay?orderNo=${order.orderNo}&amount=${order.amount}`;
+        qrText = `alipay://pay?orderNo=${order.orderNo}&amount=${order.amount}`;
       }
       
-    } else if (paymentMethod === 'wechat') {
+    } else if (resolvedPaymentMethod === 'wechat') {
       if (config.wechat.appId && config.wechat.mchId && config.wechat.apiKeyV3 && config.wechat.certPath && config.wechat.keyPath) {
         try {
           const certPath = path.isAbsolute(config.wechat.certPath) ? config.wechat.certPath : path.resolve(process.cwd(), config.wechat.certPath);
@@ -172,7 +186,7 @@ ${bodyStr}
             const msg = result?.message || result?.code || 'WeChat Pay error';
             throw new Error(msg);
           }
-          qrCodeUrl = result.code_url;
+          qrText = result.code_url;
         } catch (wechatError: any) {
           console.error('WeChat Pay integration error:', wechatError);
           return NextResponse.json(
@@ -181,16 +195,39 @@ ${bodyStr}
           );
         }
       } else {
-        qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=wxpay://pay?orderNo=${order.orderNo}&amount=${order.amount}`;
+        qrText = `wxpay://pay?orderNo=${order.orderNo}&amount=${order.amount}`;
       }
+    }
+
+    if (!qrText && !qrCodeUrl) {
+      return NextResponse.json(
+        { success: false, error: 'unsupported_payment_method' },
+        { status: 400 }
+      );
+    }
+
+    if (!qrCodeUrl) {
+      qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(qrText)}`;
     }
 
     return NextResponse.json({
       success: true,
       qrCodeUrl,
+      qr_text: qrText || qrCodeUrl,
       orderId: order.id,
       orderNo: order.orderNo,
-      amount: order.amount
+      amount: order.amount,
+      paymentMethod: resolvedPaymentMethod,
+      order: {
+        id: order.id,
+        orderNo: order.orderNo,
+        productName: order.productName,
+        amount: order.amount,
+        status: order.status,
+        createdAt: order.createdAt,
+        paymentMethod: resolvedPaymentMethod,
+        email: order.user?.email || null,
+      }
     });
 
   } catch (error) {
