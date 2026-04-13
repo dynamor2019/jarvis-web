@@ -8,7 +8,7 @@ import Footer from '@/components/Footer';
 import { getSystemConfig } from '@/lib/config';
 
 const DEFAULT_LANDING_DOWNLOAD_URL = 'https://share.weiyun.com/5LObuK4n';
-export const revalidate = 600;
+export const dynamic = 'force-dynamic';
 
 function isIpHost(hostname: string): boolean {
   const ipv4 = /^(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)){3}$/;

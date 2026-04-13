@@ -31,6 +31,11 @@ function resolveLanIp(): string {
   return '127.0.0.1';
 }
 
+function isTruthyFlag(value: string | null | undefined): boolean {
+  const normalized = (value || '').trim().toLowerCase();
+  return normalized === '1' || normalized === 'true' || normalized === 'yes' || normalized === 'on';
+}
+
 // 生成微信登录二维码
 export async function GET(request: NextRequest) {
   try {
@@ -56,6 +61,11 @@ export async function GET(request: NextRequest) {
     
     // 只有同时配置了 AppID 和 Secret，且不是默认值，才启用生产模式
     const isConfigured = appId && appId !== 'your-wechat-app-id' && appSecret && appSecret !== 'your-wechat-app-secret';
+    const oauthEnabledRaw =
+      (await getSystemConfig('wechat_login_oauth_enabled')) ||
+      process.env.WECHAT_LOGIN_OAUTH_ENABLED ||
+      '';
+    const oauthEnabled = isTruthyFlag(oauthEnabledRaw);
     // 在开发环境且是本地运行时，优先使用开发模式（模拟登录），除非显式禁用
     const runtimeHost = request.nextUrl.hostname || '';
     const rawForwardedHost = (request.headers.get('x-forwarded-host') || request.headers.get('host') || '')
@@ -63,7 +73,7 @@ export async function GET(request: NextRequest) {
       .trim();
     const forwardedHostOnly = rawForwardedHost.split(':')[0].trim();
     const isLocal = isLocalHost(forwardedHostOnly || runtimeHost);
-    const isDev = isLocal || !isConfigured;
+    const isDev = isLocal || !isConfigured || !oauthEnabled;
     
     const origin = request.nextUrl.origin;
     // 优先使用环境变量中配置的 BASE_URL，如果在本地开发且未配置，则回退到 origin

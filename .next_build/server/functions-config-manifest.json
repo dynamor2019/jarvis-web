@@ -5,8 +5,8 @@
     "/ai/generate-local": {},
     "/api/admin/settings/upload-installer": {},
     "/api/ai/generate-local": {},
-    "/api/user/status": {},
     "/tokens/sync": {},
+    "/api/user/status": {},
     "/_middleware": {
       "runtime": "nodejs",
       "matchers": [

@@ -78,10 +78,6 @@ for f in .env.production .env start.sh nginx.conf.example alipayCertPublicKey_RS
   fi
 done
 
-if [[ -f "$WORK_DIR/start.sh" ]]; then
-  chmod +x "$WORK_DIR/start.sh"
-fi
-
 # Hard exclude non-runtime artifacts.
 rm -rf "$WORK_DIR/output" "$WORK_DIR/dist" "$WORK_DIR/.git" "$WORK_DIR/.next_build/standalone" "$WORK_DIR/.next/standalone" || true
 
