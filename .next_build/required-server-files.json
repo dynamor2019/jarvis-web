@@ -151,7 +151,7 @@
       "linkNoTouchStart": false,
       "caseSensitiveRoutes": false,
       "dynamicOnHover": false,
-      "preloadEntriesOnStart": true,
+      "preloadEntriesOnStart": false,
       "clientRouterFilter": true,
       "clientRouterFilterRedirects": false,
       "fetchCacheKeyPrefix": "",
@@ -205,7 +205,7 @@
       "isolatedDevBuild": true,
       "proxyClientMaxBodySize": 10485760,
       "hideLogsAfterAbort": false,
-      "mcpServer": true,
+      "mcpServer": false,
       "serverActions": {
         "allowedOrigins": [
           "https://www.jarvisai.com.cn"

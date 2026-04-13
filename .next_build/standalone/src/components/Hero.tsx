@@ -1,17 +1,20 @@
+// ============================================================
+// [CodeGuard Protection]
+// Feature: hero-left-fix
+// Version: 15
+// Protected: 2026-04-12 17:54:50
+// ============================================================
 // [CodeGuard Feature Index]
-// - use client -> line 12
-// - inputLines: ['OpenAI：方案主稿', 'Claude：语气校对', 'DeepSeek：成本优化', '... -> line 46
-// - providers: ['OpenAI', 'Claude', 'Kimi -> line 79
-// - <div className="max-w-[620px] space-y-6"> -> line 122
-// - className="glow-button inline-flex items-center justify-cente... -> line 160
-// - <div className="-mt-1 h-3 w-3 rotate-45 border-b border-r bor... -> line 211
-// - <div className="h-20 rounded-[20px] border border-dashed bord... -> line 257
-// - </section> -> line 315
+// - use client -> line 11
+// - const SCENARIOS: Scenario[] = [ -> line 30
+// - const PROMISES = [ -> line 93
+// - const USE_CASES = [ -> line 98
+// - export default function Hero -> line 100
 // [/CodeGuard Feature Index]
 
 "use client";
 import { useEffect, useState } from 'react';
-import NextImage from 'next/image';
+import HeroRightRibbon from './HeroRightRibbon';
 
 interface HeroProps {
     downloadUrl: string;
@@ -51,13 +54,13 @@ const SCENARIOS: Scenario[] = [
     },
     {
         tab: '高质低价随心换',
-        prompt: '覆盖流量、订阅、买断三种模式；订阅免调试开箱即用；推广可赚 Token，持续畅享 AI 能力',
+        prompt: '99% 功能免费开放，付费功能最低 9.9 元即可享受 100000 tokens；覆盖流量、订阅、买断三种模式，按需选择',
         inputTag: '流量 / 订阅 / 买断',
         inputLines: ['流量模式：按量付费，轻量上手', '订阅模式：免调试，开箱即用', '买断模式：一次购买，长期使用', '推广返利：赚取 Token 畅享 AI'],
         outputTitle: '预算友好版成稿.docx',
-        outputTags: ['三种付费模式', '订阅开箱即用', '推广赚 Token'],
+        outputTags: [],
         providers: ['DeepSeek', 'Qwen', 'Kimi'],
-        stats: [['3模', '随心切换'], ['高质', '低价可得'], ['Token+', '推广可赚']],
+        stats: [['99%', '功能免费'], ['9.9元', '100000 tokens'], ['3模', '随心切换']],
     },
     {
         tab: '一键提效成倍涨',
@@ -92,26 +95,28 @@ const SCENARIOS: Scenario[] = [
 ];
 
 const PROMISES = [
-    { title: '升职加薪', desc: '方案交付像专业团队' },
+    { title: '升职加薪', desc: '方案交付比拼专业团队' },
     { title: '完善论文', desc: '结构、排版一次到位' },
     { title: '上班摸鱼', desc: '碎片时间也能快速出稿' },
 ];
 const USE_CASES = ['论文', '方案', '合同协议', '招投标文件', '会议纪要', '产品需求', '行政材料'];
-const CORE_PROVIDERS = ['OpenAI', 'Claude', 'Gemini', 'Doubao', 'DeepSeek', 'Qwen', 'GLM', 'Kimi'];
 
 export default function Hero({ downloadUrl }: HeroProps) {
     const [scenarioIndex, setScenarioIndex] = useState(0);
+    const [isRibbonHovered, setIsRibbonHovered] = useState(false);
     const scenarioCount = SCENARIOS.length;
 
     useEffect(() => {
+        if (isRibbonHovered) {
+            return;
+        }
+
         const timer = setInterval(() => {
             setScenarioIndex((prev) => (prev + 1) % scenarioCount);
         }, 6200);
 
         return () => clearInterval(timer);
-    }, [scenarioCount]);
-
-    const activeScenario = SCENARIOS[scenarioIndex];
+    }, [isRibbonHovered, scenarioCount]);
 
     return (
         <section className="relative overflow-hidden pt-8 pb-16 md:pt-10 md:pb-20 lg:pt-12 lg:pb-24">
@@ -134,13 +139,11 @@ export default function Hero({ downloadUrl }: HeroProps) {
                             </span>
                         </h1>
 
-                        <div className="max-w-[620px] rounded-[24px] border border-amber-100 bg-[linear-gradient(135deg,rgba(255,251,235,0.98),rgba(255,247,237,0.92))] px-5 py-4 text-base font-medium leading-8 text-slate-700 shadow-[0_14px_40px_rgba(245,158,11,0.08)]">
-                            不是多一个聊天框，而是多一个真能替你撑场面的搭子。脑子里刚有想法，Word 里就已经开始像成稿。
+                        <div className="hero-rainbow-border relative max-w-[620px] rounded-[24px] border border-amber-100 bg-[linear-gradient(135deg,rgba(255,251,235,0.98),rgba(255,247,237,0.92))] px-5 py-4 text-slate-700 shadow-[0_14px_40px_rgba(245,158,11,0.08)]">
+                            <span className="hero-drop-in hero-drop-line-1 block text-[30px] font-black leading-[1.1] text-slate-900">99% 功能免费</span>
+                            <span className="hero-drop-in hero-drop-line-2 mt-2 block text-[22px] font-semibold leading-tight">付费功能最低 9.9 元即可享受 100000 tokens</span>
+                            <span className="hero-drop-in hero-drop-line-3 mt-2 block text-[20px] font-semibold leading-7">覆盖流量、订阅、买断三种模式，按需选择</span>
                         </div>
-
-                        <p className="max-w-[620px] text-[17px] leading-8 text-slate-600">
-                            少一点来回搬运，少一点交稿前手忙脚乱。小贾AI 想做的是，把写作这件事从“勉强完成”变成“拿得出手”。
-                        </p>
 
                         <div className="grid max-w-[640px] grid-cols-1 gap-3 pt-1 sm:grid-cols-3">
                             {PROMISES.map((item) => (
@@ -181,137 +184,84 @@ export default function Hero({ downloadUrl }: HeroProps) {
 
                     <div className="relative lg:pl-2 lg:pt-2">
                         <div className="absolute inset-5 -z-10 rounded-[40px] bg-gradient-to-br from-indigo-200/65 via-sky-100/40 to-fuchsia-200/45 blur-3xl" />
-                        <div className="rounded-[34px] border border-slate-200/90 bg-white/94 p-5 shadow-[0_28px_90px_rgba(15,23,42,0.12)] backdrop-blur">
-                            <div className="rounded-[24px] border border-indigo-100/70 bg-[linear-gradient(180deg,rgba(249,251,255,0.95),rgba(242,246,255,0.9))] px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
-                                <p className="text-center text-[18px] font-semibold tracking-tight text-slate-800 md:text-[20px] lg:text-[22px] whitespace-nowrap">
-                                    {activeScenario.tab}
-                                </p>
-                            </div>
-
-                            <div key={activeScenario.tab} className="mt-6 grid gap-5 lg:grid-cols-[minmax(0,1fr)_156px_minmax(0,1fr)] lg:items-stretch">
-                                <div className="flex min-h-[392px] h-full flex-col rounded-[28px] border border-indigo-100 bg-[linear-gradient(180deg,#f7f9ff_0%,#eef2ff_100%)] p-5 text-slate-800 shadow-[0_18px_44px_rgba(99,102,241,0.14)]">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-xs uppercase tracking-[0.18em] text-slate-500">输入区</span>
-                                        <span className="rounded-full border border-indigo-100 bg-white px-3 py-1 text-xs text-indigo-600 shadow-sm">{activeScenario.inputTag}</span>
-                                    </div>
-                                    <p className="mt-4 max-w-[320px] text-[15px] font-medium leading-7 text-slate-700">{activeScenario.prompt}</p>
-                                    <div className="mt-5 flex-1 space-y-2 rounded-[22px] border border-indigo-100 bg-white/80 p-3.5 font-mono text-[13px] text-slate-600">
-                                        {activeScenario.inputLines.map((line) => (
-                                            <div key={line} className="rounded-xl border border-indigo-100 bg-white px-3 py-2.5">
-                                                {line}
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-
-                                <div className="relative flex min-h-[392px] flex-col items-center justify-start py-4">
-                                    <div className="flex h-14 items-end">
-                                        <div className="h-full w-px bg-gradient-to-b from-slate-200 via-slate-300 to-transparent" />
-                                    </div>
-                                    <div className="-mt-1 h-3 w-3 rotate-45 border-b border-r border-fuchsia-400/60" />
-                                    <div className="rounded-full border border-indigo-100 bg-white px-3 py-1 text-xs font-semibold text-indigo-700 shadow-sm">AI 输出直达 Word</div>
-                                    <div className="mt-5 flex items-center justify-center animate-float">
-                                        <NextImage
-                                            src="/jarvisAI.svg"
-                                            alt="Jarvis AI"
-                                            width={112}
-                                            height={112}
-                                            unoptimized
-                                            className="h-24 w-24 drop-shadow-[0_18px_34px_rgba(79,70,229,0.28)] md:h-28 md:w-28"
-                                        />
-                                    </div>
-                                    <div className="mt-3 flex h-6 items-start">
-                                        <div className="h-full w-px bg-gradient-to-b from-slate-200 via-slate-300 to-transparent" />
-                                    </div>
-                                    <div className="-mt-1 h-3 w-3 rotate-45 border-b border-r border-fuchsia-400/60" />
-                                    <div className="mt-2 w-full max-w-[150px] rounded-[24px] border border-slate-200 bg-white/92 p-3 shadow-[0_12px_28px_rgba(15,23,42,0.08)]">
-                                        <p className="pb-2 text-center text-[11px] font-semibold tracking-[0.12em] text-slate-500">主力模型</p>
-                                        <div className="grid grid-cols-2 gap-2">
-                                            {CORE_PROVIDERS.map((provider) => (
-                                                <div key={provider} className="rounded-full border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-center text-[11px] font-semibold text-slate-600 shadow-sm">
-                                                    {provider}
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <div className="flex min-h-[392px] h-full flex-col rounded-[28px] border border-slate-200 bg-white p-5 shadow-[0_18px_50px_rgba(15,23,42,0.12)]">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-xs uppercase tracking-[0.18em] text-slate-500">成稿区</span>
-                                        <span className="rounded-full bg-emerald-50 px-3 py-1 text-xs font-medium text-emerald-700">生成即排版，可继续编辑</span>
-                                    </div>
-                                    <div className="mt-5 flex-1 rounded-[24px] border border-slate-200 bg-[linear-gradient(180deg,#f8fafc_0%,#ffffff_100%)] p-4">
-                                        <div className="flex items-center justify-between">
-                                        <p className="text-sm font-semibold text-slate-900">{activeScenario.outputTitle}</p>
-                                            <div className="flex gap-1">
-                                                <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
-                                                <span className="h-2.5 w-2.5 rounded-full bg-amber-300" />
-                                                <span className="h-2.5 w-2.5 rounded-full bg-rose-300" />
-                                            </div>
-                                        </div>
-                                        <div className="mt-4 space-y-3">
-                                            <div className="h-3 w-2/3 rounded-full bg-slate-900" />
-                                            <div className="h-2 rounded-full bg-slate-200" />
-                                            <div className="h-2 w-11/12 rounded-full bg-slate-200" />
-                                            <div className="h-20 rounded-[20px] border border-dashed border-indigo-200 bg-white" />
-                                        </div>
-                                        <div className="mt-4 flex flex-wrap gap-2">
-                                            {activeScenario.outputTags.map((tag) => (
-                                                <span key={tag} className="rounded-full bg-white px-3 py-1.5 text-xs font-medium text-slate-600 shadow-sm">
-                                                    {tag}
-                                                </span>
-                                            ))}
-                                        </div>
-                                    </div>
-                                    <div className="mt-5 grid grid-cols-3 gap-3">
-                                        {activeScenario.stats.map(([value, label], index) => (
-                                            <div
-                                                key={label}
-                                                className="relative flex min-h-[92px] flex-col items-center justify-center overflow-hidden rounded-[22px] border border-indigo-100/70 bg-[linear-gradient(165deg,#ffffff_0%,#eef2ff_100%)] px-3 py-4 text-center shadow-[0_10px_24px_rgba(79,70,229,0.1)]"
-                                            >
-                                                <span className="absolute left-2.5 top-2.5 h-1.5 w-6 rounded-full bg-[linear-gradient(90deg,#4f46e5_0%,#d946ef_100%)] opacity-80" />
-                                                <p className="bg-[linear-gradient(90deg,#4f46e5_0%,#7c3aed_50%,#d946ef_100%)] bg-clip-text text-[18px] font-extrabold leading-none tracking-[-0.02em] text-transparent md:text-[20px]">
-                                                    {value}
-                                                </p>
-                                                <p className={`mt-1.5 text-[10px] font-medium ${index === 2 ? 'text-violet-600' : 'text-slate-600'}`}>
-                                                    {label}
-                                                </p>
-                                            </div>
-                                        ))}
-                                    </div>
-                                </div>
-                            </div>
-                            <div className="mt-5 rounded-[18px] border border-slate-200/90 bg-white/75 px-3 py-3">
-                                <div className="flex items-center justify-end">
-                                    <span className="text-xs font-medium text-slate-500">{scenarioIndex + 1}/{scenarioCount}</span>
-                                </div>
-                                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-200/90">
-                                    <div
-                                        className="h-full rounded-full bg-[linear-gradient(90deg,#6d4bff_0%,#8b5cf6_46%,#d946ef_100%)] transition-all duration-500 ease-out"
-                                        style={{ width: `${((scenarioIndex + 1) / scenarioCount) * 100}%` }}
-                                    />
-                                </div>
-                                <div className="mt-2 flex items-center justify-center gap-2">
-                                    {SCENARIOS.map((scenario, index) => (
-                                        <button
-                                            key={scenario.tab}
-                                            type="button"
-                                            aria-label={`切换到${scenario.tab}`}
-                                            onClick={() => setScenarioIndex(index)}
-                                            className={`h-2.5 w-2.5 rounded-full transition-all ${
-                                                index === scenarioIndex
-                                                    ? 'scale-110 bg-[linear-gradient(90deg,#6d4bff_0%,#d946ef_100%)] shadow-[0_0_0_3px_rgba(139,92,246,0.15)]'
-                                                    : 'bg-slate-300 hover:bg-slate-400'
-                                            }`}
-                                        />
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
+                        <HeroRightRibbon
+                            scenarios={SCENARIOS}
+                            scenarioIndex={scenarioIndex}
+                            onSelect={setScenarioIndex}
+                            onHoverChange={setIsRibbonHovered}
+                        />
                     </div>
                 </div>
             </div>
+            <style>{`
+                @keyframes heroHeavyDropLine1 {
+                    0%, 19.99% { opacity: 0; transform: translateY(-28px) scale(1.03); }
+                    20% { opacity: 0; transform: translateY(-28px) scale(1.03); }
+                    29.6% { opacity: 1; transform: translateY(4px) scale(0.995); }
+                    32% { opacity: 1; transform: translateY(0) scale(1); }
+                    95%, 100% { opacity: 1; transform: translateY(0) scale(1); }
+                }
+                @keyframes heroHeavyDropLine2 {
+                    0%, 24.19% { opacity: 0; transform: translateY(-28px) scale(1.03); }
+                    24.2% { opacity: 0; transform: translateY(-28px) scale(1.03); }
+                    33.8% { opacity: 1; transform: translateY(4px) scale(0.995); }
+                    36.2% { opacity: 1; transform: translateY(0) scale(1); }
+                    95%, 100% { opacity: 1; transform: translateY(0) scale(1); }
+                }
+                @keyframes heroHeavyDropLine3 {
+                    0%, 28.59% { opacity: 0; transform: translateY(-28px) scale(1.03); }
+                    28.6% { opacity: 0; transform: translateY(-28px) scale(1.03); }
+                    38.2% { opacity: 1; transform: translateY(4px) scale(0.995); }
+                    40.6% { opacity: 1; transform: translateY(0) scale(1); }
+                    95%, 100% { opacity: 1; transform: translateY(0) scale(1); }
+                }
+                .hero-drop-in {
+                    animation-duration: 10s;
+                    animation-timing-function: cubic-bezier(0.22, 0.9, 0.24, 1);
+                    animation-iteration-count: 3;
+                    animation-fill-mode: both;
+                    will-change: transform, opacity;
+                }
+                .hero-drop-line-1 {
+                    animation-name: heroHeavyDropLine1;
+                }
+                .hero-drop-line-2 {
+                    animation-name: heroHeavyDropLine2;
+                }
+                .hero-drop-line-3 {
+                    animation-name: heroHeavyDropLine3;
+                }
+                @keyframes heroRainbowBorder {
+                    0%, 19.99% { opacity: 0; }
+                    20% { opacity: 0; }
+                    24% { opacity: 1; }
+                    70% { opacity: 1; }
+                    75%, 100% { opacity: 1; }
+                }
+                .hero-rainbow-border::before,
+                .hero-rainbow-border::after {
+                    content: '';
+                    position: absolute;
+                    inset: -2px;
+                    border-radius: 26px;
+                    pointer-events: none;
+                    opacity: 0;
+                    animation: heroRainbowBorder 10s ease-in-out 0s 3 forwards;
+                }
+                .hero-rainbow-border::before {
+                    padding: 2px;
+                    background: linear-gradient(110deg, #ff7a18 0%, #ffd200 18%, #7cff6b 36%, #39d8ff 56%, #6d5bff 76%, #ff4fd8 100%);
+                    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+                    -webkit-mask-composite: xor;
+                    mask-composite: exclude;
+                }
+                .hero-rainbow-border::after {
+                    inset: -5px;
+                    background: linear-gradient(110deg, rgba(255,122,24,0.55) 0%, rgba(255,210,0,0.5) 18%, rgba(124,255,107,0.45) 36%, rgba(57,216,255,0.45) 56%, rgba(109,91,255,0.5) 76%, rgba(255,79,216,0.55) 100%);
+                    filter: blur(10px);
+                    z-index: -1;
+                }
+            `}</style>
         </section>
     );
 }

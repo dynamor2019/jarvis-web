@@ -190,6 +190,11 @@ export default function AdminPage() {
                         <div className="text-xl font-bold mb-1"><FormattedMessage id="admin.menu.settings" defaultMessage="系统设置" /></div>
                     <div className="text-sm opacity-90"><FormattedMessage id="admin.menu.settings_desc" defaultMessage="配置模型Key、支付和系统参数" /></div>
                 </Link>
+                <Link href="/admin/skills" prefetch={false} className="bg-gradient-to-r from-teal-600 to-cyan-600 text-white rounded-xl p-6 shadow-lg hover:shadow-xl transition-all text-left">
+                    <div className="text-3xl mb-2">✨</div>
+                    <div className="text-xl font-bold mb-1">Skill内容</div>
+                    <div className="text-sm opacity-90">维护天赋点亮卡片的名称、地址和简介</div>
+                </Link>
                 </div>
 
                 {/* Stats Grid */}

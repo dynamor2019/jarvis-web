@@ -22,6 +22,7 @@ export default function AdminSettingsPage() {
     const router = useRouter();
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [uploadingInstaller, setUploadingInstaller] = useState(false);
     const [activeTab, setActiveTab] = useState('payment'); // payment, general, models
     
     // 表单状态
@@ -138,6 +139,48 @@ export default function AdminSettingsPage() {
             ...prev,
             [name]: value
         }));
+    };
+
+    const handleInstallerUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('请先登录管理员账号');
+            return;
+        }
+        if (file.size > 1024 * 1024 * 1024) {
+            alert('安装包不能超过 1GB');
+            return;
+        }
+
+        setUploadingInstaller(true);
+        try {
+            const formData = new FormData();
+            formData.append('installer', file);
+            const response = await fetch('/api/admin/settings/upload-installer', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: formData,
+            });
+            const data = await response.json();
+            if (!response.ok || !data?.success || !data?.url) {
+                alert(data?.error || '安装包上传失败');
+                return;
+            }
+            setSettings(prev => ({
+                ...prev,
+                landing_download_url: data.url,
+            }));
+            alert('安装包上传成功，下载链接已自动生效');
+        } catch (error) {
+            alert('安装包上传失败');
+        } finally {
+            setUploadingInstaller(false);
+            e.target.value = '';
+        }
     };
 
     const handleSubmit = async (e: React.FormEvent) => {
@@ -671,13 +714,26 @@ export default function AdminSettingsPage() {
                                             官网下载链接（开始使用/立即下载共用）
                                         </label>
                                         <input
-                                            type="url"
+                                            type="text"
                                             name="landing_download_url"
                                             value={settings.landing_download_url}
                                             onChange={handleChange}
                                             className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
-                                            placeholder="https://example.com/Jarvis-Setup-1.0.1.exe"
+                                            placeholder="支持相对路径 /uploads/... 或完整 https://..."
                                         />
+                                        <div className="mt-2 flex items-center gap-3">
+                                            <label className="inline-flex items-center px-3 py-2 rounded-lg border border-blue-200 bg-blue-50 text-blue-700 cursor-pointer hover:bg-blue-100 transition-colors">
+                                                <input
+                                                    type="file"
+                                                    className="hidden"
+                                                    accept=".exe,.msi,.zip,.7z,.rar,.dmg,.pkg"
+                                                    onChange={handleInstallerUpload}
+                                                    disabled={uploadingInstaller}
+                                                />
+                                                {uploadingInstaller ? '上传中...' : '上传安装包'}
+                                            </label>
+                                            <span className="text-xs text-gray-500">上传后自动写入此下载链接（下载尊享/立即下载共用）</span>
+                                        </div>
                                     </div>
                                     <div className="mt-6 border-t pt-4">
                                         <label className="block text-sm font-medium text-gray-700 mb-1">SMTP Host</label>

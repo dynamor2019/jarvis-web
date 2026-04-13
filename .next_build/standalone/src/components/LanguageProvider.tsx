@@ -7,18 +7,32 @@ export default function LanguageProvider({ children }: { children: ReactNode }) 
   const [locale, setLocale] = useState<string>("zh-CN");
 
   useEffect(() => {
-    const resolveLocale = () => {
+    const fromNavigator = () => {
+      const navLang = navigator.language;
+      if (navLang.startsWith('zh')) return 'zh-CN';
+      if (navLang.startsWith('en')) return 'en-US';
+      if (navLang.startsWith('fr')) return 'fr-FR';
+      if (navLang.startsWith('de')) return 'de-DE';
+      if (navLang.startsWith('es')) return 'es-ES';
+      return 'zh-CN';
+    };
+
+    const resolveLocale = async () => {
       if (typeof window === "undefined") return;
       let v = localStorage.getItem("preferredLanguage");
       
       if (!v) {
-        const navLang = navigator.language;
-        if (navLang.startsWith('zh')) v = 'zh-CN';
-        else if (navLang.startsWith('en')) v = 'en-US';
-        else if (navLang.startsWith('fr')) v = 'fr-FR';
-        else if (navLang.startsWith('de')) v = 'de-DE';
-        else if (navLang.startsWith('es')) v = 'es-ES';
-        else v = 'zh-CN';
+        try {
+          const response = await fetch('/api/locale', { cache: 'no-store' });
+          const payload = await response.json();
+          if (response.ok && payload?.success && payload?.locale) {
+            v = String(payload.locale);
+          }
+        } catch {}
+      }
+
+      if (!v) {
+        v = fromNavigator();
       }
 
       if (typeof document !== "undefined") {
@@ -28,7 +42,7 @@ export default function LanguageProvider({ children }: { children: ReactNode }) 
     };
 
     resolveLocale();
-    const handler = () => resolveLocale();
+    const handler = () => { resolveLocale(); };
     const storageHandler = (event: StorageEvent) => {
       if (!event.key || event.key === "preferredLanguage") {
         resolveLocale();

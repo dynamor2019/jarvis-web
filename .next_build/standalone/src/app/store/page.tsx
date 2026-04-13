@@ -146,16 +146,26 @@ function ModelsList() {
 function StoreContent() {
   const searchParams = useSearchParams();
   const enableMock = searchParams.get('mock') === 'true';
-  return <Store enableMock={enableMock} />
+  const tabParam = (searchParams.get('tab') || '').toLowerCase();
+  const initialTab = tabParam === 'talent' ? 'talent' : 'subscription';
+  return <Store enableMock={enableMock} initialTab={initialTab} />
 }
 
-export function Store({ enableMock = false }: { enableMock?: boolean }) {
+export function Store({ enableMock = false, initialTab = 'subscription' }: { enableMock?: boolean; initialTab?: 'subscription' | 'talent' }) {
   const intl = useIntl();
-  const [activeTab, setActiveTab] = useState<'plugins' | 'lifetime' | 'subscription' | 'tokens' | 'purchased' | 'models'>('subscription');
+  const [activeTab, setActiveTab] = useState<'plugins' | 'lifetime' | 'subscription' | 'tokens' | 'purchased' | 'models' | 'talent'>(initialTab);
   const [payOpen, setPayOpen] = useState(false);
   const [payInfo, setPayInfo] = useState<{ paymentId: string; title: string; amount: number; tokens?: number; pluginId?: string; modelType?: string; usageDurationLabel?: string; durationMonths?: number } | null>(null);
   const [isInWordPlugin, setIsInWordPlugin] = useState(false);
   const [channel, setChannel] = useState<'mock'|'wechat'|'alipay'>(enableMock ? 'mock' : 'wechat')
+  const [skillCatalog, setSkillCatalog] = useState<Array<{ id?: string; name: string; nameEn?: string; url: string; description: string; descriptionEn?: string }>>([]);
+  const [skillInstallState, setSkillInstallState] = useState<{ status: 'idle' | 'installing' | 'done' | 'failed'; progress: number; message: string }>({
+    status: 'idle',
+    progress: 0,
+    message: ''
+  });
+  const [skillInstallingId, setSkillInstallingId] = useState<string>('');
+  const [customSkillUrl, setCustomSkillUrl] = useState('');
 
   // 检测是否在 Word 插件的 WebView 中运行
   useEffect(() => {
@@ -177,7 +187,51 @@ export function Store({ enableMock = false }: { enableMock?: boolean }) {
           alert(intl.formatMessage({ id: 'store.msg.install_fail', defaultMessage: 'Installation failed' }));
         }
       }
+      if (msg.type === 'SKILL_INSTALL_PROGRESS') {
+        const status = String(msg.payload?.status || 'installing');
+        const progress = Number(msg.payload?.progress ?? 0);
+        const message = String(msg.payload?.message || '');
+        const normalizedStatus = status === 'done' || status === 'failed' ? status : 'installing';
+        setSkillInstallState({
+          status: normalizedStatus as 'installing' | 'done' | 'failed',
+          progress: Math.max(0, Math.min(100, progress)),
+          message
+        });
+      }
+      if (msg.type === 'SKILL_INSTALL_RESULT') {
+        const success = !!msg.payload?.success;
+        const message = success ? '安装完成' : (msg.payload?.error || '安装失败');
+        setSkillInstallState({
+          status: success ? 'done' : 'failed',
+          progress: 100,
+          message
+        });
+        setSkillInstallingId('');
+      }
+      if (msg.type === 'SKILL_LIST_RESULT' && msg.payload?.success) {
+        const list = Array.isArray(msg.payload?.skills) ? msg.payload.skills : [];
+        if (list.length > 0) {
+          const normalized = list.map((item: any) => ({
+            id: item.id,
+            name: item.name || item.id,
+            nameEn: item.nameEn || item.name || item.id,
+            url: item.sourceUrl || '',
+            description: item.description || '已安装到本地',
+            descriptionEn: item.descriptionEn || 'Installed locally'
+          }));
+          setSkillCatalog((prev) => {
+            const merged = [...prev];
+            normalized.forEach((item: any) => {
+              if (!merged.some((x) => x.id === item.id || x.url === item.url)) {
+                merged.push(item);
+              }
+            });
+            return merged;
+          });
+        }
+      }
     });
+    Bridge.requestSkillList();
     return () => off();
   }, [intl]);
 
@@ -218,6 +272,42 @@ export function Store({ enableMock = false }: { enableMock?: boolean }) {
       delete window.onJarvisUserInfo;
     };
   }, []);
+
+  useEffect(() => {
+    if (initialTab === 'talent') {
+      setActiveTab('talent');
+    }
+  }, [initialTab]);
+
+  useEffect(() => {
+    let alive = true;
+    const loadSkills = async () => {
+      try {
+        const response = await fetch('/api/store/skills');
+        const payload = await response.json();
+        if (alive && payload?.success) {
+          setSkillCatalog(Array.isArray(payload.skills) ? payload.skills : []);
+        }
+      } catch {}
+    };
+    loadSkills();
+    return () => { alive = false; };
+  }, []);
+
+  const installSkillByUrl = (url: string, skillId?: string) => {
+    const trimmed = (url || '').trim();
+    if (!trimmed) {
+      alert('请输入 Skill 地址');
+      return;
+    }
+    setSkillInstallingId(skillId || trimmed);
+    setSkillInstallState({
+      status: 'installing',
+      progress: 10,
+      message: '准备安装...'
+    });
+    Bridge.requestSkillInstall(trimmed);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -282,6 +372,16 @@ export function Store({ enableMock = false }: { enableMock?: boolean }) {
               <FormattedMessage id="store.tab.plugins" defaultMessage="Plugins" />
             </button>
             <button
+              onClick={() => setActiveTab('talent')}
+              className={`px-6 py-2 rounded-md transition-all ${
+                activeTab === 'talent'
+                  ? 'bg-blue-600 text-white shadow-md'
+                  : 'text-gray-600 hover:text-gray-900'
+              }`}
+            >
+              天赋点亮
+            </button>
+            <button
               onClick={() => setActiveTab('purchased')}
               className={`px-6 py-2 rounded-md transition-all ${
                 activeTab === 'purchased'
@@ -299,6 +399,16 @@ export function Store({ enableMock = false }: { enableMock?: boolean }) {
         {activeTab === 'lifetime' && <LifetimePlans onOpenPay={(p) => { setPayOpen(true); setPayInfo(p); }} channel={channel} />}
         {activeTab === 'tokens' && <TokenPackages onOpenPay={(p) => { setPayOpen(true); setPayInfo(p); }} channel={channel} />}
         {activeTab === 'plugins' && <PluginList channel={channel} onOpenPay={(p) => { setPayOpen(true); setPayInfo(p); }} />}
+        {activeTab === 'talent' && (
+          <TalentSkills
+            skills={skillCatalog}
+            customSkillUrl={customSkillUrl}
+            onCustomSkillUrlChange={setCustomSkillUrl}
+            installingId={skillInstallingId}
+            installState={skillInstallState}
+            onInstall={(url, id) => installSkillByUrl(url, id)}
+          />
+        )}
         {activeTab === 'purchased' && <PurchasedList />}
 
         {/* FAQ */}
@@ -389,6 +499,90 @@ function PluginList({ channel, onOpenPay }: { channel: 'mock'|'wechat'|'alipay',
       ))}
     </div>
   )
+}
+
+function TalentSkills({
+  skills,
+  customSkillUrl,
+  onCustomSkillUrlChange,
+  installingId,
+  installState,
+  onInstall
+}: {
+  skills: Array<{ id?: string; name: string; nameEn?: string; url: string; description: string; descriptionEn?: string }>;
+  customSkillUrl: string;
+  onCustomSkillUrlChange: (value: string) => void;
+  installingId: string;
+  installState: { status: 'idle' | 'installing' | 'done' | 'failed'; progress: number; message: string };
+  onInstall: (url: string, skillId?: string) => void;
+}) {
+  const intl = useIntl();
+  const isZh = (intl.locale || '').toLowerCase().startsWith('zh');
+
+  return (
+    <div className="space-y-8">
+      <div className="bg-white rounded-xl p-5 ring-1 ring-gray-200">
+        <div className="text-lg font-semibold mb-3">自定义 Skill 地址</div>
+        <div className="flex gap-3">
+          <input
+            value={customSkillUrl}
+            onChange={(e) => onCustomSkillUrlChange(e.target.value)}
+            placeholder="粘贴 GitHub Skill 地址，例如：https://github.com/cjcjc111/new-khazix-skills"
+            className="flex-1 border rounded-lg px-3 py-2"
+          />
+          <button
+            onClick={() => onInstall(customSkillUrl)}
+            className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700"
+          >
+            安装
+          </button>
+        </div>
+      </div>
+
+      {installState.status !== 'idle' && (
+        <div className="bg-white rounded-xl p-5 ring-1 ring-gray-200">
+          <div className="flex items-center justify-between mb-2">
+            <div className="font-semibold">安装进度</div>
+            <div className="text-sm text-gray-500">{installState.progress}%</div>
+          </div>
+          <div className="h-2 bg-gray-100 rounded-full overflow-hidden">
+            <div
+              className={`h-full transition-all ${
+                installState.status === 'failed'
+                  ? 'bg-red-500'
+                  : installState.status === 'done'
+                  ? 'bg-green-500'
+                  : 'bg-blue-500'
+              }`}
+              style={{ width: `${Math.max(3, installState.progress)}%` }}
+            />
+          </div>
+          <div className="mt-2 text-sm text-gray-600">{installState.message || '安装中...'}</div>
+        </div>
+      )}
+
+      <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {skills.map((item, index) => {
+          const key = item.id || item.url || `skill-${index}`;
+          const loading = installingId === key || installingId === item.url;
+          return (
+            <div key={key} className="bg-white rounded-xl p-6 ring-1 ring-gray-200 shadow-sm flex flex-col">
+              <div className="text-xl font-bold mb-1">{isZh ? item.name : (item.nameEn || item.name)}</div>
+              <div className="text-xs text-gray-400 mb-3 break-all">{item.url}</div>
+              <div className="text-gray-700 text-sm flex-grow">{isZh ? item.description : (item.descriptionEn || item.description)}</div>
+              <button
+                onClick={() => onInstall(item.url, key)}
+                disabled={loading}
+                className="mt-5 w-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white py-2.5 rounded-lg font-semibold disabled:opacity-50"
+              >
+                {loading ? '安装中...' : '安装到本地'}
+              </button>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
 }
 
 function PurchasedList() {
@@ -922,7 +1116,7 @@ function SubscriptionPlans({ onOpenPay, channel }: { onOpenPay: (p: { paymentId:
     gemini: 'https://cdn.simpleicons.org/googlegemini/1d4ed8',
     claude: 'https://cdn.simpleicons.org/anthropic/111827',
     anthropic: 'https://cdn.simpleicons.org/anthropic/111827',
-    deepseek: 'https://icon.horse/icon/chat.deepseek.com',
+    deepseek: '/deepseek-logo.ico',
     siliconflow: 'https://icon.horse/icon/siliconflow.cn',
     dashscope: 'https://icon.horse/icon/dashscope.aliyun.com',
     qwen: 'https://icon.horse/icon/qwenlm.ai',

@@ -1,58 +1,33 @@
-# 部署指南
+# 部署与打包说明（Standalone）
 
-## 快速部署（宝塔）
+## 一、生成部署包（在本地）
+1. 进入项目目录：`cd C:\Jarvis\jarvis-web`
+2. 执行构建：`npm run build`
+3. 关键检查：确保以下两个目录都存在
+   - `.next_build/standalone`
+   - `.next_build/static`
+4. 打包时必须同时包含：
+   - `standalone/**`（服务端运行文件）
+   - `standalone/.next_build/static/**`（前端 CSS/JS 静态资源）
 
-### 1. 环境准备
-- Node.js 18+
-- PM2: `npm install -g pm2`
+> 注意：如果缺少 `.next_build/static`，线上会出现 `/_next/static/chunks/*.js 404`，页面只显示裸 HTML。
 
-### 2. 上传代码
-上传到 `/www/wwwroot/jarvis`
+## 二、服务器部署（Linux）
+1. 上传 zip 到服务器，例如：`/opt/jarvis-web`
+2. 解压覆盖：`unzip -o your-package.zip`
+3. 进入目录：`cd /opt/jarvis-web/standalone`
+4. 启动命令（与 start.sh 一致）：
+   - `PORT=3010 HOSTNAME=0.0.0.0 NODE_ENV=production node server.js`
 
-### 3. 配置环境
-```bash
-cd /www/wwwroot/jarvis
-cp .env.production.example .env.production
-nano .env.production
-```
+## 三、反向代理（Nginx/宝塔）
+- 反代目标必须是：`http://127.0.0.1:3010`
+- 不要单独写 `/_next` 静态目录规则，整站反代到 Node 即可。
 
-修改这3项：
-```env
-JWT_SECRET="your-random-32-chars"
-NEXT_PUBLIC_WEB_URL="https://your-domain.com"
-DATABASE_URL="file:./prisma/production.db"
-```
+## 四、部署后自检
+1. 本机探活：`curl -I http://127.0.0.1:3010`
+2. 静态资源探活：`curl -I http://127.0.0.1:3010/_next/static/chunks/<实际文件名>.js`
+3. 域名访问并强刷缓存（Ctrl+F5）
 
-### 4. 一键部署
-```bash
-chmod +x deploy.sh
-./deploy.sh
-```
-
-### 5. 初始化数据
-```bash
-node init-all-data.js
-```
-
-### 6. 配置Nginx
-复制 `nginx.conf.example` 到宝塔网站配置，修改域名
-
-### 7. 申请SSL
-宝塔面板 -> SSL -> Let's Encrypt
-
-### 8. 访问测试
-https://your-domain.com
-
-## 默认账号
-- 邮箱: admin@jarvis.com
-- 密码: admin123
-
-**部署后立即修改密码！**
-
-## 常用命令
-```bash
-pm2 status              # 查看状态
-pm2 logs jarvis-web     # 查看日志
-pm2 restart jarvis-web  # 重启
-./deploy.sh             # 更新部署
-```
+## 五、常见问题
+- `502`：Node 未监听 3010 或反代端口写错
+- `chunks 404`：部署包缺 `.next_build/static` 或 Nginx 规则拦截 `/_next`

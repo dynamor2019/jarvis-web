@@ -1,8 +1,9 @@
 {
   "version": 1,
   "functions": {
-    "/ai/generate-local": {},
     "/ai/get-key": {},
+    "/ai/generate-local": {},
+    "/api/admin/settings/upload-installer": {},
     "/api/ai/generate-local": {},
     "/api/user/status": {},
     "/tokens/sync": {},

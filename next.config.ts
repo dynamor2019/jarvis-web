@@ -15,6 +15,9 @@ const nextConfig: NextConfig = {
     },
     // Reduce process spawning pressure on Windows build environments.
     cpus: 1,
+    // Disable optional MCP server and startup preloading on low-resource Linux hosts.
+    mcpServer: false,
+    preloadEntriesOnStart: false,
   },
   output: 'standalone',
   distDir: '.next_build',

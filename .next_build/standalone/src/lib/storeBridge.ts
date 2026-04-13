@@ -9,6 +9,11 @@ export type StoreMessageType =
   | 'PLUGIN_ENV'
   | 'REQUEST_PURCHASE'
   | 'INSTALL_RESULT'
+  | 'REQUEST_SKILL_INSTALL'
+  | 'REQUEST_SKILL_LIST'
+  | 'SKILL_INSTALL_RESULT'
+  | 'SKILL_LIST_RESULT'
+  | 'SKILL_INSTALL_PROGRESS'
 
 export interface StoreMessage<T = any> {
   type: StoreMessageType
@@ -104,5 +109,18 @@ export const Bridge = {
       ;(window as any).jarvisBridge.sendMessage('request_rollback', payload)
     }
     sendMessage(window, 'REQUEST_ROLLBACK', payload, genRequestId())
+  },
+  requestSkillInstall(url: string, skill?: string) {
+    const payload = { url, skill }
+    if ((window as any).jarvisBridge?.sendMessage) {
+      ;(window as any).jarvisBridge.sendMessage('request_skill_install', payload)
+    }
+    sendMessage(window, 'REQUEST_SKILL_INSTALL', payload, genRequestId())
+  },
+  requestSkillList() {
+    if ((window as any).jarvisBridge?.sendMessage) {
+      ;(window as any).jarvisBridge.sendMessage('request_skill_list', {})
+    }
+    sendMessage(window, 'REQUEST_SKILL_LIST', {}, genRequestId())
   },
 }

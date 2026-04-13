@@ -14,17 +14,18 @@ const qrCodeStore = new Map<
 >();
 
 // 清理过期二维码（5分钟）
-setInterval(() => {
+function cleanupExpiredQrCodes() {
   const now = Date.now();
   for (const [code, data] of qrCodeStore.entries()) {
     if (now - data.createdAt > 5 * 60 * 1000) {
       qrCodeStore.delete(code);
     }
   }
-}, 60 * 1000);
+}
 
 // 生成二维码
 export async function GET(request: NextRequest) {
+  cleanupExpiredQrCodes();
   // 暂时取消扫码页面
   return NextResponse.json(
     { success: false, error: '扫码登录已暂时关闭' },

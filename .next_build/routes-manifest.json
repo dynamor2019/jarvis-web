@@ -136,6 +136,12 @@
       "namedRegex": "^/admin/settings(?:/)?$"
     },
     {
+      "page": "/admin/skills",
+      "regex": "^/admin/skills(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/admin/skills(?:/)?$"
+    },
+    {
       "page": "/admin/store",
       "regex": "^/admin/store(?:/)?$",
       "routeKeys": {},
@@ -206,6 +212,18 @@
       "regex": "^/api/admin/settings(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/api/admin/settings(?:/)?$"
+    },
+    {
+      "page": "/api/admin/settings/upload-installer",
+      "regex": "^/api/admin/settings/upload\\-installer(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/settings/upload\\-installer(?:/)?$"
+    },
+    {
+      "page": "/api/admin/skills",
+      "regex": "^/api/admin/skills(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/admin/skills(?:/)?$"
     },
     {
       "page": "/api/admin/stats",
@@ -424,6 +442,12 @@
       "namedRegex": "^/api/latex/render(?:/)?$"
     },
     {
+      "page": "/api/locale",
+      "regex": "^/api/locale(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/locale(?:/)?$"
+    },
+    {
       "page": "/api/models/available",
       "regex": "^/api/models/available(?:/)?$",
       "routeKeys": {},
@@ -578,6 +602,12 @@
       "regex": "^/api/store/releases(?:/)?$",
       "routeKeys": {},
       "namedRegex": "^/api/store/releases(?:/)?$"
+    },
+    {
+      "page": "/api/store/skills",
+      "regex": "^/api/store/skills(?:/)?$",
+      "routeKeys": {},
+      "namedRegex": "^/api/store/skills(?:/)?$"
     },
     {
       "page": "/api/store/update/check",
