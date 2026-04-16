@@ -5,11 +5,15 @@
     "/ai/generate-local": {},
     "/api/admin/settings/upload-installer": {},
     "/api/ai/generate-local": {},
-    "/tokens/sync": {},
     "/api/user/status": {},
+    "/tokens/sync": {},
     "/_middleware": {
       "runtime": "nodejs",
       "matchers": [
+        {
+          "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?(?:\\/((?!api|_next\\/static|_next\\/image|favicon.ico).*))(\\.json)?[\\/#\\?]?$",
+          "originalSource": "/((?!api|_next/static|_next/image|favicon.ico).*)"
+        },
         {
           "regexp": "^(?:\\/(_next\\/data\\/[^/]{1,}))?\\/@vite(?:\\/((?:[^\\/#\\?]+?)(?:\\/(?:[^\\/#\\?]+?))*))?(\\.json)?[\\/#\\?]?$",
           "originalSource": "/@vite/:path*"

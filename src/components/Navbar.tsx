@@ -219,6 +219,7 @@ function NavbarContent() {
                                     const v = e.target.value;
                                     setLang(v);
                                     localStorage.setItem('preferredLanguage', v);
+                                    localStorage.setItem('preferredLanguageManual', '1');
                                     window.dispatchEvent(new Event('jarvis-languagechange'));
                                 }}
                                 className="px-2 py-1 border border-gray-300 rounded text-sm"
@@ -345,6 +346,7 @@ function NavbarContent() {
                                             const v = e.target.value;
                                             setLang(v);
                                             localStorage.setItem('preferredLanguage', v);
+                                            localStorage.setItem('preferredLanguageManual', '1');
                                             window.dispatchEvent(new Event('jarvis-languagechange'));
                                         }}
                                         className="px-2 py-1 border border-gray-300 rounded text-sm"

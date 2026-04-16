@@ -13,7 +13,18 @@ import { createSign, randomBytes, X509Certificate } from 'crypto';
 import path from 'path';
 
 // Safely handle AlipaySdk import for various environments (CJS/ESM interop)
-const AlipaySdkConstructor = (AlipaySdk as any).default || AlipaySdk;
+function resolveAlipaySdkConstructor(sdkModule: any) {
+  const ctor =
+    sdkModule?.default?.default ||
+    sdkModule?.default ||
+    sdkModule?.AlipaySdk ||
+    sdkModule;
+  if (typeof ctor !== 'function') {
+    throw new Error('invalid_alipay_sdk_constructor');
+  }
+  return ctor;
+}
+const AlipaySdkConstructor = resolveAlipaySdkConstructor(AlipaySdk as any);
 
 export async function POST(request: NextRequest) {
   try {
@@ -139,11 +150,15 @@ export async function POST(request: NextRequest) {
       } else {
         // 无配置，使用模拟/占位符
         
-        qrText = `alipay://pay?orderNo=${order.orderNo}&amount=${order.amount}`;
+        return NextResponse.json(
+          { success: false, error: 'alipay_not_configured' },
+          { status: 400 }
+        );
       }
       
     } else if (resolvedPaymentMethod === 'wechat') {
-      if (config.wechat.appId && config.wechat.mchId && config.wechat.apiKeyV3 && config.wechat.certPath && config.wechat.keyPath) {
+      const wechatPayAppId = config.wechat.payAppId || config.wechat.appId;
+      if (wechatPayAppId && config.wechat.mchId && config.wechat.apiKeyV3 && config.wechat.certPath && config.wechat.keyPath) {
         try {
           const certPath = path.isAbsolute(config.wechat.certPath) ? config.wechat.certPath : path.resolve(process.cwd(), config.wechat.certPath);
           const keyPath = path.isAbsolute(config.wechat.keyPath) ? config.wechat.keyPath : path.resolve(process.cwd(), config.wechat.keyPath);
@@ -153,7 +168,7 @@ export async function POST(request: NextRequest) {
           const total = Math.max(1, Math.round(Number(order.amount) * 100));
           const payload = {
             mchid: config.wechat.mchId,
-            appid: config.wechat.appId,
+            appid: wechatPayAppId,
             out_trade_no: order.orderNo,
             description: order.productName,
             notify_url: `${baseUrl}/api/payment/webhook/wechat`,

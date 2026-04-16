@@ -10,10 +10,10 @@
 // [/CodeGuard Feature Index]
 
 // [CodeGuard Protection]
-// Feature: store_subscription_model_ui
-// Version: 18
+// Feature: align codeguard baseline for webview talent catalog fix
+// Version: 9
 // P26-03-31 08:51:44
-// Policy: Do not modify directly. Explain reason before edits. Last confirm reason: set ChatGPT/Gemini display names and logos; fix foreign ordering and divider text
+// Policy: Do not modify directly. Explain reason before edits. Last confirm reason: hide duplicate badge when popular to prevent overlap
 
 
 'use client';
@@ -153,6 +153,7 @@ function StoreContent() {
 
 export function Store({ enableMock = false, initialTab = 'subscription' }: { enableMock?: boolean; initialTab?: 'subscription' | 'talent' }) {
   const intl = useIntl();
+  const isZhLocale = (intl.locale || '').toLowerCase().startsWith('zh');
   const [activeTab, setActiveTab] = useState<'plugins' | 'lifetime' | 'subscription' | 'tokens' | 'purchased' | 'models' | 'talent'>(initialTab);
   const [payOpen, setPayOpen] = useState(false);
   const [payInfo, setPayInfo] = useState<{ paymentId: string; title: string; amount: number; tokens?: number; pluginId?: string; modelType?: string; usageDurationLabel?: string; durationMonths?: number } | null>(null);
@@ -234,6 +235,31 @@ export function Store({ enableMock = false, initialTab = 'subscription' }: { ena
     Bridge.requestSkillList();
     return () => off();
   }, [intl]);
+
+  useEffect(() => {
+    const isDesktopWebView = typeof window !== 'undefined' && !!window.chrome?.webview;
+    const hasLocalBridge = typeof window !== 'undefined' && !!(window as any).jarvisBridge?.sendMessage;
+    if (!isDesktopWebView || hasLocalBridge) {
+      return;
+    }
+
+    let attempts = 0;
+    const maxAttempts = 20;
+    const timer = window.setInterval(() => {
+      attempts += 1;
+      const bridgeReady = !!(window as any).jarvisBridge?.sendMessage;
+      if (bridgeReady) {
+        Bridge.requestSkillList();
+        window.clearInterval(timer);
+        return;
+      }
+      if (attempts >= maxAttempts) {
+        window.clearInterval(timer);
+      }
+    }, 250);
+
+    return () => window.clearInterval(timer);
+  }, []);
 
   // 监听来自客户端的用户信息注入
   useEffect(() => {
@@ -379,7 +405,7 @@ export function Store({ enableMock = false, initialTab = 'subscription' }: { ena
                   : 'text-gray-600 hover:text-gray-900'
               }`}
             >
-              天赋点亮
+              {isZhLocale ? '\u5929\u8d4b\u70b9\u4eae' : 'AI Skill'}
             </button>
             <button
               onClick={() => setActiveTab('purchased')}
@@ -684,7 +710,14 @@ function PaymentModal({ info, channel, isInWordPlugin, onClose }: { info: { paym
       try {
         const r = await fetch('/api/payment/qrcode', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ orderNo: info.paymentId, channel }) })
         const j = await r.json()
-        const text = j?.qr_text || j?.qrCodeUrl || `${window.location.origin}/pay?pid=${encodeURIComponent(info.paymentId)}`
+        if (!j?.success) {
+          throw new Error(j?.error || 'payment_qr_unavailable')
+        }
+        const rawText = j?.qr_text || j?.qrCodeUrl
+        if (!rawText) {
+          throw new Error('payment_qr_empty')
+        }
+        const text = String(rawText).replace(/&amp;/g, '&')
         if (j?.success && j?.order) {
           setPaymentMeta({
             orderNo: j.order.orderNo || j.orderNo || info.paymentId,
@@ -702,7 +735,14 @@ function PaymentModal({ info, channel, isInWordPlugin, onClose }: { info: { paym
         }
         const d = await QRCode.toDataURL(text, { width: 256 })
         if (alive) setQr(d)
-      } catch {}
+      } catch (e) {
+        if (alive) {
+          setStatus('failed')
+          setQr('')
+        }
+        const message = e instanceof Error ? e.message : 'payment_qr_failed'
+        alert(`支付二维码生成失败：${message}`)
+      }
     }
     const poll = async () => {
       if (processedRef.current) return
@@ -1602,7 +1642,7 @@ function PricingCard({ name, price, period, tokens, features, badge, popular, ty
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {badge && (
+      {badge && !popular && (
         <div className={`absolute -top-4 left-1/2 -translate-x-1/2 bg-gradient-to-r from-orange-500 to-red-500 text-white px-4 py-1 rounded-full text-sm font-semibold transition-all duration-300 ${
           isHovered ? 'translate-y-2' : ''
         }`}>

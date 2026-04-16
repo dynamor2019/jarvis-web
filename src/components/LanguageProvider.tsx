@@ -3,6 +3,8 @@ import { IntlProvider } from "react-intl";
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import { getMessages } from "@/i18n/messages";
 
+const LANG_MANUAL_KEY = "preferredLanguageManual";
+
 export default function LanguageProvider({ children }: { children: ReactNode }) {
   const [locale, setLocale] = useState<string>("zh-CN");
 
@@ -20,13 +22,15 @@ export default function LanguageProvider({ children }: { children: ReactNode }) 
     const resolveLocale = async () => {
       if (typeof window === "undefined") return;
       let v = localStorage.getItem("preferredLanguage");
+      const isManual = localStorage.getItem(LANG_MANUAL_KEY) === "1";
       
-      if (!v) {
+      if (!isManual) {
         try {
           const response = await fetch('/api/locale', { cache: 'no-store' });
           const payload = await response.json();
           if (response.ok && payload?.success && payload?.locale) {
             v = String(payload.locale);
+            localStorage.setItem("preferredLanguage", v);
           }
         } catch {}
       }

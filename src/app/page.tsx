@@ -6,9 +6,18 @@ import TechHighlights from '@/components/TechHighlights';
 import QuickStart from '@/components/QuickStart';
 import Footer from '@/components/Footer';
 import { getSystemConfig } from '@/lib/config';
+import type { Metadata } from 'next';
 
 const DEFAULT_LANDING_DOWNLOAD_URL = 'https://share.weiyun.com/5LObuK4n';
 export const revalidate = 600;
+
+export const metadata: Metadata = {
+  title: '小贾AI官网 - 中文办公写作提效工具',
+  description: '小贾AI提供中文写作、润色、排版与 Word 成稿交付能力，帮助个人与团队快速完成文档生产。',
+  alternates: {
+    canonical: '/',
+  },
+};
 
 function isIpHost(hostname: string): boolean {
   const ipv4 = /^(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)(\.(25[0-5]|2[0-4]\d|1\d{2}|[1-9]?\d)){3}$/;

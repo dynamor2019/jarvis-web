@@ -5,6 +5,16 @@ export default function proxy(request: NextRequest) {
   const { nextUrl, headers } = request
   const pathname = nextUrl.pathname
 
+  const response = NextResponse.next()
+  const accept = headers.get('accept') || ''
+  const isRsc = headers.has('rsc')
+  // Prevent stale HTML/RSC from using invalidated Server Action IDs after deployment.
+  if (accept.includes('text/html') || isRsc) {
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate')
+    response.headers.set('Pragma', 'no-cache')
+    response.headers.set('Expires', '0')
+  }
+
   // Ignore Vite client paths if present
   if (pathname.startsWith('/@vite/')) {
     return new NextResponse(null, { status: 204 })
@@ -24,9 +34,9 @@ export default function proxy(request: NextRequest) {
     }
   }
 
-  return NextResponse.next()
+  return response
 }
 
 export const config = {
-  matcher: ['/@vite/:path*', '/airribbon'],
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)', '/@vite/:path*', '/airribbon'],
 }

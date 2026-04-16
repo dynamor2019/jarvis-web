@@ -11,6 +11,7 @@ export interface PaymentConfig {
   };
   wechat: {
     appId: string | null;
+    payAppId: string | null;
     mchId: string | null;
     apiKey: string | null;
     apiKeyV3: string | null;
@@ -40,6 +41,7 @@ export async function getPaymentConfig(): Promise<PaymentConfig> {
           'alipay_public_cert_path',
           'alipay_root_cert_path',
           'wechat_app_id',
+          'wechat_pay_app_id',
           'wechat_mch_id',
           'wechat_api_key',
           'wechat_api_key_v3',
@@ -65,6 +67,7 @@ export async function getPaymentConfig(): Promise<PaymentConfig> {
     },
     wechat: {
       appId: configMap['wechat_app_id'] || process.env.WECHAT_APP_ID || null,
+      payAppId: configMap['wechat_pay_app_id'] || process.env.WECHAT_PAY_APP_ID || null,
       mchId: configMap['wechat_mch_id'] || process.env.WECHAT_MCH_ID || null,
       apiKey: configMap['wechat_api_key'] || process.env.WECHAT_API_KEY || null,
       apiKeyV3: configMap['wechat_api_key_v3'] || process.env.WECHAT_API_KEY_V3 || null,

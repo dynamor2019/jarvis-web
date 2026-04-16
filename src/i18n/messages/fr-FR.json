@@ -9,21 +9,21 @@
   "login.msg.wechat_scan_guide": "Veuillez scanner le code QR avec WeChat pour vous connecter",
   "login.msg.qr_validity": "Le code QR est valide pendant 5 minutes",
   "login.msg.waiting_scan": "En attente du scan...",
-  "store.pack.starter": "新手体验",
-  "store.pack.basic": "轻度使用",
-  "store.pack.standard": "中度使用",
-  "store.pack.pro": "重度使用",
-  "store.token.guide.title": "💡 Token 使用说明",
-  "store.token.guide.conversion": "📊 Token换算",
-  "store.token.guide.conv1": "• 1万Token ≈ 7500个汉字",
-  "store.token.guide.conv2": "• 写一篇3000字文章 ≈ 4000 Token",
-  "store.token.guide.conv3": "• 润色1000字 ≈ 1500 Token",
-  "store.token.guide.models": "🤖 模型消耗",
-  "store.token.guide.model1": "• Gemini/豆包/DeepSeek：经济实惠（推荐）",
-  "store.token.guide.model2": "• Kimi/Qwen/GLM-4：性能均衡",
-  "store.token.guide.model3": "• GPT-4：效果最好但较贵",
-  "store.token.guide.footer": "⏰ Token永久有效，不过期 | 📈 可随时查看余额和使用记录",
-  "store.pack.bonus": "+赠{amount}万",
+  "store.pack.starter": "D\u00e9couverte",
+  "store.pack.basic": "Usage l\u00e9ger",
+  "store.pack.standard": "Usage standard",
+  "store.pack.pro": "Usage intensif",
+  "store.token.guide.title": "💡 Token Usage Guide",
+  "store.token.guide.conversion": "📊 Token Conversion",
+  "store.token.guide.conv1": "• 10k Tokens ≈ 7500 Chinese characters",
+  "store.token.guide.conv2": "• Writing 3000 words ≈ 4000 Tokens",
+  "store.token.guide.conv3": "• Polishing 1000 words ≈ 1500 Tokens",
+  "store.token.guide.models": "🤖 Model Consumption",
+  "store.token.guide.model1": "• Gemini: Most economical (Recommended)",
+  "store.token.guide.model2": "• Doubao: Cost-effective",
+  "store.token.guide.model3": "• GPT-4: Best quality but expensive",
+  "store.token.guide.footer": "⏰ Tokens never expire | 📈 Check balance anytime",
+  "store.pack.bonus": "+Bonus {amount}0k",
   "dashboard.balance_label": "余额:",
   "login.error.qr_fail": "Échec de l'obtention du code QR WeChat",
   "login.error.alipay_qr_fail": "Échec de l'obtention du code QR Alipay",
@@ -58,87 +58,87 @@
   "dashboard.recharge": "Recharge",
   "store.title": "Jarvis Power",
   "store.subtitle": "Choose the right plan and start your AI writing journey",
-  "store.payment_channel": "支付方式",
-  "store.payment.mock": "模拟支付",
-  "store.payment.wechat": "微信支付",
-  "store.payment.alipay": "支付宝",
-  "store.tab.plugins": "插件市场",
-  "store.tab.purchased": "已购项目",
-  "store.plan.monthly": "月付套餐",
-  "store.period.month": "月",
-  "store.feature.bonus_token": "赠送{amount}万Token",
-  "store.feature.multi_model": "多模型可选（DeepSeek、Kimi、千问、豆包等）",
-  "store.feature.no_api_key": "无需配置API Key",
-  "store.feature.pay_as_you_go": "按量计费，透明清晰",
-  "store.feature.cancel_anytime": "随时取消",
-  "store.plan.quarterly": "季付套餐",
-  "store.period.quarter": "季",
-  "store.badge.save_10": "省10元",
-  "store.feature.all_monthly": "所有月付功能",
-  "store.feature.cheaper": "更优惠的价格",
-  "store.feature.discount_95": "相当于9.5折",
-  "store.plan.yearly": "年付套餐",
-  "store.period.year": "年",
-  "store.badge.best_value": "最划算",
-  "store.feature.discount_70": "相当于7折优惠",
-  "store.feature.avg_price": "平均每月仅¥16.6",
-  "store.plan.personal": "个人版",
-  "store.period.lifetime": "永久",
-  "store.feature.lifetime_access": "永久使用所有功能",
-  "store.feature.support_all_models": "支持所有AI模型 (DeepSeek/Kimi/Qwen/Doubao...)",
-  "store.feature.custom_api_key": "自定义API Key",
-  "store.feature.no_limit": "无使用限制",
-  "store.feature.lifetime_update": "终身免费更新",
-  "store.feature.local_data": "本地数据，隐私安全",
-  "store.plan.pro": "专业版",
-  "store.feature.all_personal": "个人版所有功能",
-  "store.feature.advanced_plugin": "高级插件支持",
-  "store.feature.priority_support": "优先技术支持",
-  "store.feature.commercial_use": "商业使用授权",
-  "store.feature.custom_dev": "定制开发服务",
-  "store.feature.multi_device": "多设备授权（3台）",
-  "store.btn.buy_and_install": "购买并安装",
-  "store.btn.install": "安装",
-  "store.btn.processing": "处理中...",
-  "store.btn.reinstall": "重新安装",
-  "store.btn.uninstall": "卸载",
-  "store.btn.check_update": "检查更新",
-  "store.btn.save_qr": "保存二维码",
-  "store.btn.go_dashboard": "前往仪表盘",
+  "store.payment_channel": "Payment Channel",
+  "store.payment.mock": "Mock Pay",
+  "store.payment.wechat": "WeChat Pay",
+  "store.payment.alipay": "Alipay",
+  "store.tab.plugins": "Plugins",
+  "store.tab.purchased": "Purchased",
+  "store.plan.monthly": "Forfait mensuel",
+  "store.period.month": "mois",
+  "store.feature.bonus_token": "Bonus {amount}0k tokens",
+  "store.feature.multi_model": "Mod\u00e8les multiples disponibles (DeepSeek, Kimi, Qwen, Doubao, etc.)",
+  "store.feature.no_api_key": "Aucune configuration d'API Key n\u00e9cessaire",
+  "store.feature.pay_as_you_go": "Facturation \u00e0 l'usage, transparente",
+  "store.feature.cancel_anytime": "R\u00e9siliable \u00e0 tout moment",
+  "store.plan.quarterly": "Forfait trimestriel",
+  "store.period.quarter": "trimestre",
+  "store.badge.save_10": "Save ¥10",
+  "store.feature.all_monthly": "Toutes les fonctionnalités du forfait mensuel",
+  "store.feature.cheaper": "Prix plus avantageux",
+  "store.feature.discount_95": "≈ 95 % du prix",
+  "store.plan.yearly": "Forfait annuel",
+  "store.period.year": "an",
+  "store.badge.best_value": "Meilleur rapport qualit\u00e9-prix",
+  "store.feature.discount_70": "\u2248 70 % du prix",
+  "store.feature.avg_price": "Moyenne mensuelle dès 16,6 ¥",
+  "store.plan.personal": "Version personnelle",
+  "store.period.lifetime": "à vie",
+  "store.feature.lifetime_access": "Acces a vie",
+  "store.feature.support_all_models": "Tous les modeles pris en charge",
+  "store.feature.custom_api_key": "Cle API personnalisee",
+  "store.feature.no_limit": "Aucune limite d'utilisation",
+  "store.feature.lifetime_update": "Mises a jour a vie",
+  "store.feature.local_data": "Confidentialite des donnees locales",
+  "store.plan.pro": "Version professionnelle",
+  "store.feature.all_personal": "Toutes les fonctionnalites personnelles",
+  "store.feature.advanced_plugin": "Plugins avances",
+  "store.feature.priority_support": "Support prioritaire",
+  "store.feature.commercial_use": "Licence commerciale",
+  "store.feature.custom_dev": "Developpement personnalise",
+  "store.feature.multi_device": "Multi-appareils (3)",
+  "store.btn.buy_and_install": "Acheter et installer",
+  "store.btn.install": "Installer",
+  "store.btn.processing": "Traitement...",
+  "store.btn.reinstall": "Reinstaller",
+  "store.btn.uninstall": "Desinstaller",
+  "store.btn.check_update": "Verifier les mises a jour",
+  "store.btn.save_qr": "Enregistrer le QR",
+  "store.btn.go_dashboard": "Aller au tableau de bord",
   "common.loading": "加载中...",
   "common.close": "关闭",
   "payment.mock_pay": "模拟支付成功",
-  "store.price.free": "免费",
-  "store.label.expires_at": "有效期至",
-  "store.tab.models": "模型列表",
-  "store.models.title": "支持的 AI 模型",
-  "store.models.desc": "Jarvis 集成了全球领先的 AI 模型，您可以根据需求自由选择。",
+  "store.price.free": "Gratuit",
+  "store.label.expires_at": "Expire le",
+  "store.tab.models": "Modeles",
+  "store.models.title": "Boutique de modeles",
+  "store.models.desc": "Parcourir et installer des modeles IA",
   "store.model.deepseek.name": "DeepSeek",
-  "store.model.deepseek.desc": "深度求索 (DeepSeek-V3/R1)，国产开源之光，推理能力强悍。",
-  "store.model.kimi.name": "Kimi (月之暗面)",
-  "store.model.kimi.desc": "超长上下文处理，擅长阅读长文和分析文档 (Moonshot)。",
-  "store.model.qwen.name": "通义千问 (Qwen)",
-  "store.model.qwen.desc": "阿里巴巴旗舰模型，全能型助手，中文理解精准。",
-  "store.model.doubao.name": "豆包 (Doubao)",
-  "store.model.doubao.desc": "字节跳动出品，响应速度快，性价比极高。",
-  "store.model.zhipu.name": "智谱清言 (GLM-4)",
-  "store.model.zhipu.desc": "源自清华系，新一代基座大模型，综合能力优秀。",
+  "store.model.deepseek.desc": "DeepSeek LLM",
+  "store.model.kimi.name": "Kimi",
+  "store.model.kimi.desc": "Moonshot AI",
+  "store.model.qwen.name": "Qwen",
+  "store.model.qwen.desc": "Alibaba Qwen",
+  "store.model.doubao.name": "Doubao",
+  "store.model.doubao.desc": "ByteDance Doubao",
+  "store.model.zhipu.name": "ChatGLM",
+  "store.model.zhipu.desc": "Zhipu AI GLM",
   "store.model.gemini.name": "Gemini",
-  "store.model.gemini.desc": "Google 多模态大模型，支持图文理解，免费额度充足。",
+  "store.model.gemini.desc": "Google Gemini Pro",
   "store.model.gpt4.name": "GPT-4",
-  "store.model.gpt4.desc": "OpenAI 最强模型，逻辑推理和代码能力的天花板。",
-  "store.label.current_version": "当前版本",
-  "store.msg.scan_qr": "请使用支付工具扫描二维码或等待自动确认",
-  "store.error.mock_pay_fail": "模拟支付失败: ",
-  "store.error.mock_pay_error": "模拟支付出错",
-  "store.msg.pay_success_install": "支付成功，已通知插件安装",
-  "store.msg.pay_success_token": "支付成功，已为账户充值 Token",
-  "store.label.current_balance": "当前余额：",
-  "store.error.login_required": "请先登录",
-  "store.error.create_order_fail": "创建订单失败: ",
+  "store.model.gpt4.desc": "OpenAI GPT-4",
+  "store.label.current_version": "Version",
+  "store.msg.scan_qr": "Veuillez scanner le code QR pour payer",
+  "store.error.mock_pay_fail": "Mock pay failed: ",
+  "store.error.mock_pay_error": "Mock pay error",
+  "store.msg.pay_success_install": "Payment successful, installing plugin...",
+  "store.msg.pay_success_token": "Payment successful, tokens added",
+  "store.label.current_balance": "Current Balance: ",
+  "store.error.login_required": "Veuillez d'abord vous connecter",
+  "store.error.create_order_fail": "Echec de la creation de commande : ",
   "common.error.unknown": "未知错误",
-  "store.error.claim_fail": "领取失败",
-  "store.error.purchase_fail": "购买失败",
+  "store.error.claim_fail": "Echec de la recuperation",
+  "store.error.purchase_fail": "Echec de l'achat",
   "store.faq.q1": "What’s the difference between lifetime and subscription?",
   "store.faq.a1": "Lifetime is one-time purchase and self-managed API key. Subscription is monthly/yearly; we provide API service, no configuration needed.",
   "store.faq.q2": "What are tokens?",
@@ -146,24 +146,24 @@
   "store.faq.q3": "Can I get a refund?",
   "store.faq.a3": "Lifetime supports 7-day no-questions refund. Subscription can be cancelled anytime with pro-rated refunds.",
   "store.tab.subscription": "Service d'abonnement",
-  "store.tab.lifetime": "Lifetime",
+  "store.tab.lifetime": "A vie",
   "store.tab.tokens": "Service de trafic",
   "store.faq.title": "FAQ",
-  "store.processing": "Processing...",
-  "store.buy_now": "Buy Now",
-  "store.recommend": "Recommended",
-  "store.badge.popular": "🔥 最受欢迎",
-  "store.buy": "Buy",
-  "store.token_pack.title": "{tokens} Token流量包",
-  "store.subscription.select_model": "选择AI模型",
-  "store.subscription.model_required": "请选择一个AI模型",
-  "store.subscription.model_deepseek": "DeepSeek - 国产开源之光，推理能力强悍",
-  "store.subscription.model_kimi": "Kimi - 超长上下文处理，擅长长文分析",
-  "store.subscription.model_qwen": "通义千问 - 阿里巴巴旗舰模型，中文理解精准",
-  "store.subscription.model_doubao": "豆包 - 字节跳动出品，响应速度快，性价比高",
-  "store.subscription.model_zhipu": "智谱清言 - 源自清华系，新一代基座大模型",
-  "store.subscription.model_gemini": "Gemini - Google多模态大模型，免费额度充足",
-  "store.subscription.model_gpt4": "GPT-4 - OpenAI最强模型，逻辑推理天花板",
+  "store.processing": "Traitement...",
+  "store.buy_now": "Acheter maintenant",
+  "store.recommend": "Recommande",
+  "store.badge.popular": "🔥 Most Popular",
+  "store.buy": "Acheter",
+  "store.token_pack.title": "{tokens} Token Pack",
+  "store.subscription.select_model": "Select Model",
+  "store.subscription.model_required": "Please select a model first",
+  "store.subscription.model_deepseek": "DeepSeek",
+  "store.subscription.model_kimi": "Kimi",
+  "store.subscription.model_qwen": "Qwen",
+  "store.subscription.model_doubao": "Doubao",
+  "store.subscription.model_zhipu": "Zhipu",
+  "store.subscription.model_gemini": "Gemini",
+  "store.subscription.model_gpt4": "GPT-4",
   "features.filter.all": "全部",
   "features.filter.ai": "AI功能",
   "features.filter.format": "格式化",
@@ -1144,11 +1144,11 @@
   "settings.sub.btn_view_plans": "查看方案",
   "settings.msg.fail": "操作失败",
   "settings.features.title": "功能开关",
-  "store.msg.install_success": "安装成功",
-  "store.msg.install_fail": "安装失败",
-  "store.msg.config_generated": "配置已生成",
-  "store.msg.config_downloading": "正在下载配置...",
-  "store.msg.generating_config": "正在生成配置...",
+  "store.msg.install_success": "Installation Successful",
+  "store.msg.install_fail": "Installation Failed",
+  "store.msg.config_generated": "Configuration Generated",
+  "store.msg.config_downloading": "Downloading configuration...",
+  "store.msg.generating_config": "Generating configuration...",
   "install.downloading": "下载中...",
   "install.scanning": "扫描中...",
   "install.installing": "安装中...",
@@ -1229,7 +1229,92 @@
   "store.model.claude.desc": "Anthropic",
   "store.model.claude.name": "Claude",
   "store.model.siliconflow.desc": "SiliconFlow",
-  "store.model.siliconflow.name": "硅基流动",
-  "store.subscription.model_claude": "Claude - Anthropic 的长文本与安全对话模型",
-  "store.subscription.model_siliconflow": "硅基流动 - 聚合多模型平台，模型覆盖全面"
+  "store.model.siliconflow.name": "SiliconFlow",
+  "store.subscription.model_claude": "Claude",
+  "store.subscription.model_siliconflow": "SiliconFlow",
+  "common.back": "Retour",
+  "common.loading": "Chargement...",
+  "common.close": "Fermer",
+  "payment.mock_pay": "Paiement simule reussi",
+  "store.badge.save_10": "Economisez 10 ¥",
+  "store.badge.popular": "Le plus populaire",
+  "store.feature.discount_95": "≈ 95 % du prix",
+  "store.feature.avg_price": "Moyenne mensuelle des 16,6 ¥",
+  "store.period.lifetime": "a vie"
+  ,"common.back": "Retour"
+  ,"common.loading": "Chargement..."
+  ,"common.close": "Fermer"
+  ,"payment.mock_pay": "Paiement simule reussi"
+  ,"store.title": "Puissance Jarvis"
+  ,"store.subtitle": "Choisissez la formule adaptee et commencez votre ecriture IA"
+  ,"store.payment_channel": "Canal de paiement"
+  ,"store.payment.wechat": "WeChat Pay"
+  ,"store.payment.alipay": "Alipay"
+  ,"store.tab.subscription": "Service d'abonnement"
+  ,"store.tab.tokens": "Service de trafic"
+  ,"store.tab.lifetime": "A vie"
+  ,"store.tab.plugins": "Plugins"
+  ,"store.tab.models": "Modeles"
+  ,"store.tab.purchased": "Achats"
+  ,"store.plan.monthly": "Forfait mensuel"
+  ,"store.period.month": "mois"
+  ,"store.plan.quarterly": "Forfait trimestriel"
+  ,"store.period.quarter": "trimestre"
+  ,"store.plan.yearly": "Forfait annuel"
+  ,"store.period.year": "an"
+  ,"store.period.lifetime": "A vie"
+  ,"store.badge.save_10": "Economisez 10 CNY"
+  ,"store.badge.best_value": "Meilleur rapport qualite-prix"
+  ,"store.badge.popular": "Le plus populaire"
+  ,"store.feature.discount_95": "Equivalent a 9,5/10"
+  ,"store.feature.discount_70": "Equivalent a 7/10"
+  ,"store.feature.avg_price": "Moyenne mensuelle des 16,6 CNY"
+  ,"store.feature.bonus_token": "Bonus {amount}0k tokens"
+  ,"store.feature.multi_model": "Modeles multiples disponibles (DeepSeek, Kimi, Qwen, Doubao, etc.)"
+  ,"store.feature.no_api_key": "Aucune configuration d'API Key necessaire"
+  ,"store.feature.pay_as_you_go": "Facturation a l'usage, transparente"
+  ,"store.feature.cancel_anytime": "Resiliable a tout moment"
+  ,"store.feature.all_monthly": "Toutes les fonctionnalites du forfait mensuel"
+  ,"store.feature.cheaper": "Prix plus avantageux"
+  ,"store.feature.lifetime_access": "Acces a vie"
+  ,"store.feature.support_all_models": "Tous les modeles pris en charge"
+  ,"store.feature.custom_api_key": "Cle API personnalisee"
+  ,"store.feature.no_limit": "Aucune limite d'utilisation"
+  ,"store.feature.lifetime_update": "Mises a jour a vie"
+  ,"store.feature.local_data": "Confidentialite des donnees locales"
+  ,"store.feature.all_personal": "Toutes les fonctionnalites personnelles"
+  ,"store.feature.advanced_plugin": "Plugins avances"
+  ,"store.feature.priority_support": "Support prioritaire"
+  ,"store.feature.commercial_use": "Licence commerciale"
+  ,"store.feature.custom_dev": "Developpement personnalise"
+  ,"store.feature.multi_device": "Multi-appareils (3)"
+  ,"store.btn.buy_and_install": "Acheter et installer"
+  ,"store.btn.install": "Installer"
+  ,"store.btn.processing": "Traitement..."
+  ,"store.btn.reinstall": "Reinstaller"
+  ,"store.btn.uninstall": "Desinstaller"
+  ,"store.btn.check_update": "Verifier les mises a jour"
+  ,"store.btn.save_qr": "Enregistrer le QR"
+  ,"store.btn.go_dashboard": "Aller au tableau de bord"
+  ,"store.price.free": "Gratuit"
+  ,"store.msg.scan_qr": "Veuillez scanner le code QR pour payer"
+  ,"store.error.login_required": "Veuillez d'abord vous connecter"
+  ,"store.error.create_order_fail": "Echec de la creation de commande : "
+  ,"store.error.claim_fail": "Echec de la recuperation"
+  ,"store.error.purchase_fail": "Echec de l'achat"
+  ,"store.processing": "Traitement..."
+  ,"store.buy_now": "Acheter maintenant"
+  ,"store.recommend": "Recommande"
+  ,"store.buy": "Acheter"
+  ,"store.faq.title": "FAQ"
+  ,"store.faq.q1": "Quelle est la difference entre abonnement a vie et abonnement periodique ?"
+  ,"store.faq.a1": "L'abonnement a vie est un achat unique avec cle API auto-geree. L'abonnement periodique est mensuel/annuel et nous fournissons le service API."
+  ,"store.faq.q2": "Que sont les tokens ?"
+  ,"store.faq.a2": "Les tokens sont l'unite de consommation des modeles IA. 10k tokens correspondent environ a 7 500 caracteres chinois, selon le modele."
+  ,"store.faq.q3": "Puis-je obtenir un remboursement ?"
+  ,"store.faq.a3": "L'abonnement a vie prend en charge un remboursement sous 7 jours. L'abonnement periodique peut etre resilie a tout moment selon les regles en vigueur."
+  ,"store.models.title": "Boutique de modeles"
+  ,"store.models.desc": "Parcourir et installer des modeles IA"
+  ,"store.subscription.select_model": "Selectionner un modele"
+  ,"store.subscription.model_required": "Veuillez d'abord selectionner un modele"
 }

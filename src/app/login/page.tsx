@@ -793,7 +793,10 @@ function LoginContent() {
                         }}
                         className="text-[#4F46E5] hover:text-[#4338ca] text-sm"
                     >
-                        <FormattedMessage id="login.link.no_account" defaultMessage="Operation failed. Please try again." />
+                        <FormattedMessage
+                            id={isLogin ? "login.link.no_account" : "login.link.has_account"}
+                            defaultMessage={isLogin ? "还没有账户？立即注册" : "已有账户，请登录"}
+                        />
                     </button>
                 </div>
             </div>

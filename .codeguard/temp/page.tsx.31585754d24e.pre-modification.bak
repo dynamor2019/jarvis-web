@@ -85,6 +85,15 @@ function LoginContent() {
         router.replace('/dashboard');
     };
 
+    const redirectToDashboard = () => {
+        router.replace('/dashboard');
+        setTimeout(() => {
+            if (typeof window !== 'undefined' && window.location.pathname.startsWith('/login')) {
+                window.location.assign('/dashboard');
+            }
+        }, 800);
+    };
+
     useEffect(() => {
         const wv = searchParams.get('wv') === '1';
         setIsWordPlugin(wv);
@@ -177,9 +186,7 @@ function LoginContent() {
 
         if (token && wechatSuccess === 'success') {
             localStorage.setItem('token', token);
-            // Start redirect countdown after social login success
-            setLoginSuccess(true);
-            setRedirectCountdown(30);
+            redirectToDashboard();
         }
 
         if (errorParam) {
@@ -225,9 +232,7 @@ function LoginContent() {
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('user', JSON.stringify(data.user));
                 setShowWechat(false);
-                // Start redirect countdown after social login success
-                setLoginSuccess(true);
-                setRedirectCountdown(30);
+                redirectToDashboard();
             } else if (data.status === 'expired') {
                 // Stop polling when ticket expires
                 if (pollingIntervalRef.current) {
@@ -298,9 +303,7 @@ function LoginContent() {
                 localStorage.setItem('token', data.token);
                 localStorage.setItem('user', JSON.stringify(data.user));
                 setShowAlipay(false);
-                // Start redirect countdown after social login success
-                setLoginSuccess(true);
-                setRedirectCountdown(30);
+                redirectToDashboard();
             } else if (data.status === 'expired') {
                 // Stop polling when ticket expires
                 if (alipayPollingIntervalRef.current) {
@@ -489,12 +492,7 @@ function LoginContent() {
                         setHasToken(true);
                     }
                 } else {
-                    router.replace('/dashboard');
-                    setTimeout(() => {
-                        if (typeof window !== 'undefined' && window.location.pathname.startsWith('/login')) {
-                            window.location.assign('/dashboard');
-                        }
-                    }, 800);
+                    redirectToDashboard();
                 }
             } else {
                 setError(data.error || (isLogin

@@ -26,14 +26,14 @@
     ],
     "src/app/login/page.tsx": [
       {
-        "version": 17,
-        "feature": "login_redirect_fix",
-        "timestamp": "2026-04-07T16:10:39",
-        "hash": "02776e5c4bfe30687523b07b134b4f5b165c362da837d5e213997190dbce1bf1",
-        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/page.tsx.31585754d24e.v17.bak",
+        "version": 18,
+        "feature": "pre_edit_sync",
+        "timestamp": "2026-04-13T19:22:31",
+        "hash": "ae2f839c10172ad5b8589b2feb47dc9c89095cee957c4d52cb81a06b6ead9ff8",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/page.tsx.31585754d24e.v18.bak",
         "original_path": "C:/Jarvis/jarvis-web/src/app/login/page.tsx",
         "file_key": "src/app/login/page.tsx",
-        "reason": "sync codeguard hash after prior approved edits"
+        "reason": "sync state before text tweak"
       }
     ],
     "src/components/Hero.tsx": [
@@ -47,13 +47,39 @@
         "file_key": "src/components/Hero.tsx",
         "reason": "Auto snapshot after confirm: user confirmed: remove citation wording, enforce single-line title, and enrich stats card visual design"
       }
+    ],
+    "src/i18n/messages/fr-FR.json": [
+      {
+        "version": 1,
+        "feature": "store_fr_copy_alignment",
+        "timestamp": "2026-04-14T18:53:38",
+        "hash": "078c860b05a6e17fb8b3ce74bdbb164b95f0ef16891598367b9b2e39700bf716",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/fr-FR.json.7c473dcd6a30.v1.bak",
+        "original_path": "C:/Jarvis/jarvis-web/src/i18n/messages/fr-FR.json",
+        "file_key": "src/i18n/messages/fr-FR.json",
+        "reason": "Auto snapshot after confirm: align french store badge and bonus copy with english semantics"
+      }
+    ],
+    "src/app/store/page.tsx": [
+      {
+        "version": 1,
+        "feature": "store_badge_layout_fix",
+        "timestamp": "2026-04-14T18:53:38",
+        "hash": "50b99e0aeec06f7dd86d235fbbffb8ced76d8acdd7b4203fa264b9be84a5bea8",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/page.tsx.0c5273670611.v1.bak",
+        "original_path": "C:/Jarvis/jarvis-web/src/app/store/page.tsx",
+        "file_key": "src/app/store/page.tsx",
+        "reason": "Auto snapshot after confirm: hide duplicate badge when popular to prevent overlap"
+      }
     ]
   },
   "last_version": {
     "src/app/api/auth/wechat/callback/route.ts": 1,
     "src/app/api/auth/wechat/status/route.ts": 1,
-    "src/app/login/page.tsx": 17,
-    "src/components/Hero.tsx": 5
+    "src/app/login/page.tsx": 18,
+    "src/components/Hero.tsx": 5,
+    "src/i18n/messages/fr-FR.json": 1,
+    "src/app/store/page.tsx": 1
   },
   "current_state": {
     "src/app/api/auth/wechat/callback/route.ts": {
@@ -73,12 +99,12 @@
       "reason": "Auto snapshot after confirm: Support redirect=1 mode to redirect login with token and pending error"
     },
     "src/app/login/page.tsx": {
-      "timestamp": "2026-04-07T16:10:39",
-      "feature": "login_redirect_fix",
-      "hash": "02776e5c4bfe30687523b07b134b4f5b165c362da837d5e213997190dbce1bf1",
+      "timestamp": "2026-04-13T19:22:31",
+      "feature": "pre_edit_sync",
+      "hash": "ae2f839c10172ad5b8589b2feb47dc9c89095cee957c4d52cb81a06b6ead9ff8",
       "path": "C:/Jarvis/jarvis-web/src/app/login/page.tsx",
       "source": "snapshot",
-      "reason": "sync codeguard hash after prior approved edits"
+      "reason": "sync state before text tweak"
     },
     "src/components/Hero.tsx": {
       "timestamp": "2026-04-08T16:06:13",
@@ -87,6 +113,22 @@
       "path": "C:/Jarvis/jarvis-web/src/components/Hero.tsx",
       "source": "snapshot",
       "reason": "Auto snapshot after confirm: user confirmed: remove citation wording, enforce single-line title, and enrich stats card visual design"
+    },
+    "src/app/store/page.tsx": {
+      "timestamp": "2026-04-14T18:53:38",
+      "feature": "store_badge_layout_fix",
+      "hash": "50b99e0aeec06f7dd86d235fbbffb8ced76d8acdd7b4203fa264b9be84a5bea8",
+      "path": "C:/Jarvis/jarvis-web/src/app/store/page.tsx",
+      "source": "snapshot",
+      "reason": "Auto snapshot after confirm: hide duplicate badge when popular to prevent overlap"
+    },
+    "src/i18n/messages/fr-FR.json": {
+      "timestamp": "2026-04-14T18:53:38",
+      "feature": "store_fr_copy_alignment",
+      "hash": "078c860b05a6e17fb8b3ce74bdbb164b95f0ef16891598367b9b2e39700bf716",
+      "path": "C:/Jarvis/jarvis-web/src/i18n/messages/fr-FR.json",
+      "source": "snapshot",
+      "reason": "Auto snapshot after confirm: align french store badge and bonus copy with english semantics"
     }
   },
   "protected_features": {
@@ -99,7 +141,8 @@
     "src/app/login/page.tsx": [
       "wechat-login-redirect-fix",
       "login_parse_fix",
-      "login_redirect_fix"
+      "login_redirect_fix",
+      "pre_edit_sync"
     ],
     "src/components/Hero.tsx": [
       "hero_showcase_layout_v1",
@@ -107,6 +150,12 @@
       "hero_crown_usecases_trim",
       "hero_promise_cards_worker_needs_v1",
       "hero_singleline_title_stats_visual_upgrade"
+    ],
+    "src/i18n/messages/fr-FR.json": [
+      "store_fr_copy_alignment"
+    ],
+    "src/app/store/page.tsx": [
+      "store_badge_layout_fix"
     ]
   },
   "index_state": {

@@ -642,6 +642,7 @@ export default function SettingsPage() {
         setUser({ ...user, ...safeUpdates });
         if (typeof updates.preferredLanguage === 'string' && updates.preferredLanguage) {
           localStorage.setItem('preferredLanguage', updates.preferredLanguage);
+          localStorage.setItem('preferredLanguageManual', '1');
           window.dispatchEvent(new Event('jarvis-languagechange'));
         }
         alert(intl.formatMessage({ id: 'settings.save_success', defaultMessage: '保存成功' }));
