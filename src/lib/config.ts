@@ -56,15 +56,33 @@ export async function getPaymentConfig(): Promise<PaymentConfig> {
   const configMap: Record<string, string> = {};
   configs.forEach((c: { key: string; value: string }) => configMap[c.key] = c.value);
 
+  // Keep Alipay config from a single source to avoid mixed DB/ENV combos
+  // (for example DB private key + ENV cert paths), which can break签名/证书校验.
+  const hasDbAlipayCore =
+    !!configMap['alipay_app_id'] ||
+    !!configMap['alipay_private_key'] ||
+    !!configMap['alipay_public_key'];
+
+  const alipayFromDb = {
+    appId: configMap['alipay_app_id'] || null,
+    privateKey: configMap['alipay_private_key'] || null,
+    publicKey: configMap['alipay_public_key'] || null,
+    appCertPath: configMap['alipay_app_cert_path'] || null,
+    alipayCertPath: configMap['alipay_public_cert_path'] || null,
+    alipayRootCertPath: configMap['alipay_root_cert_path'] || null,
+  };
+
+  const alipayFromEnv = {
+    appId: process.env.ALIPAY_APP_ID || null,
+    privateKey: process.env.ALIPAY_PRIVATE_KEY || null,
+    publicKey: process.env.ALIPAY_PUBLIC_KEY || null,
+    appCertPath: process.env.ALIPAY_APP_CERT_PATH || null,
+    alipayCertPath: process.env.ALIPAY_PUBLIC_CERT_PATH || null,
+    alipayRootCertPath: process.env.ALIPAY_ROOT_CERT_PATH || null,
+  };
+
   return {
-    alipay: {
-      appId: configMap['alipay_app_id'] || process.env.ALIPAY_APP_ID || null,
-      privateKey: configMap['alipay_private_key'] || process.env.ALIPAY_PRIVATE_KEY || null,
-      publicKey: configMap['alipay_public_key'] || process.env.ALIPAY_PUBLIC_KEY || null,
-      appCertPath: configMap['alipay_app_cert_path'] || process.env.ALIPAY_APP_CERT_PATH || null,
-      alipayCertPath: configMap['alipay_public_cert_path'] || process.env.ALIPAY_PUBLIC_CERT_PATH || null,
-      alipayRootCertPath: configMap['alipay_root_cert_path'] || process.env.ALIPAY_ROOT_CERT_PATH || null,
-    },
+    alipay: hasDbAlipayCore ? alipayFromDb : alipayFromEnv,
     wechat: {
       appId: configMap['wechat_app_id'] || process.env.WECHAT_APP_ID || null,
       payAppId: configMap['wechat_pay_app_id'] || process.env.WECHAT_PAY_APP_ID || null,

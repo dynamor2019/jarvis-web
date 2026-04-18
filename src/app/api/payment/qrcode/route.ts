@@ -8,7 +8,7 @@ import { prisma } from '@/lib/prisma';
 import { getPaymentConfig } from '@/lib/config';
 import { env } from '@/lib/env';
 import * as AlipaySdk from 'alipay-sdk';
-import { readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import { createSign, randomBytes, X509Certificate } from 'crypto';
 import path from 'path';
 
@@ -25,6 +25,70 @@ function resolveAlipaySdkConstructor(sdkModule: any) {
   return ctor;
 }
 const AlipaySdkConstructor = resolveAlipaySdkConstructor(AlipaySdk as any);
+
+function isPublicNotifyBaseUrl(rawBaseUrl: string): boolean {
+  try {
+    const url = new URL(rawBaseUrl);
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      return false;
+    }
+    const host = url.hostname.toLowerCase();
+    if (host === 'localhost' || host === '0.0.0.0' || host === '127.0.0.1' || host === '::1') {
+      return false;
+    }
+    if (/^127\./.test(host)) return false;
+    if (/^10\./.test(host)) return false;
+    if (/^192\.168\./.test(host)) return false;
+    if (/^172\.(1[6-9]|2\d|3[0-1])\./.test(host)) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function buildAlipaySubject(productName: string | null | undefined): string {
+  const normalized = (productName || 'Jarvis套餐')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!normalized) return 'Jarvis套餐';
+  return normalized.length > 120 ? normalized.slice(0, 120) : normalized;
+}
+
+function normalizePem(pem: string | null | undefined): string | undefined {
+  if (!pem) return undefined;
+  return pem.replace(/\\n/g, '\n').trim();
+}
+
+function resolveExistingPath(
+  configuredPath: string | null | undefined,
+  fallbackFiles: string[]
+): string | undefined {
+  const candidates: string[] = [];
+  if (configuredPath && configuredPath.trim()) {
+    const raw = configuredPath.trim();
+    candidates.push(raw);
+    if (!path.isAbsolute(raw)) {
+      candidates.push(path.resolve(process.cwd(), raw));
+      candidates.push(path.resolve(process.cwd(), '..', '..', raw));
+      candidates.push(path.resolve(process.cwd(), '..', '..', '..', raw));
+      candidates.push(path.resolve(process.cwd(), '..', '..', '..', '..', raw));
+      candidates.push(path.resolve(process.cwd(), '..', '..', '..', '..', '..', raw));
+    }
+  }
+  for (const fallback of fallbackFiles) {
+    candidates.push(path.resolve(process.cwd(), fallback));
+    candidates.push(path.resolve(process.cwd(), '..', '..', fallback));
+    candidates.push(path.resolve(process.cwd(), '..', '..', '..', fallback));
+    candidates.push(path.resolve(process.cwd(), '..', '..', '..', '..', fallback));
+    candidates.push(path.resolve(process.cwd(), '..', '..', '..', '..', '..', fallback));
+  }
+  for (const candidate of candidates) {
+    if (existsSync(candidate)) {
+      return candidate;
+    }
+  }
+  return undefined;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -81,59 +145,90 @@ export async function POST(request: NextRequest) {
     
     if (resolvedPaymentMethod === 'alipay') {
       // 检查配置是否存在
-      if (config.alipay.appId && config.alipay.privateKey) {
+      const hasConfiguredCertPaths = Boolean(
+        config.alipay.appCertPath?.trim() &&
+        config.alipay.alipayCertPath?.trim() &&
+        config.alipay.alipayRootCertPath?.trim()
+      );
+      const appCertPath = hasConfiguredCertPaths
+        ? resolveExistingPath(config.alipay.appCertPath, [
+            'appCertPublicKey_2021006128602915.crt',
+          ])
+        : undefined;
+      const alipayPublicCertPath = hasConfiguredCertPaths
+        ? resolveExistingPath(config.alipay.alipayCertPath, [
+            'alipayCertPublicKey_RSA2.crt',
+          ])
+        : undefined;
+      const alipayRootCertPath = hasConfiguredCertPaths
+        ? resolveExistingPath(config.alipay.alipayRootCertPath, [
+            'alipayRootCert.crt',
+          ])
+        : undefined;
+      const hasCertMode = hasConfiguredCertPaths && !!appCertPath && !!alipayPublicCertPath && !!alipayRootCertPath;
+      if (config.alipay.appId && (config.alipay.privateKey || hasCertMode)) {
         try {
           
           
           // Ensure private key is formatted correctly if needed, but SDK usually handles standard PEM
           // Cast nulls to undefined for optional fields to satisfy SDK types
-          const alipaySdk = new AlipaySdkConstructor({
-            appId: config.alipay.appId,
-            privateKey: config.alipay.privateKey,
-            alipayPublicKey: config.alipay.publicKey || undefined,
+          const appId = String(config.alipay.appId).trim();
+          const privateKey = normalizePem(config.alipay.privateKey);
+          const alipayPublicKey = normalizePem(config.alipay.publicKey);
+          const sdkOptions: Record<string, any> = {
+            appId,
             gateway: 'https://openapi.alipay.com/gateway.do',
-            timeout: 5000, // Add timeout to prevent hanging
-          });
-
-          // 调用支付宝统一下单接口 (alipay.trade.precreate)
-          
-          
-          // Using a timeout wrapper for the SDK call to prevent hanging requests
-          const sdkCall = alipaySdk.exec('alipay.trade.precreate', {
-            bizContent: {
-              out_trade_no: order.orderNo,
-              total_amount: order.amount.toString(),
-              subject: order.productName,
-            },
-            notify_url: `${baseUrl}/api/payment/webhook/alipay`,
-          });
-          
-          // 10s timeout for the SDK call
-          const result: any = await Promise.race([
-            sdkCall,
-            new Promise((_, reject) => setTimeout(() => reject(new Error('Alipay SDK timeout')), 10000))
-          ]);
-
-          
-
-          if (result && typeof result === 'object' && result.code === '10000') {
-             // code 10000 is success for Alipay responses
-             if (result.qr_code) {
-               qrText = result.qr_code;
-             } else {
-               
-               // Fallback or error? Usually alipay.trade.precreate returns qr_code on success.
-               // Sometimes it might be in a nested object depending on SDK version normalization
-               // But typically 'qr_code' is at top level of the result object returned by alipay-sdk
-               // If sdk normalizes response, it returns the content of the response node.
-             }
-          } else if (result && result.qr_code) {
-             // Some SDK versions might return the direct response object
-             qrText = result.qr_code;
+            timeout: 5000,
+          };
+          if (hasCertMode) {
+            sdkOptions.privateKey = privateKey;
+            sdkOptions.appCertPath = appCertPath;
+            sdkOptions.alipayPublicCertPath = alipayPublicCertPath;
+            sdkOptions.alipayRootCertPath = alipayRootCertPath;
           } else {
-             console.error('Alipay SDK error response:', result);
-             const subMsg = result?.sub_msg || result?.msg || 'Unknown Alipay error';
-             throw new Error(`Alipay error: ${subMsg}`);
+            if (!privateKey) {
+              throw new Error('alipay_private_key_missing');
+            }
+            sdkOptions.privateKey = privateKey;
+            sdkOptions.alipayPublicKey = alipayPublicKey;
+          }
+          const alipaySdk = new AlipaySdkConstructor(sdkOptions);
+
+          // 网站支付优先：直接调用 PC 网页支付接口 (alipay.trade.page.pay)
+          const amountNumber = Number(order.amount);
+          if (!Number.isFinite(amountNumber) || amountNumber <= 0) {
+            throw new Error(`invalid_order_amount:${order.amount}`);
+          }
+          const totalAmount = amountNumber.toFixed(2);
+          const subject = buildAlipaySubject(order.productName);
+          const pagePayParams: Record<string, any> = {
+            bizContent: {
+              outTradeNo: order.orderNo,
+              totalAmount,
+              subject,
+              productCode: 'FAST_INSTANT_TRADE_PAY',
+            },
+          };
+          if (isPublicNotifyBaseUrl(baseUrl)) {
+            pagePayParams.notify_url = `${baseUrl}/api/payment/webhook/alipay`;
+            pagePayParams.return_url = `${baseUrl}/payment?orderNo=${encodeURIComponent(order.orderNo)}&paid=1`;
+          }
+          const pagePayResult: any = await alipaySdk.exec(
+            'alipay.trade.page.pay',
+            pagePayParams,
+            { method: 'GET' }
+          );
+          if (typeof pagePayResult === 'string' && /^https?:\/\//i.test(pagePayResult)) {
+            qrText = pagePayResult;
+          } else {
+            const raw = (() => {
+              try {
+                return JSON.stringify(pagePayResult).slice(0, 260);
+              } catch {
+                return 'raw_unserializable';
+              }
+            })();
+            throw new Error(`Alipay page pay failed raw=${raw}`);
           }
 
           if (!qrText) {

@@ -1,9 +1,9 @@
-## Modification Record | 2026-04-14 18:53:38 | User Confirmed
-- **File**: src/i18n/messages/fr-FR.json
-- **Feature**: store_fr_copy_alignment
-- **Reason**: align french store badge and bonus copy with english semantics
-- **Hash**: 078c860b05a6e17fb8b3ce74bdbb164b95f0ef16891598367b9b2e39700bf716
-- **Path**: C:/Jarvis/jarvis-web/src/i18n/messages/fr-FR.json
+## Modification Record | 2026-04-16 14:40:56 | User Confirmed
+- **File**: ops/process-allowlist-guard.service
+- **Feature**: process-allowlist-service
+- **Reason**: 用户确认需要守护进程系统服务模板
+- **Hash**: e73036af229da5b97306f739b53d7210fb7f3d5d5adf8ece7c9731952cc94ab3
+- **Path**: C:/Jarvis/jarvis-web/ops/process-allowlist-guard.service
 - **Project**: C:/Jarvis/jarvis-web
 
 ---

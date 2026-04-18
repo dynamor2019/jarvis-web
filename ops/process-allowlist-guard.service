@@ -1,3 +1,5 @@
+// Policy: Do not modify directly. Explain reason before edits. Last confirm reason: 用户确认需要守护进程系统服务模板
+
 [Unit]
 Description=Jarvis Process Allowlist Guard
 After=network.target

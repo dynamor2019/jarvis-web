@@ -71,6 +71,42 @@
         "file_key": "src/app/store/page.tsx",
         "reason": "Auto snapshot after confirm: hide duplicate badge when popular to prevent overlap"
       }
+    ],
+    "scripts/process-allowlist-guard.sh": [
+      {
+        "version": 1,
+        "feature": "process-allowlist-guard",
+        "timestamp": "2026-04-16T14:40:56",
+        "hash": "9d80793bf0b2acda5f297446a7c44043e9d0b5f9a49955e1b9e81b07aabe649d",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/process-allowlist-guard.sh.d6e76eba57c0.v1.bak",
+        "original_path": "C:/Jarvis/jarvis-web/scripts/process-allowlist-guard.sh",
+        "file_key": "scripts/process-allowlist-guard.sh",
+        "reason": "Auto snapshot after confirm: 用户确认启用进程白名单守护并记录拦截日志"
+      }
+    ],
+    "ops/process-allowlist-guard.service": [
+      {
+        "version": 1,
+        "feature": "process-allowlist-service",
+        "timestamp": "2026-04-16T14:40:56",
+        "hash": "e73036af229da5b97306f739b53d7210fb7f3d5d5adf8ece7c9731952cc94ab3",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/process-allowlist-guard.service.93b504007975.v1.bak",
+        "original_path": "C:/Jarvis/jarvis-web/ops/process-allowlist-guard.service",
+        "file_key": "ops/process-allowlist-guard.service",
+        "reason": "Auto snapshot after confirm: 用户确认需要守护进程系统服务模板"
+      }
+    ],
+    "start.sh": [
+      {
+        "version": 1,
+        "feature": "auto-start-process-guard",
+        "timestamp": "2026-04-16T14:40:56",
+        "hash": "85dd78009a10d1cd87b79d86aa1ede54cfe2166cc55cdb09ddd0e9594acb529c",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/start.sh.65a5db1ae8f8.v1.bak",
+        "original_path": "C:/Jarvis/jarvis-web/start.sh",
+        "file_key": "start.sh",
+        "reason": "Auto snapshot after confirm: 用户确认项目启动时自动拉起进程守护"
+      }
     ]
   },
   "last_version": {
@@ -79,7 +115,10 @@
     "src/app/login/page.tsx": 18,
     "src/components/Hero.tsx": 5,
     "src/i18n/messages/fr-FR.json": 1,
-    "src/app/store/page.tsx": 1
+    "src/app/store/page.tsx": 1,
+    "scripts/process-allowlist-guard.sh": 1,
+    "ops/process-allowlist-guard.service": 1,
+    "start.sh": 1
   },
   "current_state": {
     "src/app/api/auth/wechat/callback/route.ts": {
@@ -129,6 +168,30 @@
       "path": "C:/Jarvis/jarvis-web/src/i18n/messages/fr-FR.json",
       "source": "snapshot",
       "reason": "Auto snapshot after confirm: align french store badge and bonus copy with english semantics"
+    },
+    "scripts/process-allowlist-guard.sh": {
+      "timestamp": "2026-04-16T14:40:56",
+      "feature": "process-allowlist-guard",
+      "hash": "9d80793bf0b2acda5f297446a7c44043e9d0b5f9a49955e1b9e81b07aabe649d",
+      "path": "C:/Jarvis/jarvis-web/scripts/process-allowlist-guard.sh",
+      "source": "snapshot",
+      "reason": "Auto snapshot after confirm: 用户确认启用进程白名单守护并记录拦截日志"
+    },
+    "start.sh": {
+      "timestamp": "2026-04-16T14:40:56",
+      "feature": "auto-start-process-guard",
+      "hash": "85dd78009a10d1cd87b79d86aa1ede54cfe2166cc55cdb09ddd0e9594acb529c",
+      "path": "C:/Jarvis/jarvis-web/start.sh",
+      "source": "snapshot",
+      "reason": "Auto snapshot after confirm: 用户确认项目启动时自动拉起进程守护"
+    },
+    "ops/process-allowlist-guard.service": {
+      "timestamp": "2026-04-16T14:40:56",
+      "feature": "process-allowlist-service",
+      "hash": "e73036af229da5b97306f739b53d7210fb7f3d5d5adf8ece7c9731952cc94ab3",
+      "path": "C:/Jarvis/jarvis-web/ops/process-allowlist-guard.service",
+      "source": "snapshot",
+      "reason": "Auto snapshot after confirm: 用户确认需要守护进程系统服务模板"
     }
   },
   "protected_features": {
@@ -156,6 +219,15 @@
     ],
     "src/app/store/page.tsx": [
       "store_badge_layout_fix"
+    ],
+    "scripts/process-allowlist-guard.sh": [
+      "process-allowlist-guard"
+    ],
+    "ops/process-allowlist-guard.service": [
+      "process-allowlist-service"
+    ],
+    "start.sh": [
+      "auto-start-process-guard"
     ]
   },
   "index_state": {

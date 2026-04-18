@@ -8,12 +8,87 @@ import { prisma } from '@/lib/prisma';
 import { getPaymentConfig } from '@/lib/config';
 import { env } from '@/lib/env';
 import * as AlipaySdk from 'alipay-sdk';
-import { readFileSync } from 'fs';
+import { existsSync, readFileSync } from 'fs';
 import { createSign, randomBytes, X509Certificate } from 'crypto';
 import path from 'path';
 
 // Safely handle AlipaySdk import for various environments (CJS/ESM interop)
-const AlipaySdkConstructor = (AlipaySdk as any).default || AlipaySdk;
+function resolveAlipaySdkConstructor(sdkModule: any) {
+  const ctor =
+    sdkModule?.default?.default ||
+    sdkModule?.default ||
+    sdkModule?.AlipaySdk ||
+    sdkModule;
+  if (typeof ctor !== 'function') {
+    throw new Error('invalid_alipay_sdk_constructor');
+  }
+  return ctor;
+}
+const AlipaySdkConstructor = resolveAlipaySdkConstructor(AlipaySdk as any);
+
+function isPublicNotifyBaseUrl(rawBaseUrl: string): boolean {
+  try {
+    const url = new URL(rawBaseUrl);
+    if (url.protocol !== 'http:' && url.protocol !== 'https:') {
+      return false;
+    }
+    const host = url.hostname.toLowerCase();
+    if (host === 'localhost' || host === '0.0.0.0' || host === '127.0.0.1' || host === '::1') {
+      return false;
+    }
+    if (/^127\./.test(host)) return false;
+    if (/^10\./.test(host)) return false;
+    if (/^192\.168\./.test(host)) return false;
+    if (/^172\.(1[6-9]|2\d|3[0-1])\./.test(host)) return false;
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function buildAlipaySubject(productName: string | null | undefined): string {
+  const normalized = (productName || 'Jarvis套餐')
+    .replace(/\s+/g, ' ')
+    .trim();
+  if (!normalized) return 'Jarvis套餐';
+  return normalized.length > 120 ? normalized.slice(0, 120) : normalized;
+}
+
+function normalizePem(pem: string | null | undefined): string | undefined {
+  if (!pem) return undefined;
+  return pem.replace(/\\n/g, '\n').trim();
+}
+
+function resolveExistingPath(
+  configuredPath: string | null | undefined,
+  fallbackFiles: string[]
+): string | undefined {
+  const candidates: string[] = [];
+  if (configuredPath && configuredPath.trim()) {
+    const raw = configuredPath.trim();
+    candidates.push(raw);
+    if (!path.isAbsolute(raw)) {
+      candidates.push(path.resolve(process.cwd(), raw));
+      candidates.push(path.resolve(process.cwd(), '..', '..', raw));
+      candidates.push(path.resolve(process.cwd(), '..', '..', '..', raw));
+      candidates.push(path.resolve(process.cwd(), '..', '..', '..', '..', raw));
+      candidates.push(path.resolve(process.cwd(), '..', '..', '..', '..', '..', raw));
+    }
+  }
+  for (const fallback of fallbackFiles) {
+    candidates.push(path.resolve(process.cwd(), fallback));
+    candidates.push(path.resolve(process.cwd(), '..', '..', fallback));
+    candidates.push(path.resolve(process.cwd(), '..', '..', '..', fallback));
+    candidates.push(path.resolve(process.cwd(), '..', '..', '..', '..', fallback));
+    candidates.push(path.resolve(process.cwd(), '..', '..', '..', '..', '..', fallback));
+  }
+  for (const candidate of candidates) {
+    if (existsSync(candidate)) {
+      return candidate;
+    }
+  }
+  return undefined;
+}
 
 export async function POST(request: NextRequest) {
   try {
@@ -24,9 +99,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ success: false, error: '无效的请求数据' }, { status: 400 });
     }
 
-    const { orderId, paymentMethod, amount } = body;
+    const { orderId, orderNo, paymentMethod, channel } = body;
+    const resolvedPaymentMethod = paymentMethod || channel;
 
-    if (!orderId || !paymentMethod || !amount) {
+    if ((!orderId && !orderNo) || !resolvedPaymentMethod) {
       return NextResponse.json(
         { success: false, error: '参数不完整' },
         { status: 400 }
@@ -35,7 +111,14 @@ export async function POST(request: NextRequest) {
 
     // 查找订单
     const order = await prisma.order.findUnique({
-      where: { id: orderId }
+      where: orderId ? { id: orderId } : { orderNo },
+      include: {
+        user: {
+          select: {
+            email: true,
+          },
+        },
+      },
     });
 
     if (!order) {
@@ -58,34 +141,80 @@ export async function POST(request: NextRequest) {
 
     // 生成支付二维码
     let qrCodeUrl = '';
+    let qrText = '';
     
-    if (paymentMethod === 'alipay') {
+    if (resolvedPaymentMethod === 'alipay') {
       // 检查配置是否存在
-      if (config.alipay.appId && config.alipay.privateKey) {
+      const hasConfiguredCertPaths = Boolean(
+        config.alipay.appCertPath?.trim() &&
+        config.alipay.alipayCertPath?.trim() &&
+        config.alipay.alipayRootCertPath?.trim()
+      );
+      const appCertPath = hasConfiguredCertPaths
+        ? resolveExistingPath(config.alipay.appCertPath, [
+            'appCertPublicKey_2021006128602915.crt',
+          ])
+        : undefined;
+      const alipayPublicCertPath = hasConfiguredCertPaths
+        ? resolveExistingPath(config.alipay.alipayCertPath, [
+            'alipayCertPublicKey_RSA2.crt',
+          ])
+        : undefined;
+      const alipayRootCertPath = hasConfiguredCertPaths
+        ? resolveExistingPath(config.alipay.alipayRootCertPath, [
+            'alipayRootCert.crt',
+          ])
+        : undefined;
+      const hasCertMode = hasConfiguredCertPaths && !!appCertPath && !!alipayPublicCertPath && !!alipayRootCertPath;
+      if (config.alipay.appId && (config.alipay.privateKey || hasCertMode)) {
         try {
           
           
           // Ensure private key is formatted correctly if needed, but SDK usually handles standard PEM
           // Cast nulls to undefined for optional fields to satisfy SDK types
-          const alipaySdk = new AlipaySdkConstructor({
-            appId: config.alipay.appId,
-            privateKey: config.alipay.privateKey,
-            alipayPublicKey: config.alipay.publicKey || undefined,
+          const appId = String(config.alipay.appId).trim();
+          const privateKey = normalizePem(config.alipay.privateKey);
+          const alipayPublicKey = normalizePem(config.alipay.publicKey);
+          const sdkOptions: Record<string, any> = {
+            appId,
             gateway: 'https://openapi.alipay.com/gateway.do',
-            timeout: 5000, // Add timeout to prevent hanging
-          });
+            timeout: 5000,
+          };
+          if (hasCertMode) {
+            sdkOptions.privateKey = privateKey;
+            sdkOptions.appCertPath = appCertPath;
+            sdkOptions.alipayPublicCertPath = alipayPublicCertPath;
+            sdkOptions.alipayRootCertPath = alipayRootCertPath;
+          } else {
+            if (!privateKey) {
+              throw new Error('alipay_private_key_missing');
+            }
+            sdkOptions.privateKey = privateKey;
+            sdkOptions.alipayPublicKey = alipayPublicKey;
+          }
+          const alipaySdk = new AlipaySdkConstructor(sdkOptions);
 
           // 调用支付宝统一下单接口 (alipay.trade.precreate)
-          
-          
-          // Using a timeout wrapper for the SDK call to prevent hanging requests
-          const sdkCall = alipaySdk.exec('alipay.trade.precreate', {
+          const amountNumber = Number(order.amount);
+          if (!Number.isFinite(amountNumber) || amountNumber <= 0) {
+            throw new Error(`invalid_order_amount:${order.amount}`);
+          }
+          const totalAmount = amountNumber.toFixed(2);
+          const subject = buildAlipaySubject(order.productName);
+          const payParams: Record<string, any> = {
             bizContent: {
-              out_trade_no: order.orderNo,
-              total_amount: order.amount.toString(),
-              subject: order.productName,
+              outTradeNo: order.orderNo,
+              totalAmount,
+              subject,
             },
-            notify_url: `${baseUrl}/api/payment/webhook/alipay`,
+          };
+          if (isPublicNotifyBaseUrl(baseUrl)) {
+            payParams.notify_url = `${baseUrl}/api/payment/webhook/alipay`;
+          }
+
+          // Using a timeout wrapper for the SDK call to prevent hanging requests
+          const sdkCall = alipaySdk.exec('alipay.trade.precreate', payParams, {
+            bizContentAutoSnakeCase: true,
           });
           
           // 10s timeout for the SDK call
@@ -99,7 +228,7 @@ export async function POST(request: NextRequest) {
           if (result && typeof result === 'object' && result.code === '10000') {
              // code 10000 is success for Alipay responses
              if (result.qr_code) {
-               qrCodeUrl = result.qr_code;
+               qrText = result.qr_code;
              } else {
                
                // Fallback or error? Usually alipay.trade.precreate returns qr_code on success.
@@ -109,14 +238,50 @@ export async function POST(request: NextRequest) {
              }
           } else if (result && result.qr_code) {
              // Some SDK versions might return the direct response object
-             qrCodeUrl = result.qr_code;
+             qrText = result.qr_code;
           } else {
              console.error('Alipay SDK error response:', result);
+             const errCode = result?.code || 'unknown_code';
+             const subCode = result?.sub_code || 'unknown_sub_code';
              const subMsg = result?.sub_msg || result?.msg || 'Unknown Alipay error';
-             throw new Error(`Alipay error: ${subMsg}`);
+             const normalizedSubCode = String(subCode || '').toUpperCase();
+             if (normalizedSubCode === 'ACQ.ACCESS_FORBIDDEN') {
+               // Website payment fallback: generate a PC web pay URL instead of failing on precreate-only restrictions.
+              const pagePayParams: Record<string, any> = {
+                bizContent: {
+                  outTradeNo: order.orderNo,
+                  totalAmount,
+                  subject,
+                  productCode: 'FAST_INSTANT_TRADE_PAY',
+                },
+              };
+              if (isPublicNotifyBaseUrl(baseUrl)) {
+                pagePayParams.notify_url = `${baseUrl}/api/payment/webhook/alipay`;
+                pagePayParams.return_url = `${baseUrl}/payment?orderNo=${encodeURIComponent(order.orderNo)}&paid=1`;
+              }
+               const pagePayResult: any = await alipaySdk.exec(
+                 'alipay.trade.page.pay',
+                 pagePayParams,
+                 { method: 'GET' }
+               );
+               if (typeof pagePayResult === 'string' && /^https?:\/\//i.test(pagePayResult)) {
+                 qrText = pagePayResult;
+               } else {
+                 throw new Error('Alipay page pay fallback failed');
+               }
+             } else {
+             const raw = (() => {
+               try {
+                 return JSON.stringify(result).slice(0, 260);
+               } catch {
+                 return 'raw_unserializable';
+               }
+             })();
+             throw new Error(`Alipay error: ${errCode}/${subCode} ${subMsg} raw=${raw}`);
+             }
           }
 
-          if (!qrCodeUrl) {
+          if (!qrText) {
              throw new Error('Failed to retrieve QR code from Alipay response');
           }
 
@@ -130,11 +295,15 @@ export async function POST(request: NextRequest) {
       } else {
         // 无配置，使用模拟/占位符
         
-        qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=alipay://pay?orderNo=${order.orderNo}&amount=${order.amount}`;
+        return NextResponse.json(
+          { success: false, error: 'alipay_not_configured' },
+          { status: 400 }
+        );
       }
       
-    } else if (paymentMethod === 'wechat') {
-      if (config.wechat.appId && config.wechat.mchId && config.wechat.apiKeyV3 && config.wechat.certPath && config.wechat.keyPath) {
+    } else if (resolvedPaymentMethod === 'wechat') {
+      const wechatPayAppId = config.wechat.payAppId || config.wechat.appId;
+      if (wechatPayAppId && config.wechat.mchId && config.wechat.apiKeyV3 && config.wechat.certPath && config.wechat.keyPath) {
         try {
           const certPath = path.isAbsolute(config.wechat.certPath) ? config.wechat.certPath : path.resolve(process.cwd(), config.wechat.certPath);
           const keyPath = path.isAbsolute(config.wechat.keyPath) ? config.wechat.keyPath : path.resolve(process.cwd(), config.wechat.keyPath);
@@ -144,7 +313,7 @@ export async function POST(request: NextRequest) {
           const total = Math.max(1, Math.round(Number(order.amount) * 100));
           const payload = {
             mchid: config.wechat.mchId,
-            appid: config.wechat.appId,
+            appid: wechatPayAppId,
             out_trade_no: order.orderNo,
             description: order.productName,
             notify_url: `${baseUrl}/api/payment/webhook/wechat`,
@@ -177,7 +346,7 @@ ${bodyStr}
             const msg = result?.message || result?.code || 'WeChat Pay error';
             throw new Error(msg);
           }
-          qrCodeUrl = result.code_url;
+          qrText = result.code_url;
         } catch (wechatError: any) {
           console.error('WeChat Pay integration error:', wechatError);
           return NextResponse.json(
@@ -186,16 +355,39 @@ ${bodyStr}
           );
         }
       } else {
-        qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=wxpay://pay?orderNo=${order.orderNo}&amount=${order.amount}`;
+        qrText = `wxpay://pay?orderNo=${order.orderNo}&amount=${order.amount}`;
       }
+    }
+
+    if (!qrText && !qrCodeUrl) {
+      return NextResponse.json(
+        { success: false, error: 'unsupported_payment_method' },
+        { status: 400 }
+      );
+    }
+
+    if (!qrCodeUrl) {
+      qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=260x260&data=${encodeURIComponent(qrText)}`;
     }
 
     return NextResponse.json({
       success: true,
       qrCodeUrl,
+      qr_text: qrText || qrCodeUrl,
       orderId: order.id,
       orderNo: order.orderNo,
-      amount: order.amount
+      amount: order.amount,
+      paymentMethod: resolvedPaymentMethod,
+      order: {
+        id: order.id,
+        orderNo: order.orderNo,
+        productName: order.productName,
+        amount: order.amount,
+        status: order.status,
+        createdAt: order.createdAt,
+        paymentMethod: resolvedPaymentMethod,
+        email: order.user?.email || null,
+      }
     });
 
   } catch (error) {

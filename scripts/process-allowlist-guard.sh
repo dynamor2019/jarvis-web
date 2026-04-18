@@ -1,4 +1,7 @@
 #!/usr/bin/env bash
+
+# Policy: Do not modify directly. Explain reason before edits. Last confirm reason: 用户确认启用进程白名单守护并记录拦截日志
+
 set -euo pipefail
 
 # Strict process allowlist guard for jarvis-web deployments.

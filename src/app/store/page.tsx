@@ -10,8 +10,8 @@
 // [/CodeGuard Feature Index]
 
 // [CodeGuard Protection]
-// Feature: align codeguard baseline for webview talent catalog fix
-// Version: 9
+// Feature: Fix TS typing for WebView chrome and onOpenPay payload fields
+// Version: 10
 // P26-03-31 08:51:44
 // Policy: Do not modify directly. Explain reason before edits. Last confirm reason: hide duplicate badge when popular to prevent overlap
 
@@ -24,6 +24,27 @@ import { FormattedMessage, useIntl } from 'react-intl';
 import { Bridge, onMessage } from '@/lib/storeBridge';
 import QRCode from 'qrcode';
 import { useSearchParams } from 'next/navigation';
+
+type PayOpenPayload = {
+  paymentId: string;
+  title: string;
+  amount: number;
+  tokens?: number;
+  pluginId?: string;
+  modelType?: string;
+  usageDurationLabel?: string;
+  durationMonths?: number;
+};
+
+type WindowWithChromeWebview = Window & typeof globalThis & {
+  chrome?: {
+    webview?: unknown;
+  };
+};
+
+function hasDesktopWebView(): boolean {
+  return typeof window !== 'undefined' && !!(window as WindowWithChromeWebview).chrome?.webview;
+}
 
 
 export default function StorePage() {
@@ -156,7 +177,7 @@ export function Store({ enableMock = false, initialTab = 'subscription' }: { ena
   const isZhLocale = (intl.locale || '').toLowerCase().startsWith('zh');
   const [activeTab, setActiveTab] = useState<'plugins' | 'lifetime' | 'subscription' | 'tokens' | 'purchased' | 'models' | 'talent'>(initialTab);
   const [payOpen, setPayOpen] = useState(false);
-  const [payInfo, setPayInfo] = useState<{ paymentId: string; title: string; amount: number; tokens?: number; pluginId?: string; modelType?: string; usageDurationLabel?: string; durationMonths?: number } | null>(null);
+  const [payInfo, setPayInfo] = useState<PayOpenPayload | null>(null);
   const [isInWordPlugin, setIsInWordPlugin] = useState(false);
   const [channel, setChannel] = useState<'mock'|'wechat'|'alipay'>(enableMock ? 'mock' : 'wechat')
   const [skillCatalog, setSkillCatalog] = useState<Array<{ id?: string; name: string; nameEn?: string; url: string; description: string; descriptionEn?: string }>>([]);
@@ -171,8 +192,7 @@ export function Store({ enableMock = false, initialTab = 'subscription' }: { ena
   // 检测是否在 Word 插件的 WebView 中运行
   useEffect(() => {
     const checkEnvironment = () => {
-      // @ts-ignore
-      if (window.chrome?.webview || (window as any).jarvisBridge) setIsInWordPlugin(true);
+      if (hasDesktopWebView() || (window as any).jarvisBridge) setIsInWordPlugin(true);
       Bridge.ready(['purchase', 'download', 'postMessage']);
     };
     checkEnvironment();
@@ -237,7 +257,7 @@ export function Store({ enableMock = false, initialTab = 'subscription' }: { ena
   }, [intl]);
 
   useEffect(() => {
-    const isDesktopWebView = typeof window !== 'undefined' && !!window.chrome?.webview;
+    const isDesktopWebView = hasDesktopWebView();
     const hasLocalBridge = typeof window !== 'undefined' && !!(window as any).jarvisBridge?.sendMessage;
     if (!isDesktopWebView || hasLocalBridge) {
       return;
@@ -1712,7 +1732,7 @@ type TokenPackCardProps = {
   bonus: number;
   desc: string;
   popular?: boolean;
-  onOpenPay?: (p: { paymentId: string; title: string; amount: number; tokens?: number }) => void;
+  onOpenPay?: (p: PayOpenPayload) => void;
   channel?: 'mock'|'wechat'|'alipay';
 };
 

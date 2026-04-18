@@ -1,1 +1,0 @@
-{"version":3,"sources":["../../../../src/app/store/mock/page.tsx"],"sourcesContent":["'use client';\r\n\r\nimport { Store } from '../page';\r\n\r\nexport default function MockStorePage() {\r\n  return <Store enableMock={true} />;\r\n}\r\n"],"names":[],"mappings":"ifAEA,EAAA,EAAA,CAAA,CAAA,QAEe,SAAS,IACtB,MAAO,CAAA,EAAA,EAAA,GAAA,EAAC,EAAA,KAAK,CAAA,CAAC,YAAY,GAC5B"}

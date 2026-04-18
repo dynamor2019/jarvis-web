@@ -84,7 +84,12 @@ export default function AdminSettingsPage() {
             });
 
             if (response.status === 401 || response.status === 403) {
-                router.push('/login');
+                setLoading(false);
+                if (typeof window !== 'undefined') {
+                    window.location.href = '/login';
+                } else {
+                    router.push('/login');
+                }
                 return;
             }
 
@@ -127,7 +132,12 @@ export default function AdminSettingsPage() {
     useEffect(() => {
         const token = localStorage.getItem('token');
         if (!token) {
-            router.push('/login');
+            setLoading(false);
+            if (typeof window !== 'undefined') {
+                window.location.href = '/login';
+            } else {
+                router.push('/login');
+            }
             return;
         }
         fetchSettings(token);
