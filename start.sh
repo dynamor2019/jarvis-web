@@ -16,6 +16,74 @@ set -e
 
 echo ">>> Starting Jarvis Web Setup..."
 
+# Minimal runtime mode: force single DB path and start with PM2/node.
+PM2_CMD=""
+if command -v pm2 >/dev/null 2>&1; then
+    PM2_CMD="pm2"
+elif [ -f "./node_modules/.bin/pm2" ]; then
+    PM2_CMD="./node_modules/.bin/pm2"
+fi
+
+if [ -z "$PM2_CMD" ]; then
+    echo "CRITICAL: pm2 not found. Install pm2 before running start.sh."
+    exit 1
+fi
+
+SERVER_FILE=""
+if [ -f "server.js" ]; then
+    SERVER_FILE="server.js"
+elif [ -f ".next_build/standalone/server.js" ]; then
+    SERVER_FILE=".next_build/standalone/server.js"
+else
+    echo "CRITICAL: server.js not found in current dir or .next_build/standalone."
+    exit 1
+fi
+
+SERVER_DIR=$(dirname "$SERVER_FILE")
+SERVER_SCRIPT=$(basename "$SERVER_FILE")
+SERVER_DIR_ABS="$(cd "$SERVER_DIR" && pwd)"
+SERVER_ABS="$SERVER_DIR_ABS/$SERVER_SCRIPT"
+
+export NODE_ENV=production
+export HOSTNAME="${HOSTNAME:-0.0.0.0}"
+export PORT="${PORT:-3010}"
+export DATABASE_URL="${DATABASE_URL:-file:/www/wwwroot/jarvis-web/prisma/jarvis.db}"
+
+# Normalize env files to the same DB path to avoid runtime drift.
+for env_file in ".env" ".env.production"; do
+    if [ -f "$env_file" ]; then
+        if grep -q '^DATABASE_URL=' "$env_file"; then
+            sed -i 's#^DATABASE_URL=.*#DATABASE_URL=file:/www/wwwroot/jarvis-web/prisma/jarvis.db#g' "$env_file"
+        else
+            echo 'DATABASE_URL=file:/www/wwwroot/jarvis-web/prisma/jarvis.db' >> "$env_file"
+        fi
+    fi
+done
+
+# Compatibility path for legacy relative sqlite path (file:./jarvis.db).
+if [ -f "/www/wwwroot/jarvis-web/prisma/jarvis.db" ]; then
+    rm -f "/www/wwwroot/jarvis-web/jarvis.db"
+    ln -s "/www/wwwroot/jarvis-web/prisma/jarvis.db" "/www/wwwroot/jarvis-web/jarvis.db" 2>/dev/null || cp -f "/www/wwwroot/jarvis-web/prisma/jarvis.db" "/www/wwwroot/jarvis-web/jarvis.db"
+fi
+
+# Best-effort permission fix for sqlite runtime access.
+chown -R www:www "/www/wwwroot/jarvis-web/prisma" 2>/dev/null || true
+chmod 755 "/www/wwwroot/jarvis-web/prisma" 2>/dev/null || true
+chmod 664 "/www/wwwroot/jarvis-web/prisma/jarvis.db" 2>/dev/null || true
+
+# Clear stale listeners/process state before restart.
+if command -v fuser >/dev/null 2>&1; then
+    fuser -k "${PORT}/tcp" >/dev/null 2>&1 || true
+    fuser -k 3000/tcp >/dev/null 2>&1 || true
+fi
+
+echo "Starting PM2 app with DATABASE_URL=${DATABASE_URL}, PORT=${PORT}"
+$PM2_CMD delete jarvis-web >/dev/null 2>&1 || true
+$PM2_CMD start "$SERVER_ABS" --name jarvis-web --cwd "$SERVER_DIR_ABS" --interpreter node --update-env -f
+$PM2_CMD save
+echo "PM2 started: jarvis-web"
+exit 0
+
 # Function to check whether a TCP port is listening
 check_port() {
     local port="${1:-3000}"

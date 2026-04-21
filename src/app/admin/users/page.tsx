@@ -460,7 +460,7 @@ export default function UsersManagementPage() {
               onClick={() => { setSelectedUser(info.row.original); setShowPwdModal(true); }}
               className="text-amber-600 hover:text-amber-900 text-sm"
             >
-              <FormattedMessage id="admin.users.action.set_pwd" defaultMessage="设初始密码" />
+              <FormattedMessage id="admin.users.action.set_pwd" defaultMessage="重设初始密码" />
             </button>
           </div>
         ),
@@ -730,7 +730,7 @@ export default function UsersManagementPage() {
         <SetPasswordModal
           user={selectedUser}
           onClose={() => { setShowPwdModal(false); setSelectedUser(null); }}
-          onSave={(pwd) => handleUpdateUser(selectedUser.id, { password: pwd })}
+          onSave={() => handleUpdateUser(selectedUser.id, { phone: selectedUser.phone, resetPasswordByPhone: true })}
         />
       )}
     </div>
@@ -1125,54 +1125,35 @@ function EditUserModal({
   );
 }
 
-function SetPasswordModal({ user, onClose, onSave }: { user: User; onClose: () => void; onSave: (password: string) => void }) {
-  const intl = useIntl();
-  const [pwd, setPwd] = useState('')
-  const [confirmPwd, setConfirmPwd] = useState('')
-  const [stepConfirm, setStepConfirm] = useState(false)
-  const hasUpper = /[A-Z]/.test(pwd)
-  const hasLower = /[a-z]/.test(pwd)
-  const hasDigit = /\d/.test(pwd)
-  const longEnough = pwd.length >= 8
-  const match = pwd && confirmPwd && pwd === confirmPwd
-  const ok = hasUpper && hasLower && hasDigit && longEnough && match
+function SetPasswordModal({ user, onClose, onSave }: { user: User; onClose: () => void; onSave: () => void }) {
+  const phoneDigits = String(user.phone || '').replace(/\D/g, '');
+  const canReset = phoneDigits.length >= 6;
+  const defaultPassword = canReset ? phoneDigits.slice(-6) : '';
+  const [stepConfirm, setStepConfirm] = useState(false);
   const submit = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!ok) return
-    if (!stepConfirm) { setStepConfirm(true); return }
-    onSave(pwd)
-    onClose()
-  }
+    e.preventDefault();
+    if (!canReset) return;
+    if (!stepConfirm) {
+      setStepConfirm(true);
+      return;
+    }
+    onSave();
+    onClose();
+  };
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white rounded-xl p-8 max-w-md w-full">
-        <h3 className="text-xl font-bold mb-4"><FormattedMessage id="admin.users.pwd.title" defaultMessage="设置初始密码" /></h3>
+        <h3 className="text-xl font-bold mb-4"><FormattedMessage id="admin.users.pwd.title" defaultMessage="重设初始密码" /></h3>
         <form onSubmit={submit} className="space-y-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1"><FormattedMessage id="admin.users.pwd.new_pwd" defaultMessage="新密码" /></label>
-            <input 
-              type="password" 
-              value={pwd} 
-              onChange={e => setPwd(e.target.value)} 
-              className="w-full px-4 py-2 border rounded-lg" 
-              placeholder={intl.formatMessage({ id: 'admin.users.pwd.placeholder', defaultMessage: '至少8位，含大小写与数字' })} 
-            />
-            <div className="mt-2 text-xs text-gray-600 space-y-1">
-              <div className={longEnough ? 'text-green-600' : 'text-gray-500'}><FormattedMessage id="admin.users.pwd.rule.length" defaultMessage="• 长度≥8" /></div>
-              <div className={hasUpper ? 'text-green-600' : 'text-gray-500'}><FormattedMessage id="admin.users.pwd.rule.upper" defaultMessage="• 包含大写字母" /></div>
-              <div className={hasLower ? 'text-green-600' : 'text-gray-500'}><FormattedMessage id="admin.users.pwd.rule.lower" defaultMessage="• 包含小写字母" /></div>
-              <div className={hasDigit ? 'text-green-600' : 'text-gray-500'}><FormattedMessage id="admin.users.pwd.rule.digit" defaultMessage="• 包含数字" /></div>
-            </div>
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1"><FormattedMessage id="admin.users.pwd.confirm_pwd" defaultMessage="确认密码" /></label>
-            <input type="password" value={confirmPwd} onChange={e => setConfirmPwd(e.target.value)} className="w-full px-4 py-2 border rounded-lg" />
-            {!match && confirmPwd && <div className="mt-1 text-xs text-red-600"><FormattedMessage id="admin.users.pwd.error.match" defaultMessage="两次输入不一致" /></div>}
+          <div className="text-sm text-gray-700">
+            <div>将把该用户密码重设为手机号后六位。</div>
+            <div className="mt-2 text-gray-500">手机号：{user.phone || '未设置'}</div>
+            <div className="mt-1 text-amber-700">初始密码：{canReset ? defaultPassword : '手机号不足6位，无法重设'}</div>
           </div>
           {stepConfirm && <div className="p-3 bg-amber-50 border border-amber-200 rounded text-sm text-amber-800"><FormattedMessage id="admin.users.pwd.confirm_hint" defaultMessage="请再次点击“确认设置”以完成密码重置" /></div>}
           <div className="flex gap-3">
             <button type="button" onClick={onClose} className="flex-1 px-4 py-2 border rounded-lg"><FormattedMessage id="admin.users.btn.cancel" defaultMessage="取消" /></button>
-            <button type="submit" disabled={!ok} className="flex-1 px-4 py-2 bg-amber-600 text-white rounded-lg disabled:opacity-50">
+            <button type="submit" disabled={!canReset} className="flex-1 px-4 py-2 bg-amber-600 text-white rounded-lg disabled:opacity-50">
               {stepConfirm ? <FormattedMessage id="admin.users.pwd.btn.confirm" defaultMessage="确认设置" /> : <FormattedMessage id="admin.users.pwd.btn.set" defaultMessage="设置密码" />}
             </button>
           </div>

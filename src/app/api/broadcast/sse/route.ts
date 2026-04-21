@@ -1,3 +1,11 @@
+// [CodeGuard Feature Index]
+// - Imports and shared state -> line 9
+// - Broadcast data read/write helpers -> line 18
+// - Hourly scheduler and push logic -> line 52
+// - SSE GET handler and client lifecycle -> line 184
+// - CORS preflight handler -> line 323
+// [/CodeGuard Feature Index]
+
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 import { promises as fs } from 'fs';
@@ -6,7 +14,7 @@ import { connectedClients, userConnections, addClient, removeClient } from '../c
 
 const BROADCASTS_FILE = path.join(process.cwd(), 'data', 'broadcasts.json');
 let hourlyBroadcastInterval: NodeJS.Timeout | null = null;
-const HEARTBEAT_INTERVAL = 10 * 60 * 1000; // 10分钟发送一次心跳
+const HEARTBEAT_INTERVAL = 15 * 1000; // 15秒发送一次心跳，避免上游空闲超时断开
 
 // 确保数据目录存在
 async function ensureDataDir() {
@@ -266,7 +274,7 @@ export async function GET(request: NextRequest) {
 
         
 
-        // 定期发送心跳，用于统计连接数
+        // 定期发送心跳，用于保持 SSE 连接活跃并统计连接数
         const heartbeatInterval = setInterval(() => {
           try {
             const client = connectedClients.get(clientId);
@@ -276,6 +284,10 @@ export async function GET(request: NextRequest) {
               return;
             }
             
+            // SSE 注释心跳，兼容部分代理对注释行的长连接保活策略
+            const pingComment = encoder.encode(`: ping ${Date.now()}\n\n`);
+            client.response.enqueue(pingComment);
+
             const heartbeat = encoder.encode(`data: ${JSON.stringify({ 
               type: 'heartbeat',
               timestamp: Date.now(),
@@ -288,12 +300,15 @@ export async function GET(request: NextRequest) {
             clearInterval(heartbeatInterval);
             removeClient(clientId);
           }
-        }, HEARTBEAT_INTERVAL); // 每10分钟发送一次心跳
+        }, HEARTBEAT_INTERVAL);
 
         // 处理客户端断开连接
         const cleanup = () => {
           clearInterval(heartbeatInterval);
           removeClient(clientId);
+          try {
+            controller.close();
+          } catch {}
           
         };
 

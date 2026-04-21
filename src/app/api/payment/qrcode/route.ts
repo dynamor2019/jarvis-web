@@ -152,17 +152,17 @@ export async function POST(request: NextRequest) {
       );
       const appCertPath = hasConfiguredCertPaths
         ? resolveExistingPath(config.alipay.appCertPath, [
-            'appCertPublicKey_2021006128602915.crt',
+            'certs/alipay/appCertPublicKey_2021006128602915.crt',
           ])
         : undefined;
       const alipayPublicCertPath = hasConfiguredCertPaths
         ? resolveExistingPath(config.alipay.alipayCertPath, [
-            'alipayCertPublicKey_RSA2.crt',
+            'certs/alipay/alipayCertPublicKey_RSA2.crt',
           ])
         : undefined;
       const alipayRootCertPath = hasConfiguredCertPaths
         ? resolveExistingPath(config.alipay.alipayRootCertPath, [
-            'alipayRootCert.crt',
+            'certs/alipay/alipayRootCert.crt',
           ])
         : undefined;
       const hasCertMode = hasConfiguredCertPaths && !!appCertPath && !!alipayPublicCertPath && !!alipayRootCertPath;

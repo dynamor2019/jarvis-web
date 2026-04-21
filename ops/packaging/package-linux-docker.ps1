@@ -1,3 +1,5 @@
+// Policy: Do not modify directly. Explain reason before edits. Last confirm reason: docker packaging script copies certs/alipay cert files
+
 param(
     [string]$NodeImage = "node:20-bookworm",
     [string]$WorkDir = "/workspace"
@@ -73,7 +75,7 @@ for path in public prisma data plugins certs; do
   fi
 done
 
-for f in .env.production .env start.sh nginx.conf.example alipayCertPublicKey_RSA2.crt alipayPublicKey_RSA2.txt alipayRootCert.crt appCertPublicKey_2021006128602915.crt; do
+for f in .env.production .env start.sh nginx.conf.example certs/alipay/alipayCertPublicKey_RSA2.crt certs/alipay/alipayPublicKey_RSA2.txt certs/alipay/alipayRootCert.crt certs/alipay/appCertPublicKey_2021006128602915.crt; do
   if [ -f "$f" ]; then
     cp -a "$f" "/tmp/jarvis-release/$f"
   fi

@@ -8,6 +8,42 @@ import { Prisma } from '@prisma/client';
 import { verifyToken } from '@/lib/auth';
 import { enqueueUserSyncTask } from '@/lib/userSyncQueue';
 
+function normalizeEducationValue(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const v = String(value).trim();
+  const map: Record<string, string> = {
+    '高中': 'high_school',
+    '本科': 'bachelor',
+    '硕士': 'master',
+    '˶ʿ': 'master',
+    '博士': 'doctor',
+    '其他': 'other',
+    'רҵ/ְҵ': '',
+  };
+  const normalized = map[v] !== undefined ? map[v] : v;
+  const allowed = new Set(['high_school', 'bachelor', 'master', 'doctor', 'other']);
+  return allowed.has(normalized) ? normalized : null;
+}
+
+function normalizeGenderValue(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const v = String(value).trim();
+  const map: Record<string, string> = {
+    '男': 'male',
+    '女': 'female',
+    'Ů': 'female',
+    '其他': 'other',
+  };
+  return map[v] || v;
+}
+
+function normalizeProfessionValue(value: string | null | undefined): string | null {
+  if (!value) return null;
+  const v = String(value).trim();
+  if (v === 'רҵ/ְҵ') return null;
+  return v;
+}
+
 // 获取所有用户列表（管理员）
 export async function GET(request: NextRequest) {
   try {
@@ -30,6 +66,28 @@ export async function GET(request: NextRequest) {
     if (!admin || admin.role !== 'admin') {
       return NextResponse.json({ error: '权限不足' }, { status: 403 });
     }
+
+    // 自动修复已知乱码/旧值（不影响主流程）
+    try {
+      await Promise.all([
+        prisma.user.updateMany({
+          where: { education: '˶ʿ' },
+          data: { education: 'master' },
+        }),
+        prisma.user.updateMany({
+          where: { education: 'רҵ/ְҵ' },
+          data: { education: null },
+        }),
+        prisma.user.updateMany({
+          where: { gender: 'Ů' },
+          data: { gender: 'female' },
+        }),
+        prisma.user.updateMany({
+          where: { profession: 'רҵ/ְҵ' },
+          data: { profession: null },
+        }),
+      ]);
+    } catch {}
 
     // 获取查询参数
     const { searchParams } = new URL(request.url);
@@ -93,8 +151,15 @@ export async function GET(request: NextRequest) {
       prisma.user.count({ where }),
     ]);
 
+    const normalizedUsers = users.map((user) => ({
+      ...user,
+      education: normalizeEducationValue(user.education),
+      gender: normalizeGenderValue(user.gender),
+      profession: normalizeProfessionValue(user.profession),
+    }));
+
     return NextResponse.json({
-      users,
+      users: normalizedUsers,
       pagination: {
         page,
         limit,
@@ -132,7 +197,7 @@ export async function PUT(request: NextRequest) {
     const { 
       userId, name, role, balance, tokenBalance, trafficTokenBalance, subscriptionTokenBalance, licenseType, subscriptionEnd, isActive,
       userType, age, gender, profession, industry, education,
-      province, city, phone, tags, source, password
+      province, city, phone, tags, source, password, resetPasswordByPhone
     } = body;
 
     if (!userId) {
@@ -178,10 +243,10 @@ export async function PUT(request: NextRequest) {
       ...(isActive !== undefined && { isActive }),
       ...(userType !== undefined && { userType }),
       ...(age !== undefined && { age: age ? parseInt(age) : null }),
-      ...(gender !== undefined && { gender: gender || null }),
-      ...(profession !== undefined && { profession: profession || null }),
+      ...(gender !== undefined && { gender: normalizeGenderValue(gender) || null }),
+      ...(profession !== undefined && { profession: normalizeProfessionValue(profession) || null }),
       ...(industry !== undefined && { industry: industry || null }),
-      ...(education !== undefined && { education: education || null }),
+      ...(education !== undefined && { education: normalizeEducationValue(education) || null }),
       ...(province !== undefined && { province: province || null }),
       ...(city !== undefined && { city: city || null }),
       ...(phone !== undefined && { phone: phone || null }),
@@ -192,6 +257,17 @@ export async function PUT(request: NextRequest) {
     if (password && typeof password === 'string' && password.length >= 6) {
       const { hashPassword } = await import('@/lib/auth');
       data.password = await hashPassword(password);
+    } else if (resetPasswordByPhone === true) {
+      const phoneDigits = String(phone ?? '').replace(/\D/g, '');
+      if (phoneDigits.length < 6) {
+        return NextResponse.json(
+          { success: false, error: '手机号不足6位，无法重设初始密码' },
+          { status: 400 }
+        );
+      }
+      const defaultPwd = phoneDigits.slice(-6);
+      const { hashPassword } = await import('@/lib/auth');
+      data.password = await hashPassword(defaultPwd);
     }
 
     const updatedUser = await prisma.user.update({

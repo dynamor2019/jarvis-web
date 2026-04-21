@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "dev": "next dev -p 3010",
-    "build": "next build",
+    "build": "node -e \"const fs=require('fs'),path=require('path'),cp=require('child_process');fs.rmSync('.next_build',{recursive:true,force:true});const u=process.env.DATABASE_URL||'file:./prisma/jarvis.db';if(u.startsWith('file:./')){process.env.DATABASE_URL='file:'+path.resolve(u.slice(5));}const r=cp.spawnSync(process.platform==='win32'?'next.cmd':'next',['build'],{stdio:'inherit',env:process.env,shell:true});process.exit(r.status??1);\"",
     "start": "node .next_build/standalone/jarvis-web/scripts/run-standalone.js",
     "lint": "eslint"
   },
@@ -18,13 +18,11 @@
     "echarts": "^6.0.0",
     "jsonwebtoken": "^9.0.2",
     "next": "16.0.10",
-    "next-auth": "^4.24.13",
     "nodemailer": "^7.0.11",
     "qrcode": "^1.5.4",
     "react": "19.2.1",
     "react-dom": "19.2.1",
-    "react-intl": "^7.1.14",
-    "wechatpay-axios-plugin": "^0.9.6"
+    "react-intl": "^7.1.14"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",

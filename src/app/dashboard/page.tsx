@@ -697,7 +697,12 @@ function ProfileTab({ user, onUpdate }: { user: User; onUpdate: (token: string) 
                         </div>
 
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2"><FormattedMessage id="dashboard.profile.phone" defaultMessage="手机号" /></label>
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                <FormattedMessage id="dashboard.profile.phone" defaultMessage="手机号" />
+                                <span className="text-red-500 ml-1">
+                                    <FormattedMessage id="dashboard.profile.phone_pwd_hint" defaultMessage="(管理员设置初始密码为手机号后六位)" />
+                                </span>
+                            </label>
                             <input
                                 type="tel"
                                 value={formData.phone}

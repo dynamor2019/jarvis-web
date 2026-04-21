@@ -50,14 +50,14 @@
     ],
     "src/i18n/messages/fr-FR.json": [
       {
-        "version": 1,
-        "feature": "store_fr_copy_alignment",
-        "timestamp": "2026-04-14T18:53:38",
-        "hash": "078c860b05a6e17fb8b3ce74bdbb164b95f0ef16891598367b9b2e39700bf716",
-        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/fr-FR.json.7c473dcd6a30.v1.bak",
+        "version": 2,
+        "feature": "SyncCurrentState",
+        "timestamp": "2026-04-21T10:55:21",
+        "hash": "04fae048fb26a44bc398c68a38e5f4d0c564d6739c6e031b94be3419995bdbf4",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/fr-FR.json.7c473dcd6a30.v2.bak",
         "original_path": "C:/Jarvis/jarvis-web/src/i18n/messages/fr-FR.json",
         "file_key": "src/i18n/messages/fr-FR.json",
-        "reason": "Auto snapshot after confirm: align french store badge and bonus copy with english semantics"
+        "reason": "User requested admin-user text fixes"
       }
     ],
     "src/app/store/page.tsx": [
@@ -98,14 +98,86 @@
     ],
     "start.sh": [
       {
-        "version": 1,
-        "feature": "auto-start-process-guard",
-        "timestamp": "2026-04-16T14:40:56",
-        "hash": "85dd78009a10d1cd87b79d86aa1ede54cfe2166cc55cdb09ddd0e9594acb529c",
-        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/start.sh.65a5db1ae8f8.v1.bak",
+        "version": 2,
+        "feature": "pm2-minimal-start",
+        "timestamp": "2026-04-21T17:43:48",
+        "hash": "9a6ad759d372c68b084dfbd7a1eacb2bfcdfbde48bcb95e0c912ec0df2467018",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/start.sh.65a5db1ae8f8.v2.bak",
         "original_path": "C:/Jarvis/jarvis-web/start.sh",
         "file_key": "start.sh",
-        "reason": "Auto snapshot after confirm: 用户确认项目启动时自动拉起进程守护"
+        "reason": "Auto snapshot after confirm: accept previously applied minimal pm2 startup mode"
+      }
+    ],
+    ".env.local": [
+      {
+        "version": 1,
+        "feature": "alipay-certs-relocate",
+        "timestamp": "2026-04-21T16:08:30",
+        "hash": "9b2adc419c53366c2f8f663e8ba38526c432e97b48c9ed9fc3dc7ad6d927300c",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/.env.local.74dd9d08974a.v1.bak",
+        "original_path": "C:/Jarvis/jarvis-web/.env.local",
+        "file_key": ".env.local",
+        "reason": "Auto snapshot after confirm: move alipay cert env paths to certs/alipay"
+      }
+    ],
+    "src/app/api/payment/qrcode/route.ts": [
+      {
+        "version": 1,
+        "feature": "alipay-certs-relocate",
+        "timestamp": "2026-04-21T16:08:30",
+        "hash": "2d917185d467c59bccea78d6d0118d714549117314e13a0eaae50e7bb9c5a973",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/route.ts.33b1e2889e3f.v1.bak",
+        "original_path": "C:/Jarvis/jarvis-web/src/app/api/payment/qrcode/route.ts",
+        "file_key": "src/app/api/payment/qrcode/route.ts",
+        "reason": "Auto snapshot after confirm: update alipay cert fallback paths to certs/alipay"
+      }
+    ],
+    "ops/packaging/package-linux.sh": [
+      {
+        "version": 1,
+        "feature": "alipay-certs-relocate",
+        "timestamp": "2026-04-21T16:08:30",
+        "hash": "97c2adcbeae52b3fc7243e1032539203a9d2757ee1d95244835d8cc5a120beb3",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/package-linux.sh.d2dff368c915.v1.bak",
+        "original_path": "C:/Jarvis/jarvis-web/ops/packaging/package-linux.sh",
+        "file_key": "ops/packaging/package-linux.sh",
+        "reason": "Auto snapshot after confirm: linux package script copies certs/alipay cert files"
+      }
+    ],
+    "ops/packaging/pack-web.ps1": [
+      {
+        "version": 1,
+        "feature": "alipay-certs-relocate",
+        "timestamp": "2026-04-21T16:08:30",
+        "hash": "4021ca77f21c0ada9edf97a631cbcbead0778a0f9990c7c38d8fa65e534816b1",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/pack-web.ps1.3e1d56ba4272.v1.bak",
+        "original_path": "C:/Jarvis/jarvis-web/ops/packaging/pack-web.ps1",
+        "file_key": "ops/packaging/pack-web.ps1",
+        "reason": "Auto snapshot after confirm: package cert files from certs/alipay path"
+      }
+    ],
+    "ops/packaging/package-linux-docker.ps1": [
+      {
+        "version": 1,
+        "feature": "alipay-certs-relocate",
+        "timestamp": "2026-04-21T16:08:30",
+        "hash": "e2fd807cbad7a5b9a287daa136ac08f6b6f513f92f36dbab3ef54678c39a3148",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/package-linux-docker.ps1.6cd2ee0b92cb.v1.bak",
+        "original_path": "C:/Jarvis/jarvis-web/ops/packaging/package-linux-docker.ps1",
+        "file_key": "ops/packaging/package-linux-docker.ps1",
+        "reason": "Auto snapshot after confirm: docker packaging script copies certs/alipay cert files"
+      }
+    ],
+    "src/lib/prisma.ts": [
+      {
+        "version": 1,
+        "feature": "runtime-db-connect-stability",
+        "timestamp": "2026-04-21T16:45:13",
+        "hash": "9b699594aa831cfad4ed6835d755427b7e424a995981f96183165e69846f0bd4",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/prisma.ts.748dde6bfd01.v1.bak",
+        "original_path": "C:/Jarvis/jarvis-web/src/lib/prisma.ts",
+        "file_key": "src/lib/prisma.ts",
+        "reason": "Auto snapshot after confirm: force prisma datasource url to resolved absolute sqlite path for pm2 runtime"
       }
     ]
   },
@@ -114,11 +186,17 @@
     "src/app/api/auth/wechat/status/route.ts": 1,
     "src/app/login/page.tsx": 18,
     "src/components/Hero.tsx": 5,
-    "src/i18n/messages/fr-FR.json": 1,
+    "src/i18n/messages/fr-FR.json": 2,
     "src/app/store/page.tsx": 1,
     "scripts/process-allowlist-guard.sh": 1,
     "ops/process-allowlist-guard.service": 1,
-    "start.sh": 1
+    "start.sh": 2,
+    ".env.local": 1,
+    "src/app/api/payment/qrcode/route.ts": 1,
+    "ops/packaging/package-linux.sh": 1,
+    "ops/packaging/pack-web.ps1": 1,
+    "ops/packaging/package-linux-docker.ps1": 1,
+    "src/lib/prisma.ts": 1
   },
   "current_state": {
     "src/app/api/auth/wechat/callback/route.ts": {
@@ -162,12 +240,12 @@
       "reason": "Auto snapshot after confirm: hide duplicate badge when popular to prevent overlap"
     },
     "src/i18n/messages/fr-FR.json": {
-      "timestamp": "2026-04-14T18:53:38",
-      "feature": "store_fr_copy_alignment",
-      "hash": "078c860b05a6e17fb8b3ce74bdbb164b95f0ef16891598367b9b2e39700bf716",
+      "timestamp": "2026-04-21T10:55:21",
+      "feature": "SyncCurrentState",
+      "hash": "04fae048fb26a44bc398c68a38e5f4d0c564d6739c6e031b94be3419995bdbf4",
       "path": "C:/Jarvis/jarvis-web/src/i18n/messages/fr-FR.json",
       "source": "snapshot",
-      "reason": "Auto snapshot after confirm: align french store badge and bonus copy with english semantics"
+      "reason": "User requested admin-user text fixes"
     },
     "scripts/process-allowlist-guard.sh": {
       "timestamp": "2026-04-16T14:40:56",
@@ -178,12 +256,12 @@
       "reason": "Auto snapshot after confirm: 用户确认启用进程白名单守护并记录拦截日志"
     },
     "start.sh": {
-      "timestamp": "2026-04-16T14:40:56",
-      "feature": "auto-start-process-guard",
-      "hash": "85dd78009a10d1cd87b79d86aa1ede54cfe2166cc55cdb09ddd0e9594acb529c",
+      "timestamp": "2026-04-21T17:43:48",
+      "feature": "pm2-minimal-start",
+      "hash": "9a6ad759d372c68b084dfbd7a1eacb2bfcdfbde48bcb95e0c912ec0df2467018",
       "path": "C:/Jarvis/jarvis-web/start.sh",
       "source": "snapshot",
-      "reason": "Auto snapshot after confirm: 用户确认项目启动时自动拉起进程守护"
+      "reason": "Auto snapshot after confirm: accept previously applied minimal pm2 startup mode"
     },
     "ops/process-allowlist-guard.service": {
       "timestamp": "2026-04-16T14:40:56",
@@ -192,6 +270,54 @@
       "path": "C:/Jarvis/jarvis-web/ops/process-allowlist-guard.service",
       "source": "snapshot",
       "reason": "Auto snapshot after confirm: 用户确认需要守护进程系统服务模板"
+    },
+    ".env.local": {
+      "timestamp": "2026-04-21T16:08:30",
+      "feature": "alipay-certs-relocate",
+      "hash": "9b2adc419c53366c2f8f663e8ba38526c432e97b48c9ed9fc3dc7ad6d927300c",
+      "path": "C:/Jarvis/jarvis-web/.env.local",
+      "source": "snapshot",
+      "reason": "Auto snapshot after confirm: move alipay cert env paths to certs/alipay"
+    },
+    "src/app/api/payment/qrcode/route.ts": {
+      "timestamp": "2026-04-21T16:08:30",
+      "feature": "alipay-certs-relocate",
+      "hash": "2d917185d467c59bccea78d6d0118d714549117314e13a0eaae50e7bb9c5a973",
+      "path": "C:/Jarvis/jarvis-web/src/app/api/payment/qrcode/route.ts",
+      "source": "snapshot",
+      "reason": "Auto snapshot after confirm: update alipay cert fallback paths to certs/alipay"
+    },
+    "ops/packaging/pack-web.ps1": {
+      "timestamp": "2026-04-21T16:08:30",
+      "feature": "alipay-certs-relocate",
+      "hash": "4021ca77f21c0ada9edf97a631cbcbead0778a0f9990c7c38d8fa65e534816b1",
+      "path": "C:/Jarvis/jarvis-web/ops/packaging/pack-web.ps1",
+      "source": "snapshot",
+      "reason": "Auto snapshot after confirm: package cert files from certs/alipay path"
+    },
+    "ops/packaging/package-linux.sh": {
+      "timestamp": "2026-04-21T16:08:30",
+      "feature": "alipay-certs-relocate",
+      "hash": "97c2adcbeae52b3fc7243e1032539203a9d2757ee1d95244835d8cc5a120beb3",
+      "path": "C:/Jarvis/jarvis-web/ops/packaging/package-linux.sh",
+      "source": "snapshot",
+      "reason": "Auto snapshot after confirm: linux package script copies certs/alipay cert files"
+    },
+    "ops/packaging/package-linux-docker.ps1": {
+      "timestamp": "2026-04-21T16:08:30",
+      "feature": "alipay-certs-relocate",
+      "hash": "e2fd807cbad7a5b9a287daa136ac08f6b6f513f92f36dbab3ef54678c39a3148",
+      "path": "C:/Jarvis/jarvis-web/ops/packaging/package-linux-docker.ps1",
+      "source": "snapshot",
+      "reason": "Auto snapshot after confirm: docker packaging script copies certs/alipay cert files"
+    },
+    "src/lib/prisma.ts": {
+      "timestamp": "2026-04-21T16:45:13",
+      "feature": "runtime-db-connect-stability",
+      "hash": "9b699594aa831cfad4ed6835d755427b7e424a995981f96183165e69846f0bd4",
+      "path": "C:/Jarvis/jarvis-web/src/lib/prisma.ts",
+      "source": "snapshot",
+      "reason": "Auto snapshot after confirm: force prisma datasource url to resolved absolute sqlite path for pm2 runtime"
     }
   },
   "protected_features": {
@@ -215,7 +341,8 @@
       "hero_singleline_title_stats_visual_upgrade"
     ],
     "src/i18n/messages/fr-FR.json": [
-      "store_fr_copy_alignment"
+      "store_fr_copy_alignment",
+      "SyncCurrentState"
     ],
     "src/app/store/page.tsx": [
       "store_badge_layout_fix"
@@ -227,7 +354,26 @@
       "process-allowlist-service"
     ],
     "start.sh": [
-      "auto-start-process-guard"
+      "auto-start-process-guard",
+      "pm2-minimal-start"
+    ],
+    ".env.local": [
+      "alipay-certs-relocate"
+    ],
+    "src/app/api/payment/qrcode/route.ts": [
+      "alipay-certs-relocate"
+    ],
+    "ops/packaging/package-linux.sh": [
+      "alipay-certs-relocate"
+    ],
+    "ops/packaging/pack-web.ps1": [
+      "alipay-certs-relocate"
+    ],
+    "ops/packaging/package-linux-docker.ps1": [
+      "alipay-certs-relocate"
+    ],
+    "src/lib/prisma.ts": [
+      "runtime-db-connect-stability"
     ]
   },
   "index_state": {
@@ -400,49 +546,49 @@
     },
     "src/i18n/messages/fr-FR.json": {
       "source": "sidecar",
-      "updated_at": "2026-04-04T00:16:46",
-      "file_hash": "f5048e8a11194b762a01b1770a8fa05af8c4f9c3d1754469463a0d0eaf29d9fe",
-      "line_count": 1235,
+      "updated_at": "2026-04-21T10:55:34",
+      "file_hash": "04fae048fb26a44bc398c68a38e5f4d0c564d6739c6e031b94be3419995bdbf4",
+      "line_count": 1320,
       "entry_signatures": [
         {
-          "feature": "common.back",
-          "line": 2,
-          "signature": "14bb714facbc"
+          "feature": "Admin and user management strings",
+          "line": 1,
+          "signature": "10b51f082f85"
         },
         {
-          "feature": "features.action.view_comments",
-          "line": 178,
-          "signature": "c7e7e1f513cb"
+          "feature": "Feature/module management strings",
+          "line": 280,
+          "signature": "55512c588ec4"
         },
         {
-          "feature": "admin.features.filter.type",
-          "line": 354,
-          "signature": "449a2899c5bf"
+          "feature": "Broadcast and ticket strings",
+          "line": 430,
+          "signature": "1ce7c6ccef2f"
         },
         {
-          "feature": "admin.users.stats.admin",
-          "line": 530,
-          "signature": "67da6d8179e5"
+          "feature": "Auth and login strings",
+          "line": 560,
+          "signature": "1f0faeb64479"
         },
         {
-          "feature": "quick.special.0.title",
-          "line": 706,
-          "signature": "f6a0394e3882"
+          "feature": "Docs and help strings",
+          "line": 700,
+          "signature": "00bce30c95a9"
         },
         {
-          "feature": "docs.section.content-tools.sub.pdf-tools.feat.2",
-          "line": 882,
-          "signature": "c80188191f37"
+          "feature": "Dashboard profile strings",
+          "line": 900,
+          "signature": "54dde090bef9"
         },
         {
-          "feature": "payment.order_no",
-          "line": 1058,
-          "signature": "c0e695f5f022"
+          "feature": "Settings and API strings",
+          "line": 1080,
+          "signature": "a6fc6f989333"
         },
         {
-          "feature": "store.subscription.model_siliconflow",
-          "line": 1234,
-          "signature": "16ebd60edbe8"
+          "feature": "Store and subscription strings",
+          "line": 1180,
+          "signature": "264abe5f777e"
         }
       ]
     },

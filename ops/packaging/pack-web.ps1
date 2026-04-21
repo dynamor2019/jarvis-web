@@ -1,3 +1,5 @@
+// Policy: Do not modify directly. Explain reason before edits. Last confirm reason: package cert files from certs/alipay path
+
 # [CodeGuard Feature Index]
 # - Write-DefaultEnvTemplate -> line 60
 # - clean package artifacts -> line 97
@@ -88,6 +90,44 @@ function Copy-OptionalRuntimePath {
     }
 }
 
+function Remove-UnneededPrismaEngines {
+    param(
+        [Parameter(Mandatory = $true)]
+        [string]$NodeModulesRoot
+    )
+    $defaultRuntimeTargets = @("debian-openssl-3.0.x")
+    $runtimeTargetsRaw = $env:PRISMA_RUNTIME_TARGETS
+    $runtimeTargets = @()
+    if ([string]::IsNullOrWhiteSpace($runtimeTargetsRaw)) {
+        $runtimeTargets = $defaultRuntimeTargets
+    } else {
+        $runtimeTargets = $runtimeTargetsRaw.Split(",") | ForEach-Object { $_.Trim() } | Where-Object { $_ -ne "" }
+    }
+
+    $engineDir = Join-Path $NodeModulesRoot "@prisma\engines"
+    if (-not (Test-Path $engineDir)) {
+        Write-Warning "Prisma engines directory not found at $engineDir, skip pruning."
+        return
+    }
+
+    $keepNameSet = @{}
+    foreach ($target in $runtimeTargets) {
+        $keepNameSet["libquery_engine-$target.so.node"] = $true
+    }
+    # Keep Windows engine for local troubleshooting runs from extracted package.
+    $keepNameSet["query_engine-windows.dll.node"] = $true
+    $keepNameSet["libquery_engine-windows.dll.node"] = $true
+
+    $removedCount = 0
+    Get-ChildItem -Path $engineDir -File -Filter "libquery_engine-*.so.node" | ForEach-Object {
+        if (-not $keepNameSet.ContainsKey($_.Name)) {
+            Remove-Item -LiteralPath $_.FullName -Force
+            $removedCount++
+        }
+    }
+    Write-Host "Prisma engine prune complete. kept=$($runtimeTargets -join ',') removed=$removedCount"
+}
+
 # Clean dist
 if (Test-Path $distDir) { Remove-Item $distDir -Recurse -Force }
 New-Item -ItemType Directory -Path $distDir | Out-Null
@@ -146,6 +186,7 @@ if (Test-Path $nodeModulesDest) {
     Remove-Item $nodeModulesDest -Recurse -Force
 }
 Copy-Item -Path $nodeModulesSource -Destination $nodeModulesDest -Recurse -Force
+Remove-UnneededPrismaEngines -NodeModulesRoot $nodeModulesDest
 
 # Copy only runtime-required .next_build artifacts (avoid recursive standalone bloat)
 $runtimeNextBuildSource = Join-Path $packageSourceRoot ".next_build"
@@ -200,18 +241,22 @@ foreach ($runtimeDir in @("data", "plugins", "certs")) {
     }
 }
 
-# Copy payment certificate files kept at project root.
+# Copy payment certificate files from certs/alipay.
 $rootRuntimeFiles = @(
-    "alipayCertPublicKey_RSA2.crt",
-    "alipayPublicKey_RSA2.txt",
-    "alipayRootCert.crt",
-    "appCertPublicKey_2021006128602915.crt"
+    "certs/alipay/alipayCertPublicKey_RSA2.crt",
+    "certs/alipay/alipayPublicKey_RSA2.txt",
+    "certs/alipay/alipayRootCert.crt",
+    "certs/alipay/appCertPublicKey_2021006128602915.crt"
 )
 foreach ($runtimeFile in $rootRuntimeFiles) {
     $fromPath = Join-Path $source $runtimeFile
     $toPath = Join-Path $distDir $runtimeFile
     if (Test-Path $fromPath) {
         Write-Host "Copying $runtimeFile..."
+        $toParent = Split-Path -Parent $toPath
+        if (-not (Test-Path $toParent)) {
+            New-Item -ItemType Directory -Path $toParent -Force | Out-Null
+        }
         Copy-Item -Path $fromPath -Destination $toPath -Force
     }
 }
