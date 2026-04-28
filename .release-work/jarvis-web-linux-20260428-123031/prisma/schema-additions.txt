@@ -1,0 +1,27 @@
+/**
+ * 订阅配置模型
+ */
+
+model SubscriptionConfig {
+  id               String   @id @default(uuid())
+  userId           String
+  orderId          String   @unique
+  apiKeyId         String   @unique
+  configId         String   @unique
+  deviceFingerprint String
+  encryptedData    String // 加密配置数据
+  expiresAt        DateTime // 过期时间
+  downloadCount    Int      @default(0) // 下载次数
+  lastDownloadedAt DateTime? // 最后下载时间
+  isActive         Boolean  @default(true)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  order  Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  apiKey ApiKey @relation(fields: [apiKeyId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([configId])
+  @@index([expiresAt])
+}

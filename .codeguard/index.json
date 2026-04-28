@@ -98,14 +98,14 @@
     ],
     "start.sh": [
       {
-        "version": 2,
-        "feature": "pm2-minimal-start",
-        "timestamp": "2026-04-21T17:43:48",
-        "hash": "9a6ad759d372c68b084dfbd7a1eacb2bfcdfbde48bcb95e0c912ec0df2467018",
-        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/start.sh.65a5db1ae8f8.v2.bak",
+        "version": 4,
+        "feature": "current_start_script_index_baseline",
+        "timestamp": "2026-04-28T14:19:52",
+        "hash": "f556a63be34a63ecb4277d4d692bfb570e6573181823ddcee73067d7610cacdb",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/start.sh.65a5db1ae8f8.v4.bak",
         "original_path": "C:/Jarvis/jarvis-web/start.sh",
         "file_key": "start.sh",
-        "reason": "Auto snapshot after confirm: accept previously applied minimal pm2 startup mode"
+        "reason": "Auto snapshot after confirm: user authorized refreshed start script index baseline before cwd fix"
       }
     ],
     ".env.local": [
@@ -122,14 +122,14 @@
     ],
     "src/app/api/payment/qrcode/route.ts": [
       {
-        "version": 1,
-        "feature": "alipay-certs-relocate",
-        "timestamp": "2026-04-21T16:08:30",
-        "hash": "2d917185d467c59bccea78d6d0118d714549117314e13a0eaae50e7bb9c5a973",
-        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/route.ts.33b1e2889e3f.v1.bak",
+        "version": 5,
+        "feature": "current_qrcode_route_index_baseline",
+        "timestamp": "2026-04-28T12:28:28",
+        "hash": "abeb6f6f645d5532cfbf4b4de69622d23d32702478d160d4795627d35a366fc2",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/route.ts.33b1e2889e3f.v5.bak",
         "original_path": "C:/Jarvis/jarvis-web/src/app/api/payment/qrcode/route.ts",
         "file_key": "src/app/api/payment/qrcode/route.ts",
-        "reason": "Auto snapshot after confirm: update alipay cert fallback paths to certs/alipay"
+        "reason": "Auto snapshot after confirm: user authorized refreshed feature index baseline before alipay certificate-mode fix"
       }
     ],
     "ops/packaging/package-linux.sh": [
@@ -190,9 +190,9 @@
     "src/app/store/page.tsx": 1,
     "scripts/process-allowlist-guard.sh": 1,
     "ops/process-allowlist-guard.service": 1,
-    "start.sh": 2,
+    "start.sh": 4,
     ".env.local": 1,
-    "src/app/api/payment/qrcode/route.ts": 1,
+    "src/app/api/payment/qrcode/route.ts": 5,
     "ops/packaging/package-linux.sh": 1,
     "ops/packaging/pack-web.ps1": 1,
     "ops/packaging/package-linux-docker.ps1": 1,
@@ -256,12 +256,12 @@
       "reason": "Auto snapshot after confirm: 用户确认启用进程白名单守护并记录拦截日志"
     },
     "start.sh": {
-      "timestamp": "2026-04-21T17:43:48",
-      "feature": "pm2-minimal-start",
-      "hash": "9a6ad759d372c68b084dfbd7a1eacb2bfcdfbde48bcb95e0c912ec0df2467018",
+      "timestamp": "2026-04-28T14:19:52",
+      "feature": "current_start_script_index_baseline",
+      "hash": "f556a63be34a63ecb4277d4d692bfb570e6573181823ddcee73067d7610cacdb",
       "path": "C:/Jarvis/jarvis-web/start.sh",
       "source": "snapshot",
-      "reason": "Auto snapshot after confirm: accept previously applied minimal pm2 startup mode"
+      "reason": "Auto snapshot after confirm: user authorized refreshed start script index baseline before cwd fix"
     },
     "ops/process-allowlist-guard.service": {
       "timestamp": "2026-04-16T14:40:56",
@@ -280,12 +280,12 @@
       "reason": "Auto snapshot after confirm: move alipay cert env paths to certs/alipay"
     },
     "src/app/api/payment/qrcode/route.ts": {
-      "timestamp": "2026-04-21T16:08:30",
-      "feature": "alipay-certs-relocate",
-      "hash": "2d917185d467c59bccea78d6d0118d714549117314e13a0eaae50e7bb9c5a973",
+      "timestamp": "2026-04-28T12:28:28",
+      "feature": "current_qrcode_route_index_baseline",
+      "hash": "abeb6f6f645d5532cfbf4b4de69622d23d32702478d160d4795627d35a366fc2",
       "path": "C:/Jarvis/jarvis-web/src/app/api/payment/qrcode/route.ts",
       "source": "snapshot",
-      "reason": "Auto snapshot after confirm: update alipay cert fallback paths to certs/alipay"
+      "reason": "Auto snapshot after confirm: user authorized refreshed feature index baseline before alipay certificate-mode fix"
     },
     "ops/packaging/pack-web.ps1": {
       "timestamp": "2026-04-21T16:08:30",
@@ -355,13 +355,19 @@
     ],
     "start.sh": [
       "auto-start-process-guard",
-      "pm2-minimal-start"
+      "pm2-minimal-start",
+      "current_start_script_baseline",
+      "current_start_script_index_baseline"
     ],
     ".env.local": [
       "alipay-certs-relocate"
     ],
     "src/app/api/payment/qrcode/route.ts": [
-      "alipay-certs-relocate"
+      "alipay-certs-relocate",
+      "alipay_page_execute_pay_url",
+      "wechat_payment_base_chain",
+      "current_qrcode_route_baseline",
+      "current_qrcode_route_index_baseline"
     ],
     "ops/packaging/package-linux.sh": [
       "alipay-certs-relocate"
@@ -379,39 +385,49 @@
   "index_state": {
     "start.sh": {
       "source": "inline",
-      "updated_at": "2026-04-05T16:56:56",
-      "file_hash": "c936f3067e265ce818d60546a4cc17fb3db71176cc374c7f5725a2cdec724b9e",
-      "line_count": 472,
+      "updated_at": "2026-04-28T14:19:30",
+      "file_hash": "f556a63be34a63ecb4277d4d692bfb570e6573181823ddcee73067d7610cacdb",
+      "line_count": 796,
       "entry_signatures": [
         {
           "feature": "set -e",
-          "line": 12,
+          "line": 14,
           "signature": "36d2e25f79d4"
         },
         {
           "feature": "else",
-          "line": 30,
-          "signature": "c7776e75d23c"
+          "line": 39,
+          "signature": "808186622c9a"
         },
         {
-          "feature": "return 1",
-          "line": 31,
-          "signature": "03cbb3771ad6"
+          "feature": "exit 0",
+          "line": 87,
+          "signature": "c236b434a5e4"
         },
         {
           "feature": "return 0",
-          "line": 148,
-          "signature": "920c30eba449"
+          "line": 112,
+          "signature": "1d04fe4ac343"
+        },
+        {
+          "feature": "npm install",
+          "line": 135,
+          "signature": "fd7b8a042749"
+        },
+        {
+          "feature": "yarn build",
+          "line": 187,
+          "signature": "580eabdae697"
         },
         {
           "feature": "sleep 2",
-          "line": 192,
+          "line": 427,
           "signature": "71c9418706e4"
         },
         {
-          "feature": "exit 1",
-          "line": 300,
-          "signature": "2ca3cd2a2924"
+          "feature": "start_process_allowlist_guard",
+          "line": 606,
+          "signature": "5ee14b35934c"
         }
       ]
     },
@@ -607,19 +623,49 @@
     },
     "src/app/api/payment/qrcode/route.ts": {
       "source": "inline",
-      "updated_at": "2026-04-06T21:22:40",
-      "file_hash": "f1f4421d5d7163ae904af280f52e7f1eb6f54fce04685a81aa7209fcbeefd847",
-      "line_count": 240,
+      "updated_at": "2026-04-28T12:27:44",
+      "file_hash": "abeb6f6f645d5532cfbf4b4de69622d23d32702478d160d4795627d35a366fc2",
+      "line_count": 365,
       "entry_signatures": [
         {
-          "feature": "AlipaySdkConstructor",
-          "line": 16,
-          "signature": "2297cf3f1e04"
+          "feature": "resolveAlipaySdkConstructor",
+          "line": 22,
+          "signature": "68d7624f4e69"
+        },
+        {
+          "feature": "isPublicNotifyBaseUrl",
+          "line": 35,
+          "signature": "e054a08818c0"
+        },
+        {
+          "feature": "buildAlipaySubject",
+          "line": 55,
+          "signature": "2d0a56b4e4ac"
+        },
+        {
+          "feature": "normalized",
+          "line": 56,
+          "signature": "c30304b4533e"
+        },
+        {
+          "feature": "normalizePem",
+          "line": 63,
+          "signature": "8f87579f0da0"
+        },
+        {
+          "feature": "resolveExistingPath",
+          "line": 68,
+          "signature": "9a08f459bc19"
         },
         {
           "feature": "POST",
-          "line": 18,
+          "line": 99,
           "signature": "8eeaf37f2464"
+        },
+        {
+          "feature": "wechatPayAppId",
+          "line": 251,
+          "signature": "a4705bbd5dc5"
         }
       ]
     },

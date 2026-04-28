@@ -77,7 +77,7 @@ for d in public prisma data plugins certs; do
     cp -a "$d"/. "$WORK_DIR/$d"/
   fi
 done
-for f in .env.production .env start.sh nginx.conf.example certs/alipay/alipayCertPublicKey_RSA2.crt certs/alipay/alipayPublicKey_RSA2.txt certs/alipay/alipayRootCert.crt certs/alipay/appCertPublicKey_2021006128602915.crt; do
+for f in .env.production start.sh nginx.conf.example certs/alipay/alipayCertPublicKey_RSA2.crt certs/alipay/alipayPublicKey_RSA2.txt certs/alipay/alipayRootCert.crt certs/alipay/appCertPublicKey_2021006128602915.crt; do
   if [[ -f "$f" ]]; then
     cp -a "$f" "$WORK_DIR/$f"
   fi
@@ -95,8 +95,11 @@ rm -rf "$WORK_DIR/public/uploads/installers" || true
 rm -rf "$WORK_DIR/public/public" || true
 # Exclude packaged artifacts and dev-only files accidentally traced by standalone.
 rm -f "$WORK_DIR"/jarvis-web-linux-standalone-*.tar.gz "$WORK_DIR"/jarvis-web-standalone-*.zip || true
-rm -rf "$WORK_DIR/ops" "$WORK_DIR/scripts" "$WORK_DIR/docs" "$WORK_DIR/logs" || true
+rm -rf "$WORK_DIR/ops" "$WORK_DIR/scripts" "$WORK_DIR/docs" "$WORK_DIR/logs" "$WORK_DIR/release" "$WORK_DIR/.release-work" || true
 rm -f "$WORK_DIR/tsconfig.json" "$WORK_DIR/tsconfig.tsbuildinfo" "$WORK_DIR/tailwind.config.ts" "$WORK_DIR/postcss.config.js" || true
+rm -f "$WORK_DIR/.env" "$WORK_DIR/.env.local" "$WORK_DIR/.env.development" || true
+# Exclude all database files; deploy over the existing server DB without overwriting data.
+find "$WORK_DIR" -type f \( -name "*.db" -o -name "*.db-*" -o -name "*.db.*" -o -name "*.sqlite" -o -name "*.sqlite3" \) -delete
 
 echo "[6/6] Creating archive..."
 rm -f "$OUTPUT_TAR"

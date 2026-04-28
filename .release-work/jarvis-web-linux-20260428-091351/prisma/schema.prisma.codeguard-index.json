@@ -1,0 +1,20 @@
+{
+  "file": "prisma/schema.prisma",
+  "updated_at": "2026-03-23T10:36:49",
+  "line_count": 403,
+  "file_hash": "a12a1fcaf2df9e448d577894292134150b8444511a7959ccc13cf63fb8fde995",
+  "entries": [
+    {
+      "feature": "User identity and balance fields",
+      "line": 13
+    },
+    {
+      "feature": "Order and license billing models",
+      "line": 188
+    },
+    {
+      "feature": "Token package and subscription config",
+      "line": 347
+    }
+  ]
+}

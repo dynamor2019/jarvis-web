@@ -1,8 +1,8 @@
-## Modification Record | 2026-04-21 17:43:48 | User Confirmed
+## Modification Record | 2026-04-28 14:19:52 | User Confirmed
 - **File**: start.sh
-- **Feature**: pm2-minimal-start
-- **Reason**: accept previously applied minimal pm2 startup mode
-- **Hash**: 9a6ad759d372c68b084dfbd7a1eacb2bfcdfbde48bcb95e0c912ec0df2467018
+- **Feature**: current_start_script_index_baseline
+- **Reason**: user authorized refreshed start script index baseline before cwd fix
+- **Hash**: f556a63be34a63ecb4277d4d692bfb570e6573181823ddcee73067d7610cacdb
 - **Path**: C:/Jarvis/jarvis-web/start.sh
 - **Project**: C:/Jarvis/jarvis-web
 
