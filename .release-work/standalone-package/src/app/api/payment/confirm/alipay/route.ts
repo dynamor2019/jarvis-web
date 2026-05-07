@@ -1,0 +1,82 @@
+import { NextRequest, NextResponse } from 'next/server'
+import { AlipaySdk } from 'alipay-sdk'
+
+import { getPaymentConfig } from '@/lib/config'
+import { fulfillPaidOrder } from '@/lib/paymentFulfillment'
+import { prisma } from '@/lib/prisma'
+
+function normalizePem(pem: string | null | undefined): string | undefined {
+  if (!pem) return undefined
+  return pem.replace(/\\n/g, '\n').trim()
+}
+
+function readTradeStatus(result: any): string {
+  return (
+    result?.tradeStatus ||
+    result?.trade_status ||
+    result?.alipayTradeQueryResponse?.tradeStatus ||
+    result?.alipay_trade_query_response?.trade_status ||
+    ''
+  )
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json()
+    const orderNo = String(body?.orderNo || body?.outTradeNo || '').trim()
+    if (!orderNo) {
+      return NextResponse.json({ success: false, error: 'missing_order_no' }, { status: 400 })
+    }
+
+    const existingOrder = await prisma.order.findUnique({ where: { orderNo } })
+    if (!existingOrder) {
+      return NextResponse.json({ success: false, error: 'order_not_found' }, { status: 404 })
+    }
+    if (existingOrder.status === 'paid') {
+      await fulfillPaidOrder(orderNo, existingOrder.paymentMethod || 'alipay')
+      return NextResponse.json({ success: true, status: 'paid', orderNo, alreadyPaid: true })
+    }
+
+    const config = await getPaymentConfig()
+    const appId = String(config.alipay?.appId || '').trim()
+    const privateKey = normalizePem(config.alipay?.privateKey)
+    const alipayPublicKey = normalizePem(config.alipay?.publicKey)
+    if (!appId || !privateKey || !alipayPublicKey) {
+      return NextResponse.json({ success: false, error: 'alipay_not_configured' }, { status: 500 })
+    }
+
+    const sdk = new AlipaySdk({
+      appId,
+      privateKey,
+      alipayPublicKey,
+      gateway: 'https://openapi.alipay.com/gateway.do',
+      signType: 'RSA2',
+      timeout: 8000,
+    })
+
+    const result: any = await sdk.exec(
+      'alipay.trade.query',
+      { bizContent: { outTradeNo: orderNo } },
+      { validateSign: true }
+    )
+    const tradeStatus = readTradeStatus(result)
+    if (tradeStatus === 'TRADE_SUCCESS' || tradeStatus === 'TRADE_FINISHED') {
+      const fulfilled = await fulfillPaidOrder(orderNo, 'alipay')
+      return NextResponse.json({
+        success: fulfilled.success,
+        status: fulfilled.success ? 'paid' : 'failed',
+        orderNo,
+        tradeStatus,
+        error: fulfilled.success ? undefined : fulfilled.reason,
+      })
+    }
+
+    return NextResponse.json({ success: true, status: 'pending', orderNo, tradeStatus })
+  } catch (error) {
+    console.error('[AlipayConfirm] confirmation failed:', error)
+    return NextResponse.json(
+      { success: false, error: error instanceof Error ? error.message : 'confirm_failed' },
+      { status: 500 }
+    )
+  }
+}

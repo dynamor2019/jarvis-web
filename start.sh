@@ -2,13 +2,13 @@
 
 # [CodeGuard Feature Index]
 # - set -e -> line 14
-# - else -> line 39
-# - exit 0 -> line 87
-# - return 0 -> line 112
-# - npm install -> line 135
-# - yarn build -> line 187
-# - sleep 2 -> line 427
-# - start_process_allowlist_guard -> line 606
+# - else -> line 41
+# - exit 0 -> line 96
+# - return 0 -> line 121
+# - npm install -> line 144
+# - yarn build -> line 196
+# - sleep 2 -> line 436
+# - start_process_allowlist_guard -> line 615
 # [/CodeGuard Feature Index]
 
 set -e
@@ -21,6 +21,48 @@ cd "$SCRIPT_DIR"
 
 echo ">>> Starting Jarvis Web Setup..."
 echo "Runtime root: $(pwd)"
+
+clear_runtime_cache() {
+    echo "Clearing runtime page/cache state..."
+    rm -rf "$SCRIPT_DIR/.next_build/cache" 2>/dev/null || true
+    rm -rf "$SCRIPT_DIR/.next/cache" 2>/dev/null || true
+    rm -rf "$SCRIPT_DIR/.next_build/server/app/"*.html 2>/dev/null || true
+    rm -rf "$SCRIPT_DIR/.next_build/server/app/"*.rsc 2>/dev/null || true
+
+    if [ -d "/www/server/nginx/proxy_cache_dir" ]; then
+        find /www/server/nginx/proxy_cache_dir -type f -delete 2>/dev/null || true
+    fi
+    if [ -d "/www/server/nginx/fastcgi_cache" ]; then
+        find /www/server/nginx/fastcgi_cache -type f -delete 2>/dev/null || true
+    fi
+    if [ -d "/www/wwwroot/standalone/.next_build/cache" ] && [ "$SCRIPT_DIR" != "/www/wwwroot/standalone" ]; then
+        rm -rf "/www/wwwroot/standalone/.next_build/cache" 2>/dev/null || true
+    fi
+}
+
+verify_runtime_html() {
+    local route="$1"
+    local html=""
+    local bad_pattern="b6796591290fafbf|c519e67d5291d2d3|e3edf65c76d9640a|turbopack-c1633fb7cd3ee69d|43d882588542afbe|436317df5a38925d|55be9a80f2de8160|ea0dfd4fd8498758|turbopack-2118a49a26f5d5d5|3f7009f671663305|777ae21c74d08273"
+
+    if ! command -v curl >/dev/null 2>&1; then
+        echo "curl not found, skip HTML verification for $route."
+        return 0
+    fi
+
+    html="$(curl -fsS --max-time 15 -H 'Cache-Control: no-cache' -H 'Pragma: no-cache' "http://127.0.0.1:${PORT}${route}" || true)"
+    if [ -z "$html" ]; then
+        echo "CRITICAL: local route did not return HTML: $route"
+        return 1
+    fi
+    if printf '%s' "$html" | grep -Eq "$bad_pattern"; then
+        echo "CRITICAL: $route is still serving stale chunks after restart."
+        printf '%s' "$html" | grep -Eo '/_next/static/chunks/[^" ]+' | sort -u | head -40 || true
+        return 1
+    fi
+    echo "Verified fresh runtime HTML: $route"
+    return 0
+}
 
 # Minimal runtime mode: force single DB path and start with PM2/node.
 PM2_CMD=""
@@ -54,33 +96,34 @@ if [ ! -f "$SCRIPT_DIR/.next_build/BUILD_ID" ]; then
     exit 1
 fi
 echo "Detected production build: $(cat "$SCRIPT_DIR/.next_build/BUILD_ID")"
+clear_runtime_cache
 
 export NODE_ENV=production
 export HOSTNAME="${HOSTNAME:-0.0.0.0}"
 export PORT="${PORT:-3010}"
-export DATABASE_URL="${DATABASE_URL:-file:/www/wwwroot/jarvis-web/prisma/jarvis.db}"
+export DATABASE_URL="${DATABASE_URL:-file:$SCRIPT_DIR/prisma/jarvis.db}"
 
 # Normalize env files to the same DB path to avoid runtime drift.
 for env_file in ".env" ".env.production"; do
     if [ -f "$env_file" ]; then
         if grep -q '^DATABASE_URL=' "$env_file"; then
-            sed -i 's#^DATABASE_URL=.*#DATABASE_URL=file:/www/wwwroot/jarvis-web/prisma/jarvis.db#g' "$env_file"
+            sed -i "s#^DATABASE_URL=.*#DATABASE_URL=file:$SCRIPT_DIR/prisma/jarvis.db#g" "$env_file"
         else
-            echo 'DATABASE_URL=file:/www/wwwroot/jarvis-web/prisma/jarvis.db' >> "$env_file"
+            echo "DATABASE_URL=file:$SCRIPT_DIR/prisma/jarvis.db" >> "$env_file"
         fi
     fi
 done
 
 # Compatibility path for legacy relative sqlite path (file:./jarvis.db).
-if [ -f "/www/wwwroot/jarvis-web/prisma/jarvis.db" ]; then
-    rm -f "/www/wwwroot/jarvis-web/jarvis.db"
-    ln -s "/www/wwwroot/jarvis-web/prisma/jarvis.db" "/www/wwwroot/jarvis-web/jarvis.db" 2>/dev/null || cp -f "/www/wwwroot/jarvis-web/prisma/jarvis.db" "/www/wwwroot/jarvis-web/jarvis.db"
+if [ -f "$SCRIPT_DIR/prisma/jarvis.db" ]; then
+    rm -f "$SCRIPT_DIR/jarvis.db"
+    ln -s "$SCRIPT_DIR/prisma/jarvis.db" "$SCRIPT_DIR/jarvis.db" 2>/dev/null || cp -f "$SCRIPT_DIR/prisma/jarvis.db" "$SCRIPT_DIR/jarvis.db"
 fi
 
 # Best-effort permission fix for sqlite runtime access.
-chown -R www:www "/www/wwwroot/jarvis-web/prisma" 2>/dev/null || true
-chmod 755 "/www/wwwroot/jarvis-web/prisma" 2>/dev/null || true
-chmod 664 "/www/wwwroot/jarvis-web/prisma/jarvis.db" 2>/dev/null || true
+chown -R www:www "$SCRIPT_DIR/prisma" 2>/dev/null || true
+chmod 755 "$SCRIPT_DIR/prisma" 2>/dev/null || true
+chmod 664 "$SCRIPT_DIR/prisma/jarvis.db" 2>/dev/null || true
 
 # Clear stale listeners/process state before restart.
 if command -v fuser >/dev/null 2>&1; then
@@ -92,6 +135,9 @@ echo "Starting PM2 app with DATABASE_URL=${DATABASE_URL}, PORT=${PORT}"
 $PM2_CMD delete jarvis-web >/dev/null 2>&1 || true
 $PM2_CMD start "$SERVER_ABS" --name jarvis-web --cwd "$SERVER_DIR_ABS" --interpreter node --update-env -f
 $PM2_CMD save
+sleep 3
+verify_runtime_html "/store"
+verify_runtime_html "/admin/users"
 echo "PM2 started: jarvis-web"
 exit 0
 

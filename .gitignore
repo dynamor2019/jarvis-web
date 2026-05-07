@@ -11,3 +11,4 @@ dist-full-*/
 *.tar.gz
 *.log
 tsconfig.tsbuildinfo
+certs/

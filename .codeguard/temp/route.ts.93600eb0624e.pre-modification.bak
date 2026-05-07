@@ -1,0 +1,147 @@
+import { NextResponse } from 'next/server'
+import { prisma } from '@/lib/prisma'
+import { Prisma } from '@prisma/client'
+import { AlipaySdk } from 'alipay-sdk'
+import { getPaymentConfig } from '@/lib/config'
+
+function resolveBuyoutLicenseType(orderType: string, productName: string | null): 'lifetime_personal' | 'lifetime_pro' {
+  if (orderType === 'lifetime_personal' || orderType === 'lifetime_pro') {
+    return orderType
+  }
+
+  const normalizedName = (productName || '').toLowerCase()
+  return normalizedName.includes('pro') ? 'lifetime_pro' : 'lifetime_personal'
+}
+
+export async function POST(req: Request) {
+  try {
+    const rawBody = await req.text()
+    const body = rawBody.includes('=') ? Object.fromEntries(new URLSearchParams(rawBody)) : JSON.parse(rawBody || '{}')
+
+    // 验证支付宝签名，防止伪造回调
+    try {
+      const config = await getPaymentConfig()
+      const appId = config.alipay?.appId
+      const privateKey = config.alipay?.privateKey?.replace(/\\n/g, '\n').trim()
+      const alipayPublicKey = config.alipay?.publicKey?.replace(/\\n/g, '\n').trim()
+      if (appId && privateKey && alipayPublicKey) {
+        const sdk = new AlipaySdk({ appId, privateKey, alipayPublicKey })
+        if (!sdk.checkNotifySign(body)) {
+          console.warn('[AlipayWebhook] signature verification failed')
+          return new Response('fail', { status: 200 })
+        }
+      }
+    } catch (signErr) {
+      console.error('[AlipayWebhook] signature check error:', signErr)
+    }
+
+    const orderNo = body?.orderNo || body?.out_trade_no || ''
+    if (!orderNo) return new Response('failure', { status: 400 })
+    if (body?.trade_status && body.trade_status !== 'TRADE_SUCCESS' && body.trade_status !== 'TRADE_FINISHED') {
+      return new Response('success')
+    }
+    const order = await prisma.order.findUnique({ where: { orderNo } })
+    if (!order) return new Response('failure', { status: 404 })
+    if (order.status !== 'paid') {
+      await prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+        await tx.order.update({
+          where: { id: order.id },
+          data: { status: 'paid', paymentMethod: 'alipay', paymentTime: new Date() },
+        })
+
+        const isSubscription = order.orderType === 'subscription'
+        const isBuyout =
+          order.orderType === 'lifetime' ||
+          order.orderType === 'lifetime_personal' ||
+          order.orderType === 'lifetime_pro'
+        const hasTokens = !!order.tokens && order.tokens > 0
+        let updatedUser
+
+        if (order.orderType === 'token_pack' && hasTokens) {
+          updatedUser = await tx.user.update({
+            where: { id: order.userId },
+            data: {
+              trafficTokenBalance: { increment: order.tokens ?? 0 },
+              tokenBalance: { increment: order.tokens ?? 0 },
+              totalSpent: { increment: order.amount },
+            },
+          })
+        } else if (isSubscription || isBuyout) {
+          const buyoutLicenseType = resolveBuyoutLicenseType(order.orderType, order.productName)
+          const updateData: any = {
+            totalSpent: { increment: order.amount },
+            licenseType: isBuyout ? buyoutLicenseType : 'subscription',
+            subscriptionEnd: isBuyout
+              ? null
+              : (order.duration
+                ? new Date(Date.now() + order.duration * 30 * 24 * 60 * 60 * 1000)
+                : undefined),
+          }
+          if (!isBuyout && hasTokens) {
+            updateData.subscriptionTokenBalance = { increment: order.tokens ?? 0 }
+            updateData.tokenBalance = { increment: order.tokens ?? 0 }
+          }
+          updatedUser = await tx.user.update({
+            where: { id: order.userId },
+            data: updateData,
+          })
+
+          const licenseKey = `LIC-${Math.random().toString(36).substring(2, 10).toUpperCase()}-${Date.now()}`
+          await tx.license.create({
+            data: {
+              userId: order.userId,
+              licenseKey,
+              licenseType: isBuyout ? buyoutLicenseType : 'subscription',
+              status: 'active',
+              expiresAt: isBuyout
+                ? null
+                : (order.duration
+                  ? new Date(Date.now() + order.duration * 30 * 24 * 60 * 60 * 1000)
+                  : null),
+            },
+          })
+
+          const modelType = order.modelType || 'deepseek'
+          const apiKey = `sk-${modelType}-${Math.random().toString(36).substring(2, 10)}`
+          await tx.apiKey.create({
+            data: {
+              userId: order.userId,
+              provider: 'openai',
+              key: apiKey,
+              modelType,
+              isActive: true,
+              expiresAt: isBuyout
+                ? new Date(Date.now() + 10 * 365 * 24 * 60 * 60 * 1000)
+                : (order.duration
+                  ? new Date(Date.now() + order.duration * 30 * 24 * 60 * 60 * 1000)
+                  : new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)),
+            },
+          })
+        } else {
+          updatedUser = await tx.user.update({
+            where: { id: order.userId },
+            data: { totalSpent: { increment: order.amount } },
+          })
+        }
+
+        await tx.transaction.create({
+          data: {
+            userId: order.userId,
+            type: 'recharge',
+            amount: order.amount,
+            tokens: order.tokens,
+            balance: updatedUser.balance,
+            tokenBalance: updatedUser.tokenBalance,
+            description: `充值${order.productName}`,
+            paymentMethod: 'alipay',
+            status: 'completed',
+          },
+        })
+      })
+    }
+    return new Response('success')
+  } catch (error) {
+    console.error('[AlipayWebhook] processing failed:', error)
+    return new Response('failure', { status: 400 })
+  }
+}

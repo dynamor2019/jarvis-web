@@ -62,14 +62,14 @@
     ],
     "src/app/store/page.tsx": [
       {
-        "version": 1,
-        "feature": "store_badge_layout_fix",
-        "timestamp": "2026-04-14T18:53:38",
-        "hash": "50b99e0aeec06f7dd86d235fbbffb8ced76d8acdd7b4203fa264b9be84a5bea8",
-        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/page.tsx.0c5273670611.v1.bak",
+        "version": 9,
+        "feature": "model_ordering_release",
+        "timestamp": "2026-05-07T19:12:56",
+        "hash": "bd35a814c6bf9c63c0354158316c00c569ad510b406b85a1d1530db92f5688e9",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/page.tsx.0c5273670611.v9.bak",
         "original_path": "C:/Jarvis/jarvis-web/src/app/store/page.tsx",
         "file_key": "src/app/store/page.tsx",
-        "reason": "Auto snapshot after confirm: hide duplicate badge when popular to prevent overlap"
+        "reason": "Auto snapshot after confirm: server release package generated and user confirmed"
       }
     ],
     "scripts/process-allowlist-guard.sh": [
@@ -98,14 +98,14 @@
     ],
     "start.sh": [
       {
-        "version": 4,
-        "feature": "current_start_script_index_baseline",
-        "timestamp": "2026-04-28T14:19:52",
-        "hash": "f556a63be34a63ecb4277d4d692bfb570e6573181823ddcee73067d7610cacdb",
-        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/start.sh.65a5db1ae8f8.v4.bak",
+        "version": 6,
+        "feature": "current_start_script_baseline",
+        "timestamp": "2026-05-07T16:20:54",
+        "hash": "56c40bcfecfe2f3f56b16964e60c17417d8e718ad85b0c694d11a80747679ee2",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/start.sh.65a5db1ae8f8.v6.bak",
         "original_path": "C:/Jarvis/jarvis-web/start.sh",
         "file_key": "start.sh",
-        "reason": "Auto snapshot after confirm: user authorized refreshed start script index baseline before cwd fix"
+        "reason": "Auto snapshot after confirm: user authorized refreshing start.sh baseline before cache-safe startup fix"
       }
     ],
     ".env.local": [
@@ -122,14 +122,14 @@
     ],
     "src/app/api/payment/qrcode/route.ts": [
       {
-        "version": 5,
-        "feature": "current_qrcode_route_index_baseline",
-        "timestamp": "2026-04-28T12:28:28",
-        "hash": "abeb6f6f645d5532cfbf4b4de69622d23d32702478d160d4795627d35a366fc2",
-        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/route.ts.33b1e2889e3f.v5.bak",
+        "version": 10,
+        "feature": "alipay_page_pay_baseline",
+        "timestamp": "2026-05-01T17:19:13",
+        "hash": "2725d6e5f0bb155f01c33bb92dc7c8e90b5087a0a30a90d90f988cc887b09301",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/route.ts.33b1e2889e3f.v10.bak",
         "original_path": "C:/Jarvis/jarvis-web/src/app/api/payment/qrcode/route.ts",
         "file_key": "src/app/api/payment/qrcode/route.ts",
-        "reason": "Auto snapshot after confirm: user authorized refreshed feature index baseline before alipay certificate-mode fix"
+        "reason": "authorize current qrcode route before switching alipay from precreate to page pay"
       }
     ],
     "ops/packaging/package-linux.sh": [
@@ -179,6 +179,66 @@
         "file_key": "src/lib/prisma.ts",
         "reason": "Auto snapshot after confirm: force prisma datasource url to resolved absolute sqlite path for pm2 runtime"
       }
+    ],
+    "src/app/admin/transactions/page.tsx": [
+      {
+        "version": 2,
+        "feature": "交易记录排序修复",
+        "timestamp": "2026-05-06T21:24:41",
+        "hash": "f572377b1ed6fa2f6837c3790bcab8ed4e91c923afa4211c9f0c69c8e7443f44",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/page.tsx.ca79f6b27057.v2.bak",
+        "original_path": "C:/Jarvis/jarvis-web/src/app/admin/transactions/page.tsx",
+        "file_key": "src/app/admin/transactions/page.tsx",
+        "reason": "公网通过 Nginx 指向新版后确认可用，保留当前稳定状态"
+      }
+    ],
+    "src/app/dashboard/transactions/page.tsx": [
+      {
+        "version": 2,
+        "feature": "交易记录排序修复",
+        "timestamp": "2026-05-06T21:24:42",
+        "hash": "350eb2ed16286041fdcbb57983d5de1c78f5da175aad0a57a326a15b64f602d3",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/page.tsx.d4dad5ba160a.v2.bak",
+        "original_path": "C:/Jarvis/jarvis-web/src/app/dashboard/transactions/page.tsx",
+        "file_key": "src/app/dashboard/transactions/page.tsx",
+        "reason": "公网通过 Nginx 指向新版后确认可用，保留当前稳定状态"
+      }
+    ],
+    "src/app/dashboard/page.tsx": [
+      {
+        "version": 2,
+        "feature": "交易记录排序修复",
+        "timestamp": "2026-05-06T21:24:42",
+        "hash": "027a226396d027522bec4e6d3617b7ed75fd14501b5ebba0c32b96affa62677c",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/page.tsx.2c144079a433.v2.bak",
+        "original_path": "C:/Jarvis/jarvis-web/src/app/dashboard/page.tsx",
+        "file_key": "src/app/dashboard/page.tsx",
+        "reason": "公网通过 Nginx 指向新版后确认可用，保留当前稳定状态"
+      }
+    ],
+    "src/app/api/admin/transactions/route.ts": [
+      {
+        "version": 2,
+        "feature": "交易记录排序修复",
+        "timestamp": "2026-05-06T21:24:43",
+        "hash": "af21d66fefd5caf205ab0adb1167ccbb6b8eb8223f80f2f1cfa946997ae381bb",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/route.ts.14cd036959e7.v2.bak",
+        "original_path": "C:/Jarvis/jarvis-web/src/app/api/admin/transactions/route.ts",
+        "file_key": "src/app/api/admin/transactions/route.ts",
+        "reason": "公网通过 Nginx 指向新版后确认可用，保留当前稳定状态"
+      }
+    ],
+    "src/app/api/transactions/route.ts": [
+      {
+        "version": 2,
+        "feature": "交易记录排序修复",
+        "timestamp": "2026-05-06T21:24:44",
+        "hash": "70976f229a63ba29d698a04a8e9e2e4d12679f596de9aa7b887118d3d0dbf893",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/route.ts.d8dfa6f689bc.v2.bak",
+        "original_path": "C:/Jarvis/jarvis-web/src/app/api/transactions/route.ts",
+        "file_key": "src/app/api/transactions/route.ts",
+        "reason": "公网通过 Nginx 指向新版后确认可用，保留当前稳定状态"
+      }
     ]
   },
   "last_version": {
@@ -187,16 +247,21 @@
     "src/app/login/page.tsx": 18,
     "src/components/Hero.tsx": 5,
     "src/i18n/messages/fr-FR.json": 2,
-    "src/app/store/page.tsx": 1,
+    "src/app/store/page.tsx": 9,
     "scripts/process-allowlist-guard.sh": 1,
     "ops/process-allowlist-guard.service": 1,
-    "start.sh": 4,
+    "start.sh": 6,
     ".env.local": 1,
-    "src/app/api/payment/qrcode/route.ts": 5,
+    "src/app/api/payment/qrcode/route.ts": 10,
     "ops/packaging/package-linux.sh": 1,
     "ops/packaging/pack-web.ps1": 1,
     "ops/packaging/package-linux-docker.ps1": 1,
-    "src/lib/prisma.ts": 1
+    "src/lib/prisma.ts": 1,
+    "src/app/admin/transactions/page.tsx": 2,
+    "src/app/dashboard/transactions/page.tsx": 2,
+    "src/app/dashboard/page.tsx": 2,
+    "src/app/api/admin/transactions/route.ts": 2,
+    "src/app/api/transactions/route.ts": 2
   },
   "current_state": {
     "src/app/api/auth/wechat/callback/route.ts": {
@@ -232,12 +297,12 @@
       "reason": "Auto snapshot after confirm: user confirmed: remove citation wording, enforce single-line title, and enrich stats card visual design"
     },
     "src/app/store/page.tsx": {
-      "timestamp": "2026-04-14T18:53:38",
-      "feature": "store_badge_layout_fix",
-      "hash": "50b99e0aeec06f7dd86d235fbbffb8ced76d8acdd7b4203fa264b9be84a5bea8",
+      "timestamp": "2026-05-07T19:12:56",
+      "feature": "model_ordering_release",
+      "hash": "bd35a814c6bf9c63c0354158316c00c569ad510b406b85a1d1530db92f5688e9",
       "path": "C:/Jarvis/jarvis-web/src/app/store/page.tsx",
       "source": "snapshot",
-      "reason": "Auto snapshot after confirm: hide duplicate badge when popular to prevent overlap"
+      "reason": "Auto snapshot after confirm: server release package generated and user confirmed"
     },
     "src/i18n/messages/fr-FR.json": {
       "timestamp": "2026-04-21T10:55:21",
@@ -256,12 +321,12 @@
       "reason": "Auto snapshot after confirm: 用户确认启用进程白名单守护并记录拦截日志"
     },
     "start.sh": {
-      "timestamp": "2026-04-28T14:19:52",
-      "feature": "current_start_script_index_baseline",
-      "hash": "f556a63be34a63ecb4277d4d692bfb570e6573181823ddcee73067d7610cacdb",
+      "timestamp": "2026-05-07T16:20:54",
+      "feature": "current_start_script_baseline",
+      "hash": "56c40bcfecfe2f3f56b16964e60c17417d8e718ad85b0c694d11a80747679ee2",
       "path": "C:/Jarvis/jarvis-web/start.sh",
       "source": "snapshot",
-      "reason": "Auto snapshot after confirm: user authorized refreshed start script index baseline before cwd fix"
+      "reason": "Auto snapshot after confirm: user authorized refreshing start.sh baseline before cache-safe startup fix"
     },
     "ops/process-allowlist-guard.service": {
       "timestamp": "2026-04-16T14:40:56",
@@ -280,12 +345,12 @@
       "reason": "Auto snapshot after confirm: move alipay cert env paths to certs/alipay"
     },
     "src/app/api/payment/qrcode/route.ts": {
-      "timestamp": "2026-04-28T12:28:28",
-      "feature": "current_qrcode_route_index_baseline",
-      "hash": "abeb6f6f645d5532cfbf4b4de69622d23d32702478d160d4795627d35a366fc2",
+      "timestamp": "2026-05-01T17:19:13",
+      "feature": "alipay_page_pay_baseline",
+      "hash": "2725d6e5f0bb155f01c33bb92dc7c8e90b5087a0a30a90d90f988cc887b09301",
       "path": "C:/Jarvis/jarvis-web/src/app/api/payment/qrcode/route.ts",
       "source": "snapshot",
-      "reason": "Auto snapshot after confirm: user authorized refreshed feature index baseline before alipay certificate-mode fix"
+      "reason": "authorize current qrcode route before switching alipay from precreate to page pay"
     },
     "ops/packaging/pack-web.ps1": {
       "timestamp": "2026-04-21T16:08:30",
@@ -318,6 +383,46 @@
       "path": "C:/Jarvis/jarvis-web/src/lib/prisma.ts",
       "source": "snapshot",
       "reason": "Auto snapshot after confirm: force prisma datasource url to resolved absolute sqlite path for pm2 runtime"
+    },
+    "src/app/admin/transactions/page.tsx": {
+      "timestamp": "2026-05-06T21:24:41",
+      "feature": "交易记录排序修复",
+      "hash": "f572377b1ed6fa2f6837c3790bcab8ed4e91c923afa4211c9f0c69c8e7443f44",
+      "path": "C:/Jarvis/jarvis-web/src/app/admin/transactions/page.tsx",
+      "source": "snapshot",
+      "reason": "公网通过 Nginx 指向新版后确认可用，保留当前稳定状态"
+    },
+    "src/app/dashboard/transactions/page.tsx": {
+      "timestamp": "2026-05-06T21:24:42",
+      "feature": "交易记录排序修复",
+      "hash": "350eb2ed16286041fdcbb57983d5de1c78f5da175aad0a57a326a15b64f602d3",
+      "path": "C:/Jarvis/jarvis-web/src/app/dashboard/transactions/page.tsx",
+      "source": "snapshot",
+      "reason": "公网通过 Nginx 指向新版后确认可用，保留当前稳定状态"
+    },
+    "src/app/dashboard/page.tsx": {
+      "timestamp": "2026-05-06T21:24:42",
+      "feature": "交易记录排序修复",
+      "hash": "027a226396d027522bec4e6d3617b7ed75fd14501b5ebba0c32b96affa62677c",
+      "path": "C:/Jarvis/jarvis-web/src/app/dashboard/page.tsx",
+      "source": "snapshot",
+      "reason": "公网通过 Nginx 指向新版后确认可用，保留当前稳定状态"
+    },
+    "src/app/api/admin/transactions/route.ts": {
+      "timestamp": "2026-05-06T21:24:43",
+      "feature": "交易记录排序修复",
+      "hash": "af21d66fefd5caf205ab0adb1167ccbb6b8eb8223f80f2f1cfa946997ae381bb",
+      "path": "C:/Jarvis/jarvis-web/src/app/api/admin/transactions/route.ts",
+      "source": "snapshot",
+      "reason": "公网通过 Nginx 指向新版后确认可用，保留当前稳定状态"
+    },
+    "src/app/api/transactions/route.ts": {
+      "timestamp": "2026-05-06T21:24:44",
+      "feature": "交易记录排序修复",
+      "hash": "70976f229a63ba29d698a04a8e9e2e4d12679f596de9aa7b887118d3d0dbf893",
+      "path": "C:/Jarvis/jarvis-web/src/app/api/transactions/route.ts",
+      "source": "snapshot",
+      "reason": "公网通过 Nginx 指向新版后确认可用，保留当前稳定状态"
     }
   },
   "protected_features": {
@@ -345,7 +450,14 @@
       "SyncCurrentState"
     ],
     "src/app/store/page.tsx": [
-      "store_badge_layout_fix"
+      "store_badge_layout_fix",
+      "store_current_authorized_baseline",
+      "alipay_page_pay_baseline",
+      "current_store_page_baseline",
+      "subscription_payment_baseline",
+      "store_dynamic_cache_fix_baseline",
+      "model_ordering",
+      "model_ordering_release"
     ],
     "scripts/process-allowlist-guard.sh": [
       "process-allowlist-guard"
@@ -357,7 +469,8 @@
       "auto-start-process-guard",
       "pm2-minimal-start",
       "current_start_script_baseline",
-      "current_start_script_index_baseline"
+      "current_start_script_index_baseline",
+      "standalone_runtime_path_baseline"
     ],
     ".env.local": [
       "alipay-certs-relocate"
@@ -367,7 +480,12 @@
       "alipay_page_execute_pay_url",
       "wechat_payment_base_chain",
       "current_qrcode_route_baseline",
-      "current_qrcode_route_index_baseline"
+      "current_qrcode_route_index_baseline",
+      "qrcode_feature_index_refresh",
+      "qrcode_current_authorized_baseline",
+      "qrcode_rsa_sign_type_intermediate",
+      "qrcode_current_rsa_state_before_rsa2",
+      "alipay_page_pay_baseline"
     ],
     "ops/packaging/package-linux.sh": [
       "alipay-certs-relocate"
@@ -380,14 +498,29 @@
     ],
     "src/lib/prisma.ts": [
       "runtime-db-connect-stability"
+    ],
+    "src/app/admin/transactions/page.tsx": [
+      "交易记录排序修复"
+    ],
+    "src/app/dashboard/transactions/page.tsx": [
+      "交易记录排序修复"
+    ],
+    "src/app/dashboard/page.tsx": [
+      "交易记录排序修复"
+    ],
+    "src/app/api/admin/transactions/route.ts": [
+      "交易记录排序修复"
+    ],
+    "src/app/api/transactions/route.ts": [
+      "交易记录排序修复"
     ]
   },
   "index_state": {
     "start.sh": {
       "source": "inline",
-      "updated_at": "2026-04-28T14:19:30",
-      "file_hash": "f556a63be34a63ecb4277d4d692bfb570e6573181823ddcee73067d7610cacdb",
-      "line_count": 796,
+      "updated_at": "2026-05-07T16:20:19",
+      "file_hash": "56c40bcfecfe2f3f56b16964e60c17417d8e718ad85b0c694d11a80747679ee2",
+      "line_count": 805,
       "entry_signatures": [
         {
           "feature": "set -e",
@@ -396,37 +529,37 @@
         },
         {
           "feature": "else",
-          "line": 39,
-          "signature": "808186622c9a"
+          "line": 41,
+          "signature": "89d00d55266a"
         },
         {
           "feature": "exit 0",
-          "line": 87,
+          "line": 96,
           "signature": "c236b434a5e4"
         },
         {
           "feature": "return 0",
-          "line": 112,
+          "line": 121,
           "signature": "1d04fe4ac343"
         },
         {
           "feature": "npm install",
-          "line": 135,
+          "line": 144,
           "signature": "fd7b8a042749"
         },
         {
           "feature": "yarn build",
-          "line": 187,
+          "line": 196,
           "signature": "580eabdae697"
         },
         {
           "feature": "sleep 2",
-          "line": 427,
+          "line": 436,
           "signature": "71c9418706e4"
         },
         {
           "feature": "start_process_allowlist_guard",
-          "line": 606,
+          "line": 615,
           "signature": "5ee14b35934c"
         }
       ]
@@ -623,9 +756,9 @@
     },
     "src/app/api/payment/qrcode/route.ts": {
       "source": "inline",
-      "updated_at": "2026-04-28T12:27:44",
-      "file_hash": "abeb6f6f645d5532cfbf4b4de69622d23d32702478d160d4795627d35a366fc2",
-      "line_count": 365,
+      "updated_at": "2026-04-29T13:00:03",
+      "file_hash": "46224f6f77fa296bfab15a3253f8fc36f3988dd282b8e45974f241aefd681821",
+      "line_count": 372,
       "entry_signatures": [
         {
           "feature": "resolveAlipaySdkConstructor",
@@ -648,23 +781,23 @@
           "signature": "c30304b4533e"
         },
         {
-          "feature": "normalizePem",
-          "line": 63,
-          "signature": "8f87579f0da0"
+          "feature": "detectAlipayKeyType",
+          "line": 68,
+          "signature": "15eb52184d10"
         },
         {
           "feature": "resolveExistingPath",
-          "line": 68,
+          "line": 81,
           "signature": "9a08f459bc19"
         },
         {
           "feature": "POST",
-          "line": 99,
+          "line": 112,
           "signature": "8eeaf37f2464"
         },
         {
           "feature": "wechatPayAppId",
-          "line": 251,
+          "line": 258,
           "signature": "a4705bbd5dc5"
         }
       ]
@@ -737,6 +870,34 @@
           "feature": "</section>",
           "line": 315,
           "signature": "40b2501422d5"
+        }
+      ]
+    },
+    "src/app/dashboard/transactions/page.tsx": {
+      "source": "inline",
+      "updated_at": "2026-05-06T16:45:57",
+      "file_hash": "20d60c0aa6f91d17b78c8779f04c091a2d7e685e1fe59793a85b9a47306267af",
+      "line_count": 296,
+      "entry_signatures": [
+        {
+          "feature": "Transactions page state and loading",
+          "line": 34,
+          "signature": "d4539cf908fe"
+        },
+        {
+          "feature": "Fetch transaction list",
+          "line": 70,
+          "signature": "e7f09364ac11"
+        },
+        {
+          "feature": "Transaction table rendering",
+          "line": 136,
+          "signature": "5beef9513cac"
+        },
+        {
+          "feature": "Pagination controls",
+          "line": 230,
+          "signature": "55e0ae621993"
         }
       ]
     }

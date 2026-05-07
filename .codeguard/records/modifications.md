@@ -1,9 +1,9 @@
-## Modification Record | 2026-04-28 14:19:52 | User Confirmed
-- **File**: start.sh
-- **Feature**: current_start_script_index_baseline
-- **Reason**: user authorized refreshed start script index baseline before cwd fix
-- **Hash**: f556a63be34a63ecb4277d4d692bfb570e6573181823ddcee73067d7610cacdb
-- **Path**: C:/Jarvis/jarvis-web/start.sh
+## Modification Record | 2026-05-07 19:12:56 | User Confirmed
+- **File**: src/app/store/page.tsx
+- **Feature**: model_ordering_release
+- **Reason**: server release package generated and user confirmed
+- **Hash**: bd35a814c6bf9c63c0354158316c00c569ad510b406b85a1d1530db92f5688e9
+- **Path**: C:/Jarvis/jarvis-web/src/app/store/page.tsx
 - **Project**: C:/Jarvis/jarvis-web
 
 ---
