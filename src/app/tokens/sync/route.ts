@@ -4,7 +4,7 @@ export const runtime = 'edge'
 
 export async function POST(request: NextRequest) {
   try {
-    const backendPort = process.env.TOKEN_SYNC_BACKEND_PORT || process.env.LOCAL_BACKEND_PORT || '3001'
+    const backendPort = process.env.TOKEN_SYNC_BACKEND_PORT || process.env.LOCAL_BACKEND_PORT || '37641'
     const target = `http://127.0.0.1:${backendPort}/tokens/sync`
     const headers: Record<string, string> = {}
     request.headers.forEach((v, k) => {

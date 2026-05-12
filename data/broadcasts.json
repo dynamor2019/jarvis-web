@@ -15,8 +15,8 @@
     "createdAt": 1767011341668,
     "createdBy": "b508f4f2-07ac-4af0-bcdd-db6305a2a076",
     "isActive": true,
-    "displayCount": 19,
-    "lastDisplayTime": 1774577184393,
+    "displayCount": 25,
+    "lastDisplayTime": 1778393748072,
     "sendRecords": [
       {
         "timestamp": 1767014412392,
@@ -72,6 +72,76 @@
         "timestamp": 1774577184393,
         "time": "10:06:24",
         "count": 1
+      },
+      {
+        "timestamp": 1778380878700,
+        "time": "10:41:18",
+        "count": 0
+      },
+      {
+        "timestamp": 1778381828917,
+        "time": "10:57:08",
+        "count": 0
+      },
+      {
+        "timestamp": 1778382097850,
+        "time": "11:01:37",
+        "count": 0
+      },
+      {
+        "timestamp": 1778382157451,
+        "time": "11:02:37",
+        "count": 0
+      },
+      {
+        "timestamp": 1778382540472,
+        "time": "11:09:00",
+        "count": 1
+      },
+      {
+        "timestamp": 1778382604056,
+        "time": "11:10:04",
+        "count": 1
+      },
+      {
+        "timestamp": 1778391258346,
+        "time": "13:34:18",
+        "count": 0
+      },
+      {
+        "timestamp": 1778391686109,
+        "time": "13:41:26",
+        "count": 0
+      },
+      {
+        "timestamp": 1778391758671,
+        "time": "13:42:38",
+        "count": 0
+      },
+      {
+        "timestamp": 1778392120526,
+        "time": "13:48:40",
+        "count": 1
+      },
+      {
+        "timestamp": 1778392573308,
+        "time": "13:56:13",
+        "count": 1
+      },
+      {
+        "timestamp": 1778392764195,
+        "time": "13:59:24",
+        "count": 1
+      },
+      {
+        "timestamp": 1778392812452,
+        "time": "14:00:12",
+        "count": 1
+      },
+      {
+        "timestamp": 1778393748072,
+        "time": "14:15:48",
+        "count": 0
       }
     ]
   }
