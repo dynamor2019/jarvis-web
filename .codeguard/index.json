@@ -900,6 +900,92 @@
           "signature": "55e0ae621993"
         }
       ]
+    },
+    "src/app/api/ai/generate-local/route.ts": {
+      "source": "inline",
+      "updated_at": "2026-05-22T10:47:12",
+      "file_hash": "ccec0b302dde973b4c86b8bd352246f41d895a77199bb9bf4b897f440dfba375",
+      "line_count": 379,
+      "entry_signatures": [
+        {
+          "feature": "applyDomesticWebSearchOptions",
+          "line": 28,
+          "signature": "adec3184567c"
+        },
+        {
+          "feature": "p",
+          "line": 37,
+          "signature": "7eff8d9fa2ce"
+        },
+        {
+          "feature": "fetchZhipuWebSearchContext",
+          "line": 68,
+          "signature": "3d08d507ede2"
+        },
+        {
+          "feature": "q",
+          "line": 72,
+          "signature": "fee8b7d07efe"
+        },
+        {
+          "feature": "POST",
+          "line": 123,
+          "signature": "60fcb38d14aa"
+        },
+        {
+          "feature": "requestTemperature",
+          "line": 266,
+          "signature": "b95a8280672d"
+        }
+      ]
+    },
+    "src/app/airribbon/page.tsx": {
+      "source": "inline",
+      "updated_at": "2026-05-22T10:46:50",
+      "file_hash": "09c090033a9db218380001bb2f1c71c5b9214517f782f6dc64cdbb7ebc819843",
+      "line_count": 920,
+      "entry_signatures": [
+        {
+          "feature": "postToHost",
+          "line": 24,
+          "signature": "0383170ce658"
+        },
+        {
+          "feature": "normalizeChunk",
+          "line": 96,
+          "signature": "be6f2f6b1d90"
+        },
+        {
+          "feature": "flushLists",
+          "line": 190,
+          "signature": "53ac05e1b6cf"
+        },
+        {
+          "feature": "mapJsonToSections",
+          "line": 272,
+          "signature": "4553e2f63bdb"
+        },
+        {
+          "feature": "onWebViewMessage",
+          "line": 422,
+          "signature": "1e76bf2a39f9"
+        },
+        {
+          "feature": "onSend",
+          "line": 486,
+          "signature": "91fac5cbd599"
+        },
+        {
+          "feature": "safeIcon",
+          "line": 538,
+          "signature": "8bfe96ae2fae"
+        },
+        {
+          "feature": "pics",
+          "line": 886,
+          "signature": "bf85c197405e"
+        }
+      ]
     }
   }
 }

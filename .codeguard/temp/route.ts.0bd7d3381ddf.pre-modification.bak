@@ -312,27 +312,14 @@ export async function POST(request: NextRequest) {
     };
     const withSearch = applyDomesticWebSearchOptions(basePayload, pKey || '', enableWebSearch);
 
-    let upstreamUrl = `${baseUrl}/chat/completions`;
-    let upstreamPayload = withSearch.payload;
-    if (pKey === 'openai' && enableWebSearch) {
-      upstreamUrl = `${baseUrl}/responses`;
-      upstreamPayload = {
-        model: targetModel,
-        input: effectiveMessages.map(m => `${m.role}: ${m.content}`).join('\n\n'),
-        tools: [{ type: 'web_search' }],
-        stream: true,
-        store: false
-      };
-    }
-
     // Call upstream API
-    let upstreamRes = await fetch(upstreamUrl, {
+    let upstreamRes = await fetch(`${baseUrl}/chat/completions`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': authHeader
       },
-      body: JSON.stringify(upstreamPayload)
+      body: JSON.stringify(withSearch.payload)
     });
 
     // Some provider/model combinations may reject search params.

@@ -262,7 +262,7 @@ export async function GET(request: NextRequest) {
       if (!activeLicense.expiresAt || new Date(activeLicense.expiresAt) > new Date()) {
         effectiveLicenseType = activeLicense.licenseType;
         effectiveSubscriptionEnd = activeLicense.expiresAt;
-        hasActiveSubscription = activeLicense.licenseType === 'subscription' || activeLicense.licenseType === 'monthly';
+        hasActiveSubscription = true;
       }
     }
     const normalizedLicenseType = (effectiveLicenseType || '').toLowerCase();

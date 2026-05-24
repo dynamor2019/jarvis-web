@@ -13,7 +13,7 @@
 // Feature: Fix TS typing for WebView chrome and onOpenPay payload fields
 // Version: 10
 // P26-03-31 08:51:44
-// Policy: Do not modify directly. Explain reason before edits. Last confirm reason: local store model order confirmed by user
+// Policy: Do not modify directly. Explain reason before edits. Last confirm reason: server release package generated and user confirmed
 
 
 'use client';

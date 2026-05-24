@@ -262,9 +262,14 @@ export async function GET(request: NextRequest) {
       if (!activeLicense.expiresAt || new Date(activeLicense.expiresAt) > new Date()) {
         effectiveLicenseType = activeLicense.licenseType;
         effectiveSubscriptionEnd = activeLicense.expiresAt;
-        hasActiveSubscription = true;
+        hasActiveSubscription = activeLicense.licenseType === 'subscription' || activeLicense.licenseType === 'monthly';
       }
     }
+    const normalizedLicenseType = (effectiveLicenseType || '').toLowerCase();
+    const hasProTools = normalizedLicenseType === 'lifetime_pro' || normalizedLicenseType === 'pro' || normalizedLicenseType.includes('pro');
+    const hasLifetime = normalizedLicenseType === 'lifetime' || normalizedLicenseType === 'lifetime_personal' || normalizedLicenseType === 'lifetime_pro';
+    hasActiveSubscription = hasActiveSubscription || normalizedLicenseType === 'subscription' || normalizedLicenseType === 'monthly';
+    const userModeTag = hasProTools ? 'pro' : (hasActiveSubscription ? 'subscription' : (hasLifetime ? 'standard' : 'traffic'));
 
     // 4. 检查是否为订阅用户
     const isSubscriptionUser = 
@@ -280,6 +285,13 @@ export async function GET(request: NextRequest) {
         error: 'not_subscription_user',
         message: '仅订阅用户可以获取 AI 配置',
         licenseType: effectiveLicenseType,
+        userModeTag,
+        billingMode: userModeTag,
+        hasActiveSubscription,
+        hasLifetime,
+        hasProTools,
+        has_pro_tools: hasProTools,
+        proTools: hasProTools,
       });
     }
 
@@ -380,6 +392,14 @@ export async function GET(request: NextRequest) {
         provider,
         model,
         modelType,
+        licenseType: effectiveLicenseType,
+        userModeTag,
+        billingMode: userModeTag,
+        hasActiveSubscription,
+        hasLifetime,
+        hasProTools,
+        has_pro_tools: hasProTools,
+        proTools: hasProTools,
       });
     }
 
@@ -401,6 +421,12 @@ export async function GET(request: NextRequest) {
       trafficBalance,
       subscriptionBalance,
       hasActiveSubscription,
+      hasLifetime,
+      hasProTools,
+      has_pro_tools: hasProTools,
+      proTools: hasProTools,
+      userModeTag,
+      billingMode: userModeTag,
     });
 
   } catch (error) {

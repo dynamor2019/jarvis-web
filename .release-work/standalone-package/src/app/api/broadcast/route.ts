@@ -33,6 +33,44 @@ interface Broadcast {
 }
 
 const BROADCASTS_FILE = path.join(process.cwd(), 'data', 'broadcasts.json');
+const PC_BACKEND_BROADCAST_URL = process.env.JARVIS_PC_BROADCAST_URL || 'http://127.0.0.1:37641/api/broadcast/push';
+
+async function pushToPcBackend(message: any): Promise<number> {
+  try {
+    const response = await fetch(PC_BACKEND_BROADCAST_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(message),
+      cache: 'no-store'
+    });
+
+    if (!response.ok) {
+      console.warn('[Broadcast] PC backend push failed:', response.status);
+      return 0;
+    }
+
+    const data = await response.json().catch(() => null);
+    return Number(data?.sentCount || 0);
+  } catch (error) {
+    console.warn('[Broadcast] PC backend push unavailable:', error);
+    return 0;
+  }
+}
+
+async function getPcBackendBroadcastStatus(): Promise<{ activeClients: number; connectedCount: number } | null> {
+  try {
+    const statusUrl = PC_BACKEND_BROADCAST_URL.replace(/\/push$/, '');
+    const response = await fetch(statusUrl, { cache: 'no-store' });
+    if (!response.ok) return null;
+    const data = await response.json().catch(() => null);
+    return {
+      activeClients: Number(data?.activeClients || 0),
+      connectedCount: Number(data?.connectedCount || data?.activeClients || 0)
+    };
+  } catch {
+    return null;
+  }
+}
 
 // 确保数据目录存在
 async function ensureDataDir() {
@@ -232,9 +270,15 @@ export async function GET(request: NextRequest) {
     const allBroadcasts = deduplicateBroadcasts(broadcasts)
       .sort((a, b) => b.createdAt - a.createdAt);
 
+    const pcBackend = await getPcBackendBroadcastStatus();
+
     return NextResponse.json({
       success: true,
-      broadcasts: allBroadcasts
+      broadcasts: allBroadcasts,
+      activeClients: pcBackend?.activeClients ?? connectedClients.size,
+      connectedCount: pcBackend?.connectedCount ?? connectedClients.size,
+      webConnectedCount: connectedClients.size,
+      pcBackendConnectedCount: pcBackend?.connectedCount ?? 0
     }, { headers });
   } catch (error) {
     console.error('获取广播错误:', error);
@@ -289,12 +333,15 @@ export async function POST(request: NextRequest) {
       
       
       
-      const successCount = broadcastToAllClients({
+      const message = {
         type: 'broadcast',
         action: 'super_send',
         broadcast: broadcast,
         timestamp: now
-      });
+      };
+      const webSuccessCount = broadcastToAllClients(message);
+      const pcSuccessCount = await pushToPcBackend(message);
+      const successCount = webSuccessCount + pcSuccessCount;
 
       
       
@@ -380,12 +427,14 @@ export async function POST(request: NextRequest) {
       
       
       
-      broadcastToAllClients({
+      const message = {
         type: 'broadcast',
         action: 'hourly',
         broadcast: newBroadcast,
         timestamp: now
-      });
+      };
+      broadcastToAllClients(message);
+      await pushToPcBackend(message);
     }
 
     return NextResponse.json({

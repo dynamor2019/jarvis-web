@@ -77,21 +77,7 @@ export async function POST(request: NextRequest) {
         id: true,
         trafficTokenBalance: true,
         subscriptionTokenBalance: true,
-        username: true,
-        email: true,
-        role: true,
-        licenseType: true,
-        subscriptionEnd: true,
         updatedAt: true,
-        licenses: {
-          where: { status: 'active' },
-          select: {
-            licenseType: true,
-            expiresAt: true,
-          },
-          orderBy: { createdAt: 'desc' },
-          take: 1,
-        },
       },
     });
 
@@ -102,20 +88,6 @@ export async function POST(request: NextRequest) {
     const serverTraffic = user.trafficTokenBalance || 0;
     const serverSubscription = user.subscriptionTokenBalance || 0;
     const serverUpdatedAt = user.updatedAt ? new Date(user.updatedAt).getTime() : Date.now();
-    let effectiveLicenseType = user.licenseType || 'trial';
-    let effectiveSubscriptionEnd = user.subscriptionEnd;
-    if (user.licenses && user.licenses.length > 0) {
-      const activeLicense = user.licenses[0];
-      if (!activeLicense.expiresAt || new Date(activeLicense.expiresAt) > new Date()) {
-        effectiveLicenseType = activeLicense.licenseType;
-        effectiveSubscriptionEnd = activeLicense.expiresAt;
-      }
-    }
-    const normalizedLicenseType = (effectiveLicenseType || '').toLowerCase();
-    const hasProTools = normalizedLicenseType === 'lifetime_pro' || normalizedLicenseType === 'pro' || normalizedLicenseType.includes('pro');
-    const hasLifetime = normalizedLicenseType === 'lifetime' || normalizedLicenseType === 'lifetime_personal' || normalizedLicenseType === 'lifetime_pro';
-    const hasActiveSubscription = normalizedLicenseType === 'subscription' || normalizedLicenseType === 'monthly';
-    const userModeTag = hasProTools ? 'pro' : (hasActiveSubscription ? 'subscription' : (hasLifetime ? 'standard' : 'traffic'));
 
     const clientTraffic = toSafeInt(snapshot.trafficBalance);
     const clientSubscription = toSafeInt(snapshot.subscriptionBalance);
@@ -162,34 +134,6 @@ export async function POST(request: NextRequest) {
       success: true,
       synced_ids: syncedIds,
       server_records: [],
-      userId: user.id,
-      username: user.username,
-      email: user.email,
-      role: user.role,
-      licenseType: effectiveLicenseType,
-      subscriptionEnd: effectiveSubscriptionEnd,
-      userModeTag,
-      billingMode: userModeTag,
-      hasActiveSubscription,
-      hasLifetime,
-      hasProTools,
-      has_pro_tools: hasProTools,
-      proTools: hasProTools,
-      user: {
-        id: user.id,
-        userId: user.id,
-        username: user.username,
-        email: user.email,
-        role: user.role,
-        licenseType: effectiveLicenseType,
-        userModeTag,
-        billingMode: userModeTag,
-        hasActiveSubscription,
-        hasLifetime,
-        hasProTools,
-        has_pro_tools: hasProTools,
-        proTools: hasProTools,
-      },
       resolved: {
         trafficTokenBalance: nextTraffic,
         subscriptionTokenBalance: nextSubscription,
@@ -207,3 +151,4 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ success: false, error: 'sync_failed' }, { status: 500 });
   }
 }
+

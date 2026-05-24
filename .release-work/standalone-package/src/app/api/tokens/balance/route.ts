@@ -157,6 +157,11 @@ export async function GET(request: NextRequest) {
     const subscriptionBalance = user.subscriptionTokenBalance || 0;
     const tokenBalance = trafficBalance + subscriptionBalance;
     const walletUpdatedAt = user.updatedAt ? new Date(user.updatedAt).getTime() : Date.now();
+    const normalizedLicenseType = (effectiveLicenseType || '').toLowerCase();
+    const hasProTools = normalizedLicenseType === 'lifetime_pro' || normalizedLicenseType === 'pro' || normalizedLicenseType.includes('pro');
+    const hasLifetime = normalizedLicenseType === 'lifetime' || normalizedLicenseType === 'lifetime_personal' || normalizedLicenseType === 'lifetime_pro';
+    const hasActiveSubscription = normalizedLicenseType === 'subscription' || normalizedLicenseType === 'monthly';
+    const userModeTag = hasProTools ? 'pro' : (hasActiveSubscription ? 'subscription' : (hasLifetime ? 'standard' : 'traffic'));
 
     return NextResponse.json({
       success: true,
@@ -176,8 +181,13 @@ export async function GET(request: NextRequest) {
       subscriptionEnd: effectiveSubscriptionEnd,
       apiKey: effectiveApiKey,
       modelType: effectiveModelType,
-      billingMode: effectiveLicenseType === 'subscription' ? 'subscription' : 'traffic',
-      hasActiveSubscription: effectiveLicenseType === 'subscription',
+      userModeTag,
+      billingMode: userModeTag,
+      hasActiveSubscription,
+      hasLifetime,
+      hasProTools,
+      has_pro_tools: hasProTools,
+      proTools: hasProTools,
     });
   } catch (error) {
     console.error('??Token????:', error);

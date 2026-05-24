@@ -4,7 +4,7 @@ export const runtime = 'edge'
 
 export async function POST(request: NextRequest) {
   try {
-    const backendPort = process.env.TOKEN_SYNC_BACKEND_PORT || process.env.LOCAL_BACKEND_PORT || '3001'
+    const backendPort = process.env.TOKEN_SYNC_BACKEND_PORT || process.env.LOCAL_BACKEND_PORT || '37641'
     const target = `http://127.0.0.1:${backendPort}/ai/generate-local`
     
     const headers: Record<string, string> = {}
@@ -47,7 +47,7 @@ export async function POST(request: NextRequest) {
   } catch (e: any) {
     
     return NextResponse.json({ 
-        error: `Failed to connect to local backend: ${e?.message || 'Unknown error'}. Please ensure the Jarvis Backend Service is running on port 3001.` 
+        error: `Failed to connect to local backend: ${e?.message || 'Unknown error'}. Please ensure the Jarvis Backend Service is running on port 37641.` 
     }, { status: 500 })
   }
 }

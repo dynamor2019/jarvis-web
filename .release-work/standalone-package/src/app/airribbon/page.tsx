@@ -1,3 +1,14 @@
+// [CodeGuard Feature Index]
+// - postToHost -> line 24
+// - normalizeChunk -> line 96
+// - flushLists -> line 190
+// - mapJsonToSections -> line 272
+// - onWebViewMessage -> line 422
+// - onSend -> line 486
+// - safeIcon -> line 538
+// - pics -> line 886
+// [/CodeGuard Feature Index]
+
 "use client"
 import React, { useEffect, useRef, useState } from 'react'
 import '@icon-park/react/styles/index.css'
@@ -104,9 +115,6 @@ export default function AirRibbonPage() {
   const lastChunkRef = useRef<string>('')
   const [allowed, setAllowed] = useState(false)
   const [settingsOpen, setSettingsOpen] = useState(false)
-  const [apiKey, setApiKey] = useState<string>(() => {
-    try { return localStorage.getItem('api_key') || '' } catch { return '' }
-  })
   const [company, setCompany] = useState<string>(() => {
     try {
       const saved = localStorage.getItem('custom_model_config')
@@ -127,11 +135,6 @@ export default function AirRibbonPage() {
       return localStorage.getItem('local_model') || ''
     } catch { return '' }
   })
-  const [proEnabled, setProEnabled] = useState<boolean>(() => {
-    try { return localStorage.getItem('pro_api_enabled') === '1' } catch { return false }
-  })
-  const apiKeyRef = useRef<string>(apiKey)
-  useEffect(() => { apiKeyRef.current = apiKey }, [apiKey])
   const [cards, setCards] = useState<Array<{ id: string; text: string; sent?: boolean; sections?: Array<{ tab: string; items: Array<{ title: string; text: string; type?: string }> }> }>>([])
   const [draftId, setDraftId] = useState<string | null>(null)
   const draftIdRef = useRef<string | null>(null)
@@ -145,31 +148,10 @@ export default function AirRibbonPage() {
   const structuredModeRef = useRef<boolean>(false)
   const [cardTabs, setCardTabs] = useState<Record<string, number>>({})
 
-  const isWV = typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('wv') === '1'
-
   const sendInstruction = React.useCallback((instruction: string, pics: Array<{ base64: string; mime?: string }>) => {
     try {
       if (pics && pics.length > 0) {
-        if (!proEnabled) {
-          setProEnabled(true)
-          try {
-            postToHost({
-              type: 'saveApiKey',
-              masked: apiKey ? (apiKey.slice(0, 4) + '…' + apiKey.slice(-4)) : '',
-              apiKeyRaw: isWV ? apiKey : undefined,
-              provider: company
-            })
-          } catch {}
-        } else {
-          try {
-            postToHost({
-              type: 'saveApiKey',
-              masked: apiKey ? (apiKey.slice(0, 4) + '…' + apiKey.slice(-4)) : '',
-              apiKeyRaw: isWV ? apiKey : undefined,
-              provider: company
-            })
-          } catch {}
-        }
+        postToHost({ type: 'saveApiKey', provider: company, model })
       }
     } catch {}
     const id = String(nextIdRef.current++)
@@ -182,7 +164,7 @@ export default function AirRibbonPage() {
     try { lastInstructionRef.current = instruction } catch {}
     try { lastImagesRef.current = pics || [] } catch {}
     postToHost({ type: 'generate', instruction: instruction, images, provider: company, model })
-  }, [apiKey, isWV, proEnabled, company, model])
+  }, [company, model])
 
   function normalizeLatexInText(s: string): string {
     let t = String(s || '')
@@ -416,11 +398,11 @@ export default function AirRibbonPage() {
             if (shouldFallback && !liteFallbackTriedRef.current) {
               liteFallbackTriedRef.current = true
                 try {
-                postToHost({ type: 'saveApiKey', masked: apiKeyRef.current ? (apiKeyRef.current.slice(0, 4) + '…' + apiKeyRef.current.slice(-4)) : '', apiKeyRaw: ((typeof window !== 'undefined' && new URLSearchParams(window.location.search).get('wv') === '1') ? apiKeyRef.current : undefined), provider: 'doubao-lite' })
+                postToHost({ type: 'saveApiKey', provider: 'doubao-lite', model })
               } catch {}
               try {
                 const imgs = (lastImagesRef.current || []).map(s => ({ base64: s.base64, mime: s.mime }))
-                postToHost({ type: 'generate', instruction: lastInstructionRef.current || '', images: imgs })
+                postToHost({ type: 'generate', instruction: lastInstructionRef.current || '', images: imgs, provider: company, model })
               } catch {}
             } else {
               alert(err)
@@ -534,11 +516,10 @@ export default function AirRibbonPage() {
 
   function onSaveSettings() {
     try {
-      localStorage.setItem('api_key', apiKey)
-      localStorage.setItem('pro_api_enabled', proEnabled ? '1' : '0')
       localStorage.setItem('local_provider', company)
       localStorage.setItem('local_model', model)
-      postToHost({ type: 'saveApiKey', masked: apiKey ? apiKey.slice(0, 4) + '…' + apiKey.slice(-4) : '', apiKeyRaw: isWV ? apiKey : undefined, provider: company })
+      localStorage.setItem('custom_model_config', JSON.stringify({ provider: company, model }))
+      postToHost({ type: 'saveApiKey', provider: company, model })
       setSettingsOpen(false)
     } catch {
       setSettingsOpen(false)
@@ -558,7 +539,7 @@ export default function AirRibbonPage() {
     try { return (ALL_ICON_KEYS as ReadonlyArray<string>).includes(type) ? type : 'Application' as IconType } catch { return 'Application' as IconType }
   }
 
-  if (hydrated && blocked.offline && !apiKey) {
+  if (hydrated && blocked.offline) {
     const reason = blocked.offline
       ? intl.formatMessage({ id: 'airribbon.offline.network_error', defaultMessage: 'Network unavailable, cannot connect to server' })
       : intl.formatMessage({ id: 'airribbon.offline.not_pro', defaultMessage: 'Current account is not subscribed to JarvisAI PRO' })
@@ -873,8 +854,6 @@ export default function AirRibbonPage() {
             <div style={{ width: 420, background: '#FFFFFF', borderRadius: 12, boxShadow: '0 12px 40px rgba(0,0,0,0.25)', padding: 16 }}>
               <div style={{ fontWeight: 700, fontSize: 18, marginBottom: 12 }}><FormattedMessage id="airribbon.settings.title" defaultMessage="Settings" /></div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-                <label style={{ fontSize: 13, color: '#374151' }}><FormattedMessage id="airribbon.settings.apikey" defaultMessage="API Key" /></label>
-                <input value={apiKey} onChange={e => setApiKey(e.target.value)} placeholder={intl.formatMessage({ id: 'airribbon.settings.apikey_placeholder', defaultMessage: 'Enter your API Key' })} style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #E5E7EB' }} />
                 <label style={{ fontSize: 13, color: '#374151' }}><FormattedMessage id="airribbon.settings.company" defaultMessage="Company" /></label>
                 <select value={company} onChange={e => setCompany(e.target.value)} style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #E5E7EB' }}>
                   <option value="doubao">{intl.formatMessage({ id: 'airribbon.settings.provider.doubao', defaultMessage: 'Doubao (ByteDance)' })}</option>
@@ -884,22 +863,6 @@ export default function AirRibbonPage() {
                 </select>
                 <label style={{ fontSize: 13, color: '#374151' }}><FormattedMessage id="airribbon.settings.model" defaultMessage="Model" /></label>
                 <input value={model} onChange={e => setModel(e.target.value)} placeholder={intl.formatMessage({ id: 'airribbon.settings.model_placeholder', defaultMessage: 'e.g. deepseek-chat / gpt-4o / Qwen/Qwen2.5-7B-Instruct' })} style={{ width: '100%', padding: 10, borderRadius: 8, border: '1px solid #E5E7EB' }} />
-                <label style={{ fontSize: 13, color: '#374151' }}><FormattedMessage id="airribbon.settings.advanced_api" defaultMessage="Advanced API (Toggle)" /></label>
-                <div style={{ width: 140, height: 36, borderRadius: 18, background: proEnabled ? '#4F46E5' : '#E5E7EB', position: 'relative', cursor: 'pointer', userSelect: 'none' }}>
-                  <div style={{ 
-                    width: 68, height: 32, borderRadius: 16, background: '#FFFFFF', 
-                    position: 'absolute', top: 2, 
-                    left: proEnabled ? 70 : 2, 
-                    transition: 'all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1)',
-                    boxShadow: '0 2px 6px rgba(0,0,0,0.15)',
-                    display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontWeight: 600, fontSize: 12, color: proEnabled ? '#4F46E5' : '#6B7280'
-                  }}>
-                    {proEnabled ? 'PRO' : 'LITE'}
-                  </div>
-                  <div onClick={() => setProEnabled(false)} style={{ position: 'absolute', left: 0, top: 0, width: '50%', height: '100%', zIndex: 10 }} />
-                  <div onClick={() => setProEnabled(true)} style={{ position: 'absolute', right: 0, top: 0, width: '50%', height: '100%', zIndex: 10 }} />
-                </div>
                 <div style={{ display: 'flex', gap: 10, justifyContent: 'flex-end', marginTop: 8 }}>
                   <button onClick={() => setSettingsOpen(false)} style={{ padding: '8px 12px', borderRadius: 8, border: '1px solid #E5E7EB', background: '#FFFFFF', cursor: 'pointer' }}><FormattedMessage id="airribbon.btn.cancel" defaultMessage="Cancel" /></button>
                   <button onClick={onSaveSettings} style={{ padding: '8px 12px', borderRadius: 8, border: 'none', background: '#4F46E5', color: '#FFFFFF', cursor: 'pointer' }}><FormattedMessage id="airribbon.btn.save" defaultMessage="Save" /></button>

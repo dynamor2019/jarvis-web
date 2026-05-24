@@ -1,3 +1,12 @@
+// [CodeGuard Feature Index]
+// - applyDomesticWebSearchOptions -> line 28
+// - p -> line 37
+// - fetchZhipuWebSearchContext -> line 68
+// - q -> line 72
+// - POST -> line 123
+// - requestTemperature -> line 266
+// [/CodeGuard Feature Index]
+
 /* [CodeGuard Feature Index] */
 /* - Function applyDomesticWebSearchOptions -> line 9 */
 /* - Function POST -> line 48 */
@@ -303,14 +312,27 @@ export async function POST(request: NextRequest) {
     };
     const withSearch = applyDomesticWebSearchOptions(basePayload, pKey || '', enableWebSearch);
 
+    let upstreamUrl = `${baseUrl}/chat/completions`;
+    let upstreamPayload = withSearch.payload;
+    if (pKey === 'openai' && enableWebSearch) {
+      upstreamUrl = `${baseUrl}/responses`;
+      upstreamPayload = {
+        model: targetModel,
+        input: effectiveMessages.map(m => `${m.role}: ${m.content}`).join('\n\n'),
+        tools: [{ type: 'web_search' }],
+        stream: true,
+        store: false
+      };
+    }
+
     // Call upstream API
-    let upstreamRes = await fetch(`${baseUrl}/chat/completions`, {
+    let upstreamRes = await fetch(upstreamUrl, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': authHeader
       },
-      body: JSON.stringify(withSearch.payload)
+      body: JSON.stringify(upstreamPayload)
     });
 
     // Some provider/model combinations may reject search params.
