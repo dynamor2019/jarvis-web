@@ -21,10 +21,6 @@ export interface PaymentConfig {
   };
 }
 
-const DEFAULT_ALIPAY_APP_CERT_PATH = 'certs/alipay/appCertPublicKey_2021006128602915.crt';
-const DEFAULT_ALIPAY_PUBLIC_CERT_PATH = 'certs/alipay/alipayCertPublicKey_RSA2.crt';
-const DEFAULT_ALIPAY_ROOT_CERT_PATH = 'certs/alipay/alipayRootCert.crt';
-
 export async function getSystemConfig(key: string): Promise<string | null> {
   const config = await prisma.systemConfig.findUnique({
     where: { key },
@@ -71,18 +67,18 @@ export async function getPaymentConfig(): Promise<PaymentConfig> {
     appId: configMap['alipay_app_id'] || null,
     privateKey: configMap['alipay_private_key'] || null,
     publicKey: configMap['alipay_public_key'] || null,
-    appCertPath: configMap['alipay_app_cert_path'] || process.env.ALIPAY_APP_CERT_PATH || DEFAULT_ALIPAY_APP_CERT_PATH,
-    alipayCertPath: configMap['alipay_public_cert_path'] || process.env.ALIPAY_PUBLIC_CERT_PATH || DEFAULT_ALIPAY_PUBLIC_CERT_PATH,
-    alipayRootCertPath: configMap['alipay_root_cert_path'] || process.env.ALIPAY_ROOT_CERT_PATH || DEFAULT_ALIPAY_ROOT_CERT_PATH,
+    appCertPath: configMap['alipay_app_cert_path'] || null,
+    alipayCertPath: configMap['alipay_public_cert_path'] || null,
+    alipayRootCertPath: configMap['alipay_root_cert_path'] || null,
   };
 
   const alipayFromEnv = {
     appId: process.env.ALIPAY_APP_ID || null,
     privateKey: process.env.ALIPAY_PRIVATE_KEY || null,
     publicKey: process.env.ALIPAY_PUBLIC_KEY || null,
-    appCertPath: process.env.ALIPAY_APP_CERT_PATH || DEFAULT_ALIPAY_APP_CERT_PATH,
-    alipayCertPath: process.env.ALIPAY_PUBLIC_CERT_PATH || DEFAULT_ALIPAY_PUBLIC_CERT_PATH,
-    alipayRootCertPath: process.env.ALIPAY_ROOT_CERT_PATH || DEFAULT_ALIPAY_ROOT_CERT_PATH,
+    appCertPath: process.env.ALIPAY_APP_CERT_PATH || null,
+    alipayCertPath: process.env.ALIPAY_PUBLIC_CERT_PATH || null,
+    alipayRootCertPath: process.env.ALIPAY_ROOT_CERT_PATH || null,
   };
 
   return {
