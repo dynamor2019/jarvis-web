@@ -38,14 +38,14 @@
     ],
     "src/components/Hero.tsx": [
       {
-        "version": 5,
-        "feature": "hero_singleline_title_stats_visual_upgrade",
-        "timestamp": "2026-04-08T16:06:13",
-        "hash": "0a0f6fe7f5b89db0dd0e504a48c30f93f109b283757a34df12006a85a3bd1d00",
-        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/Hero.tsx.1cadf8397b73.v5.bak",
+        "version": 8,
+        "feature": "pre_hero_particle_interaction",
+        "timestamp": "2026-06-08T10:36:47",
+        "hash": "fd186011fb012520c726140561f5d3d588428445b119908e6a4d4ce090f4e1b9",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/Hero.tsx.1cadf8397b73.v8.bak",
         "original_path": "C:/Jarvis/jarvis-web/src/components/Hero.tsx",
         "file_key": "src/components/Hero.tsx",
-        "reason": "Auto snapshot after confirm: user confirmed: remove citation wording, enforce single-line title, and enrich stats card visual design"
+        "reason": "baseline before adding interactive hero particles"
       }
     ],
     "src/i18n/messages/fr-FR.json": [
@@ -62,14 +62,14 @@
     ],
     "src/app/store/page.tsx": [
       {
-        "version": 9,
-        "feature": "model_ordering_release",
-        "timestamp": "2026-05-07T19:12:56",
-        "hash": "bd35a814c6bf9c63c0354158316c00c569ad510b406b85a1d1530db92f5688e9",
-        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/page.tsx.0c5273670611.v9.bak",
+        "version": 10,
+        "feature": "pre_agent_market_card_style",
+        "timestamp": "2026-06-10T21:09:10",
+        "hash": "eded4030cee847c78fde954086dc9f5bd35672c92ed25ba075dbb431d746151e",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/page.tsx.0c5273670611.v10.bak",
         "original_path": "C:/Jarvis/jarvis-web/src/app/store/page.tsx",
         "file_key": "src/app/store/page.tsx",
-        "reason": "Auto snapshot after confirm: server release package generated and user confirmed"
+        "reason": "sync before adjusting plugin marketplace card style"
       }
     ],
     "scripts/process-allowlist-guard.sh": [
@@ -245,9 +245,9 @@
     "src/app/api/auth/wechat/callback/route.ts": 1,
     "src/app/api/auth/wechat/status/route.ts": 1,
     "src/app/login/page.tsx": 18,
-    "src/components/Hero.tsx": 5,
+    "src/components/Hero.tsx": 8,
     "src/i18n/messages/fr-FR.json": 2,
-    "src/app/store/page.tsx": 9,
+    "src/app/store/page.tsx": 10,
     "scripts/process-allowlist-guard.sh": 1,
     "ops/process-allowlist-guard.service": 1,
     "start.sh": 6,
@@ -289,20 +289,20 @@
       "reason": "sync state before text tweak"
     },
     "src/components/Hero.tsx": {
-      "timestamp": "2026-04-08T16:06:13",
-      "feature": "hero_singleline_title_stats_visual_upgrade",
-      "hash": "0a0f6fe7f5b89db0dd0e504a48c30f93f109b283757a34df12006a85a3bd1d00",
+      "timestamp": "2026-06-08T10:36:47",
+      "feature": "pre_hero_particle_interaction",
+      "hash": "fd186011fb012520c726140561f5d3d588428445b119908e6a4d4ce090f4e1b9",
       "path": "C:/Jarvis/jarvis-web/src/components/Hero.tsx",
       "source": "snapshot",
-      "reason": "Auto snapshot after confirm: user confirmed: remove citation wording, enforce single-line title, and enrich stats card visual design"
+      "reason": "baseline before adding interactive hero particles"
     },
     "src/app/store/page.tsx": {
-      "timestamp": "2026-05-07T19:12:56",
-      "feature": "model_ordering_release",
-      "hash": "bd35a814c6bf9c63c0354158316c00c569ad510b406b85a1d1530db92f5688e9",
+      "timestamp": "2026-06-10T21:09:10",
+      "feature": "pre_agent_market_card_style",
+      "hash": "eded4030cee847c78fde954086dc9f5bd35672c92ed25ba075dbb431d746151e",
       "path": "C:/Jarvis/jarvis-web/src/app/store/page.tsx",
       "source": "snapshot",
-      "reason": "Auto snapshot after confirm: server release package generated and user confirmed"
+      "reason": "sync before adjusting plugin marketplace card style"
     },
     "src/i18n/messages/fr-FR.json": {
       "timestamp": "2026-04-21T10:55:21",
@@ -443,7 +443,10 @@
       "hero_cta_docs_usecases_update",
       "hero_crown_usecases_trim",
       "hero_promise_cards_worker_needs_v1",
-      "hero_singleline_title_stats_visual_upgrade"
+      "hero_singleline_title_stats_visual_upgrade",
+      "home_lusion_light_revamp_pre",
+      "pre_unify_home_style",
+      "pre_hero_particle_interaction"
     ],
     "src/i18n/messages/fr-FR.json": [
       "store_fr_copy_alignment",
@@ -457,7 +460,8 @@
       "subscription_payment_baseline",
       "store_dynamic_cache_fix_baseline",
       "model_ordering",
-      "model_ordering_release"
+      "model_ordering_release",
+      "pre_agent_market_card_style"
     ],
     "scripts/process-allowlist-guard.sh": [
       "process-allowlist-guard"
@@ -614,9 +618,9 @@
     },
     "src/i18n/messages/zh-CN.json": {
       "source": "sidecar",
-      "updated_at": "2026-04-03T12:19:16",
-      "file_hash": "504fe311288058f2c2dc24123e273c7dcf9fa5ccae6017fa29d62b98457aa839",
-      "line_count": 1235,
+      "updated_at": "2026-06-08T10:02:21",
+      "file_hash": "ef7530ea21b4429da9a898d97bf7f467831c4e54ec1f7a8c497a4652fdc3c9b4",
+      "line_count": 1232,
       "entry_signatures": [
         {
           "feature": "common.back",
@@ -629,33 +633,33 @@
           "signature": "a9879f4ed116"
         },
         {
-          "feature": "admin.features.subtitle",
-          "line": 354,
-          "signature": "8a46b9c7387b"
+          "feature": "admin.features.title",
+          "line": 353,
+          "signature": "549af86c18fd"
         },
         {
-          "feature": "admin.users.stats.virtual",
-          "line": 530,
-          "signature": "7c53b9c2b9f8"
+          "feature": "admin.users.stats.real",
+          "line": 529,
+          "signature": "64c3d532dfa1"
         },
         {
-          "feature": "quick.special.prefix",
-          "line": 706,
-          "signature": "0f638add8fae"
+          "feature": "quick.special.0.title",
+          "line": 704,
+          "signature": "78447e422e94"
         },
         {
-          "feature": "docs.section.content-tools.sub.pdf-tools.feat.0",
-          "line": 882,
-          "signature": "35bda9460193"
+          "feature": "docs.section.content-tools.sub.pdf-tools.feat.2",
+          "line": 880,
+          "signature": "c80188191f37"
         },
         {
           "feature": "login.msg.alipay_scan_guide",
-          "line": 1058,
+          "line": 1055,
           "signature": "398715a01319"
         },
         {
           "feature": "store.model.siliconflow.name",
-          "line": 1234,
+          "line": 1231,
           "signature": "39eb4f5c0fa4"
         }
       ]
@@ -984,6 +988,281 @@
           "feature": "pics",
           "line": 886,
           "signature": "bf85c197405e"
+        }
+      ]
+    },
+    "src/app/api/broadcast/route.ts": {
+      "source": "inline",
+      "updated_at": "2026-06-07T21:13:23",
+      "file_hash": "79d4a82934994e7a11ca5752ef8ca52d6d3806828d3714fea8ecf5614fbb3d72",
+      "line_count": 518,
+      "entry_signatures": [
+        {
+          "feature": "pushToPcBackend",
+          "line": 49,
+          "signature": "fca6481da84e"
+        },
+        {
+          "feature": "getPcBackendBroadcastStatus",
+          "line": 71,
+          "signature": "8125a63784b7"
+        },
+        {
+          "feature": "loadBroadcasts",
+          "line": 96,
+          "signature": "9924044c7730"
+        },
+        {
+          "feature": "saveBroadcasts",
+          "line": 116,
+          "signature": "0fbfc1c78f4e"
+        },
+        {
+          "feature": "GET",
+          "line": 191,
+          "signature": "1876cf8342c0"
+        },
+        {
+          "feature": "POST",
+          "line": 270,
+          "signature": "d5d8ec5b8fb4"
+        },
+        {
+          "feature": "DELETE",
+          "line": 468,
+          "signature": "0bb4418ed369"
+        },
+        {
+          "feature": "OPTIONS",
+          "line": 509,
+          "signature": "355ce1a5e17d"
+        }
+      ]
+    },
+    "src/components/Themes.tsx": {
+      "source": "inline",
+      "updated_at": "2026-06-12T14:57:30",
+      "file_hash": "8828c525f1bcb3a84cf51bbc86f6c5c04aa5780d7e268194b39ae652ba8debbc",
+      "line_count": 249,
+      "entry_signatures": [
+        {
+          "feature": "Theme customization section and skin carousel",
+          "line": 34,
+          "signature": "a4602fe5d690"
+        },
+        {
+          "feature": "Theme entry animation and carousel styles",
+          "line": 78,
+          "signature": "6af0a75b994a"
+        },
+        {
+          "feature": "Theme preview layout and skin image display",
+          "line": 138,
+          "signature": "dffe0708e3f5"
+        }
+      ]
+    },
+    "prisma/schema.prisma": {
+      "source": "sidecar",
+      "updated_at": "2026-06-10T20:59:18",
+      "file_hash": "ff1b576013d7ffbf5fce865ae84aa9267df5df9f74c6bd96fd0dd55e8019bb58",
+      "line_count": 505,
+      "entry_signatures": [
+        {
+          "feature": "Core user billing and license models",
+          "line": 13,
+          "signature": "a4f9d8b155e5"
+        },
+        {
+          "feature": "Feature request demand market models",
+          "line": 298,
+          "signature": "ab6166c97c1f"
+        },
+        {
+          "feature": "Store plugin marketplace metadata",
+          "line": 337,
+          "signature": "39d69cde0bf2"
+        },
+        {
+          "feature": "System configuration and AI model settings",
+          "line": 398,
+          "signature": "14aa30070c92"
+        }
+      ]
+    },
+    "src/app/admin/settings/page.tsx": {
+      "source": "inline",
+      "updated_at": "2026-06-12T10:19:26",
+      "file_hash": "e07fe8bc4a1bce44017f9a6d97be8e833c35a317284c006d30209e7f8913498b",
+      "line_count": 1300,
+      "entry_signatures": [
+        {
+          "feature": "Admin system settings tabs and payment configuration",
+          "line": 34,
+          "signature": "6bbfba3a8f87"
+        },
+        {
+          "feature": "Admin agent upload tab and store marketplace metadata",
+          "line": 289,
+          "signature": "4adff2b5f075"
+        }
+      ]
+    },
+    "src/app/api/store/plugins/route.ts": {
+      "source": "inline",
+      "updated_at": "2026-06-10T21:15:59",
+      "file_hash": "0fbddd595126f9b67921e7334d5082c81e922711baa44a673c16a1f042f7e64a",
+      "line_count": 208,
+      "entry_signatures": [
+        {
+          "feature": "Store plugin marketplace listing and jarv metadata merge",
+          "line": 7,
+          "signature": "9f94d8e4572d"
+        },
+        {
+          "feature": "StorePlugin database fallback and response shaping",
+          "line": 22,
+          "signature": "a80c592bf7cf"
+        },
+        {
+          "feature": "Jarv metadata parser",
+          "line": 177,
+          "signature": "9f9804249461"
+        }
+      ]
+    },
+    "package-lock.json": {
+      "source": "sidecar",
+      "updated_at": "2026-06-12T08:36:34",
+      "file_hash": "f83bdcd6a307c651c2be8e977cefa99f813ee055d950ecb8572de850b6bc458c",
+      "line_count": 7342,
+      "entry_signatures": [
+        {
+          "feature": "NPM dependency lockfile root package metadata",
+          "line": 1,
+          "signature": "84f3c30194cb"
+        },
+        {
+          "feature": "Resolved package dependency graph",
+          "line": 49,
+          "signature": "c95e295b48fd"
+        }
+      ]
+    },
+    "src/components/HomeHorizontalScroll.tsx": {
+      "source": "inline",
+      "updated_at": "2026-06-12T13:10:45",
+      "file_hash": "260a3650efa81cce64bd5a600363598e906aac85e1b0f48c2cf595fb85bb9dc3",
+      "line_count": 295,
+      "entry_signatures": [
+        {
+          "feature": "AnimeJS panel entrance and indicator animation",
+          "line": 52,
+          "signature": "3e1c44a113eb"
+        },
+        {
+          "feature": "Horizontal panel navigation and wheel scrolling",
+          "line": 94,
+          "signature": "d1fb6e4e598a"
+        },
+        {
+          "feature": "Interactive particle canvas background",
+          "line": 118,
+          "signature": "275d4b6d5658"
+        },
+        {
+          "feature": "Panel rendering and page indicator controls",
+          "line": 251,
+          "signature": "fcd8791a3b16"
+        }
+      ]
+    },
+    "src/app/promo/jntm/page.tsx": {
+      "source": "inline",
+      "updated_at": "2026-06-12T14:47:58",
+      "file_hash": "3e23eaf783888ec356a7385aaeecf8d241199e0a8a2f05c079c7d1ff7006f202",
+      "line_count": 522,
+      "entry_signatures": [
+        {
+          "feature": "Promo header and rights explanation",
+          "line": 13,
+          "signature": "87d669e59565"
+        },
+        {
+          "feature": "Promotion process and rules sections",
+          "line": 89,
+          "signature": "80190b9f0386"
+        },
+        {
+          "feature": "Referral, transfer, and buyback actions",
+          "line": 172,
+          "signature": "31d9b0bcefc4"
+        },
+        {
+          "feature": "Promotion stats, records, and unified dark layout",
+          "line": 418,
+          "signature": "cf0cb72df997"
+        }
+      ]
+    },
+    "src/components/Footer.tsx": {
+      "source": "inline",
+      "updated_at": "2026-06-12T15:42:45",
+      "file_hash": "9fd2adb49fa1687aa061662e17b00dc662a9d3a9d9a42be343aea393d3bb482e",
+      "line_count": 284,
+      "entry_signatures": [
+        {
+          "feature": "Footer link data and final steps",
+          "line": 1,
+          "signature": "de5b9f9fcaa0"
+        },
+        {
+          "feature": "AnimeJS interactive orbit animation",
+          "line": 40,
+          "signature": "b781c23339d5"
+        },
+        {
+          "feature": "Footer layout and link columns",
+          "line": 144,
+          "signature": "2a029b62572b"
+        },
+        {
+          "feature": "Copyright and ICP filing",
+          "line": 241,
+          "signature": "258118b0e91b"
+        }
+      ]
+    },
+    "src/components/BroadcastCard.tsx": {
+      "source": "inline",
+      "updated_at": "2026-06-15T15:35:31",
+      "file_hash": "4641be1f4720d071edc053179717510429606a034d999b56deb01cc44b66a336",
+      "line_count": 235,
+      "entry_signatures": [
+        {
+          "feature": "syncForeground",
+          "line": 42,
+          "signature": "ff22294a80c9"
+        },
+        {
+          "feature": "handleClose",
+          "line": 81,
+          "signature": "9f9f30903412"
+        },
+        {
+          "feature": "handleAction",
+          "line": 88,
+          "signature": "842292a13f0f"
+        },
+        {
+          "feature": "getTypeStyles",
+          "line": 95,
+          "signature": "388b4fae39b2"
+        },
+        {
+          "feature": "getTypeLabel",
+          "line": 124,
+          "signature": "21ca5e0b0d18"
         }
       ]
     }

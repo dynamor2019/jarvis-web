@@ -16,7 +16,7 @@ import { FormattedMessage } from 'react-intl';
 
 export default function Navbar() {
     return (
-        <Suspense fallback={<div className="h-16 bg-white/80 backdrop-blur-md fixed w-full z-50 top-0 border-b border-gray-100" />}>
+        <Suspense fallback={<div className="h-16 bg-slate-950/82 backdrop-blur-md fixed w-full z-50 top-0 border-b border-cyan-200/10" />}>
             <NavbarContent />
         </Suspense>
     );
@@ -30,6 +30,7 @@ function NavbarContent() {
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const isWv = searchParams.get('wv') === '1';
+    const darkNavLinkStyle = { color: '#F8FAFC' };
 
     useEffect(() => {
         const checkNavbar = () => {
@@ -114,7 +115,7 @@ function NavbarContent() {
 
     return (
         <>
-            <nav id="site-navbar" className={`${scrolled ? 'bg-white/95 shadow-md' : 'bg-gradient-to-b from-white/90 to-white/70 shadow-sm'} fixed top-0 left-0 right-0 z-50 backdrop-blur border-b border-gray-200 transition-shadow`}>
+            <nav id="site-navbar" className={`${scrolled ? 'bg-slate-950/90 shadow-[0_18px_46px_rgba(2,6,23,0.34)]' : 'bg-gradient-to-b from-slate-950/90 to-slate-950/60 shadow-sm'} fixed top-0 left-0 right-0 z-50 backdrop-blur-xl border-b border-cyan-200/10 transition-shadow`}>
                 <div className="container mx-auto px-4 md:px-6 py-3 flex justify-between items-center">
                             <Link href="/" prefetch={false} className="flex flex-col items-stretch">
                                 <div className="flex items-center gap-3">
@@ -123,9 +124,9 @@ function NavbarContent() {
                                             <path d="M23.769 14.359c-1.097 5.495-5.952 9.641-11.768 9.641-6.623 0-12-5.377-12-12s5.377-12 12-12c2.68 0 5.656 1.047 7.598 2.774-2.604-.958-5.138-.87-6.553-.626-3.951.757-6.731 3.32-7.972 6.232-2.447 5.743 1.359 10.347 5.599 10.343 2.746 0 5.152-1.853 6.583-4.202 1.099-1.802 2.308-2.388 3.187-2.357 1.259.044 2.089.566 3.326 2.195zm.231-2.541c-.981-.94-2.085-1.612-3.535-1.662-1.903-.065-3.726 1.37-4.916 3.323-1.007 1.652-2.444 2.795-3.941 3.136-3.359.765-6.683-2.785-4.694-7.451 3.461-8.121 13.861-4.826 14.826-3.618.798.999 2.219 3.515 2.26 6.272z"/>
                                         </svg>
                                     </div>
-                                    <span className="text-lg font-bold gradient-text hidden sm:block">{'\u5C0F\u8D3EAI'}</span>
+                                    <span className="text-lg font-bold hidden sm:block text-cyan-100 drop-shadow-[0_0_18px_rgba(103,232,249,0.34)]">{'\u5C0F\u8D3EAI'}</span>
                                 </div>
-                                <span className="text-xs font-bold mt-0.5 hidden sm:flex w-full justify-center items-center gap-5 gradient-text">
+                                <span className="text-xs font-bold mt-0.5 hidden sm:flex w-full justify-center items-center gap-5 text-fuchsia-300">
                                     <span className="inline-flex gap-1">
                                         <span>J</span><span>A</span><span>R</span><span>V</span><span>I</span><span>S</span>
                                     </span>
@@ -138,38 +139,44 @@ function NavbarContent() {
                     <div className="hidden md:flex gap-6 items-center">
                         <Link 
                             href="/#features"
-                            className="nav-link max-w-none text-gray-700 hover:text-[#4F46E5] transition-colors font-medium text-center leading-tight whitespace-nowrap hover:scale-105 duration-200"
+                            style={darkNavLinkStyle}
+                            className="nav-link max-w-none text-slate-200/90 hover:text-cyan-200 transition-colors font-medium text-center leading-tight whitespace-nowrap hover:scale-105 duration-200"
                         >
                             <FormattedMessage id="navbar.features" />
                         </Link>
                         <Link 
                             href="/#functions" 
-                            className="nav-link max-w-none text-gray-700 hover:text-[#4F46E5] transition-colors font-medium text-center leading-tight whitespace-nowrap hover:scale-105 duration-200"
+                            style={darkNavLinkStyle}
+                            className="nav-link max-w-none text-slate-200/90 hover:text-cyan-200 transition-colors font-medium text-center leading-tight whitespace-nowrap hover:scale-105 duration-200"
                         >
                             <FormattedMessage id="navbar.modules" />
                         </Link>
                         <Link 
                             href="/#themes" 
-                            className="nav-link max-w-none text-gray-700 hover:text-[#4F46E5] transition-colors font-medium text-center leading-tight whitespace-nowrap hover:scale-105 duration-200"
+                            style={darkNavLinkStyle}
+                            className="nav-link max-w-none text-slate-200/90 hover:text-cyan-200 transition-colors font-medium text-center leading-tight whitespace-nowrap hover:scale-105 duration-200"
                         >
                             <FormattedMessage id="navbar.themes" />
                         </Link>
                         <Link 
                             href="/#tech" 
-                            className="nav-link max-w-none text-gray-700 hover:text-[#4F46E5] transition-colors font-medium text-center leading-tight whitespace-nowrap hover:scale-105 duration-200"
+                            style={darkNavLinkStyle}
+                            className="nav-link max-w-none text-slate-200/90 hover:text-cyan-200 transition-colors font-medium text-center leading-tight whitespace-nowrap hover:scale-105 duration-200"
                         >
                             <FormattedMessage id="navbar.tech" />
                         </Link>
                         <Link 
                             href="/docs" 
+                            style={darkNavLinkStyle}
                             prefetch={false}
                             onClick={(e)=>{ try { if (pathname === '/docs') { e.preventDefault(); } } catch {} }}
-                            className="nav-link max-w-none text-gray-700 hover:text-[#4F46E5] transition-colors font-medium text-center leading-tight whitespace-nowrap hover:scale-105 duration-200"
+                            className="nav-link max-w-none text-slate-200/90 hover:text-cyan-200 transition-colors font-medium text-center leading-tight whitespace-nowrap hover:scale-105 duration-200"
                         >
                             <FormattedMessage id="navbar.docs" />
                         </Link>
                         <Link 
                             href="/promo/jntm" 
+                            style={darkNavLinkStyle}
                             prefetch={false}
                             onClick={(e) => {
                                 if (pathname === '/promo/jntm') {
@@ -177,12 +184,13 @@ function NavbarContent() {
                                     window.scrollTo({ top: 0, behavior: 'smooth' });
                                 }
                             }}
-                            className="nav-link max-w-none text-gray-700 hover:text-[#4F46E5] transition-colors font-medium text-center leading-tight whitespace-nowrap hover:scale-105 duration-200"
+                            className="nav-link max-w-none text-slate-200/90 hover:text-cyan-200 transition-colors font-medium text-center leading-tight whitespace-nowrap hover:scale-105 duration-200"
                         >
                             <FormattedMessage id="navbar.promo.jntm" />
                         </Link>
                         <Link 
                             href="/store" 
+                            style={darkNavLinkStyle}
                             prefetch={false}
                             onClick={(e) => {
                                 if (pathname === '/store') {
@@ -190,12 +198,13 @@ function NavbarContent() {
                                     window.scrollTo({ top: 0, behavior: 'smooth' });
                                 }
                             }}
-                            className="nav-link max-w-none text-gray-700 hover:text-[#4F46E5] transition-colors font-medium flex items-center gap-1 text-center leading-tight whitespace-nowrap hover:scale-105 duration-200"
+                            className="nav-link max-w-none text-slate-200/90 hover:text-cyan-200 transition-colors font-medium flex items-center gap-1 text-center leading-tight whitespace-nowrap hover:scale-105 duration-200"
                         >
                             <FormattedMessage id="navbar.store" />
                         </Link>
                         <Link 
                             href="/features" 
+                            style={darkNavLinkStyle}
                             prefetch={false}
                             onClick={(e) => {
                                 if (pathname === '/features') {
@@ -203,7 +212,7 @@ function NavbarContent() {
                                     window.scrollTo({ top: 0, behavior: 'smooth' });
                                 }
                             }}
-                            className="nav-link max-w-none text-gray-700 hover:text-[#4F46E5] transition-colors font-medium flex items-center gap-1 text-center leading-tight whitespace-nowrap hover:scale-105 duration-200"
+                            className="nav-link max-w-none text-slate-200/90 hover:text-cyan-200 transition-colors font-medium flex items-center gap-1 text-center leading-tight whitespace-nowrap hover:scale-105 duration-200"
                         >
                             <FormattedMessage id="navbar.market" />
                         </Link>
@@ -212,9 +221,10 @@ function NavbarContent() {
 
                     <div className="flex items-center gap-2 md:gap-4">
                         <div className="hidden md:flex items-center gap-2">
-                            <span className="text-gray-700 text-sm"><FormattedMessage id="navbar.language" /></span>
+                            <span className="text-slate-300 text-sm"><FormattedMessage id="navbar.language" /></span>
                             <select
                                 value={lang}
+                                style={{ backgroundColor: '#0F172A', color: '#F8FAFC' }}
                                 onChange={(e) => {
                                     const v = e.target.value;
                                     setLang(v);
@@ -222,13 +232,13 @@ function NavbarContent() {
                                     localStorage.setItem('preferredLanguageManual', '1');
                                     window.dispatchEvent(new Event('jarvis-languagechange'));
                                 }}
-                                className="px-2 py-1 border border-gray-300 rounded text-sm"
+                                className="px-2 py-1 border border-cyan-200/20 bg-slate-950/52 text-slate-100 rounded text-sm"
                             >
-                                <option value="zh-CN"><FormattedMessage id="navbar.lang.zhCN" /></option>
-                                <option value="en-US"><FormattedMessage id="navbar.lang.enUS" /></option>
-                                <option value="fr-FR"><FormattedMessage id="navbar.lang.frFR" /></option>
-                                <option value="de-DE"><FormattedMessage id="navbar.lang.deDE" /></option>
-                                <option value="es-ES"><FormattedMessage id="navbar.lang.esES" /></option>
+                                <option value="zh-CN" style={{ backgroundColor: '#0F172A', color: '#F8FAFC' }}><FormattedMessage id="navbar.lang.zhCN" /></option>
+                                <option value="en-US" style={{ backgroundColor: '#0F172A', color: '#F8FAFC' }}><FormattedMessage id="navbar.lang.enUS" /></option>
+                                <option value="fr-FR" style={{ backgroundColor: '#0F172A', color: '#F8FAFC' }}><FormattedMessage id="navbar.lang.frFR" /></option>
+                                <option value="de-DE" style={{ backgroundColor: '#0F172A', color: '#F8FAFC' }}><FormattedMessage id="navbar.lang.deDE" /></option>
+                                <option value="es-ES" style={{ backgroundColor: '#0F172A', color: '#F8FAFC' }}><FormattedMessage id="navbar.lang.esES" /></option>
                             </select>
                         </div>
                         {isLoggedIn ? (
@@ -249,10 +259,10 @@ function NavbarContent() {
                             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
                             style={{
                                 backgroundColor: isMobileMenuOpen ? 'rgba(79, 70, 229, 0.1)' : 'transparent',
-                                color: isMobileMenuOpen ? '#4F46E5' : '#374151',
+                                color: isMobileMenuOpen ? '#A5F3FC' : '#E2E8F0',
                                 boxShadow: isMobileMenuOpen ? '0 4px 6px -1px rgba(0, 0, 0, 0.1)' : 'none',
                             }}
-                            className="md:hidden p-2 rounded-lg transition-all duration-200 hover:bg-[#4F46E5]/5 hover:text-[#4F46E5] active:scale-95 focus-visible:ring-2 focus-visible:ring-[#4F46E5] focus-visible:ring-offset-2"
+                            className="md:hidden p-2 rounded-lg transition-all duration-200 hover:bg-cyan-300/10 hover:text-cyan-200 active:scale-95 focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
                             aria-label="Toggle menu"
                         >
                             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -263,40 +273,40 @@ function NavbarContent() {
                 </div>
 
                 {isMobileMenuOpen && (
-                    <div className="md:hidden bg-white/95 backdrop-blur border-t border-gray-200 shadow-md animate-in fade-in slide-in-from-top-2 duration-200">
+                    <div className="md:hidden bg-slate-950/96 backdrop-blur border-t border-cyan-200/10 shadow-md animate-in fade-in slide-in-from-top-2 duration-200">
                         <div className="container mx-auto px-4 py-4 space-y-2">
                             <Link 
                                 href="/#features"
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className="block max-w-none px-3 py-2 text-gray-700 hover:text-[#4F46E5] hover:bg-gray-50 active:bg-[#4F46E5]/10 active:scale-95 focus-visible:ring-2 focus-visible:ring-[#4F46E5] focus-visible:ring-offset-2 transition-all duration-200 rounded-lg"
+                                className="block max-w-none px-3 py-2 text-slate-200/90 hover:text-cyan-200 hover:bg-cyan-300/10 active:bg-cyan-300/15 active:scale-95 focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 transition-all duration-200 rounded-lg"
                             >
                                 <FormattedMessage id="navbar.features" />
                             </Link>
                             <Link 
                                 href="/#functions"
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className="block max-w-none px-3 py-2 text-gray-700 hover:text-[#4F46E5] hover:bg-gray-50 active:bg-[#4F46E5]/10 active:scale-95 focus-visible:ring-2 focus-visible:ring-[#4F46E5] focus-visible:ring-offset-2 transition-all duration-200 rounded-lg"
+                                className="block max-w-none px-3 py-2 text-slate-200/90 hover:text-cyan-200 hover:bg-cyan-300/10 active:bg-cyan-300/15 active:scale-95 focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 transition-all duration-200 rounded-lg"
                             >
                                 <FormattedMessage id="navbar.modules" />
                             </Link>
                             <Link 
                                 href="/#themes"
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className="block max-w-none px-3 py-2 text-gray-700 hover:text-[#4F46E5] hover:bg-gray-50 active:bg-[#4F46E5]/10 active:scale-95 focus-visible:ring-2 focus-visible:ring-[#4F46E5] focus-visible:ring-offset-2 transition-all duration-200 rounded-lg"
+                                className="block max-w-none px-3 py-2 text-slate-200/90 hover:text-cyan-200 hover:bg-cyan-300/10 active:bg-cyan-300/15 active:scale-95 focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 transition-all duration-200 rounded-lg"
                             >
                                 <FormattedMessage id="navbar.themes" />
                             </Link>
                             <Link 
                                 href="/#tech"
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className="block max-w-none px-3 py-2 text-gray-700 hover:text-[#4F46E5] hover:bg-gray-50 active:bg-[#4F46E5]/10 active:scale-95 focus-visible:ring-2 focus-visible:ring-[#4F46E5] focus-visible:ring-offset-2 transition-all duration-200 rounded-lg"
+                                className="block max-w-none px-3 py-2 text-slate-200/90 hover:text-cyan-200 hover:bg-cyan-300/10 active:bg-cyan-300/15 active:scale-95 focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 transition-all duration-200 rounded-lg"
                             >
                                 <FormattedMessage id="navbar.tech" />
                             </Link>
                             <Link 
                                 href="/docs"
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className="block max-w-none px-3 py-2 text-gray-700 hover:text-[#4F46E5] hover:bg-gray-50 active:bg-[#4F46E5]/10 active:scale-95 focus-visible:ring-2 focus-visible:ring-[#4F46E5] focus-visible:ring-offset-2 transition-all duration-200 rounded-lg"
+                                className="block max-w-none px-3 py-2 text-slate-200/90 hover:text-cyan-200 hover:bg-cyan-300/10 active:bg-cyan-300/15 active:scale-95 focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 transition-all duration-200 rounded-lg"
                             >
                                 <FormattedMessage id="navbar.docs" />
                             </Link>
@@ -310,7 +320,7 @@ function NavbarContent() {
                                         window.scrollTo({ top: 0, behavior: 'smooth' });
                                     }
                                 }}
-                                className="block max-w-none px-3 py-2 text-gray-700 hover:text-[#4F46E5] hover:bg-gray-50 active:bg-[#4F46E5]/10 active:scale-95 focus-visible:ring-2 focus-visible:ring-[#4F46E5] focus-visible:ring-offset-2 transition-all duration-200 rounded-lg"
+                                className="block max-w-none px-3 py-2 text-slate-200/90 hover:text-cyan-200 hover:bg-cyan-300/10 active:bg-cyan-300/15 active:scale-95 focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 transition-all duration-200 rounded-lg"
                             >
                                 <FormattedMessage id="navbar.store" />
                             </Link>
@@ -318,7 +328,7 @@ function NavbarContent() {
                                 href="/promo/jntm"
                                 prefetch={false}
                                 onClick={() => setIsMobileMenuOpen(false)}
-                                className="block max-w-none px-3 py-2 text-gray-700 hover:text-[#4F46E5] hover:bg-gray-50 active:bg-[#4F46E5]/10 active:scale-95 focus-visible:ring-2 focus-visible:ring-[#4F46E5] focus-visible:ring-offset-2 transition-all duration-200 rounded-lg"
+                                className="block max-w-none px-3 py-2 text-slate-200/90 hover:text-cyan-200 hover:bg-cyan-300/10 active:bg-cyan-300/15 active:scale-95 focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 transition-all duration-200 rounded-lg"
                             >
                                 <FormattedMessage id="navbar.promo.jntm" />
                             </Link>
@@ -332,16 +342,17 @@ function NavbarContent() {
                                         window.scrollTo({ top: 0, behavior: 'smooth' });
                                     }
                                 }}
-                                className="block max-w-none px-3 py-2 text-gray-700 hover:text-[#4F46E5] hover:bg-gray-50 active:bg-[#4F46E5]/10 active:scale-95 focus-visible:ring-2 focus-visible:ring-[#4F46E5] focus-visible:ring-offset-2 transition-all duration-200 rounded-lg"
+                                className="block max-w-none px-3 py-2 text-slate-200/90 hover:text-cyan-200 hover:bg-cyan-300/10 active:bg-cyan-300/15 active:scale-95 focus-visible:ring-2 focus-visible:ring-cyan-200 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950 transition-all duration-200 rounded-lg"
                             >
                                 <FormattedMessage id="navbar.market" />
                             </Link>
                             
-                            <div className="border-t border-gray-200 pt-3 mt-3">
+                            <div className="border-t border-cyan-200/10 pt-3 mt-3">
                                 <div className="flex items-center gap-2 mb-3">
-                                    <span className="text-gray-700 text-sm"><FormattedMessage id="navbar.language" /></span>
+                                    <span className="text-slate-300 text-sm"><FormattedMessage id="navbar.language" /></span>
                                     <select
                                         value={lang}
+                                        style={{ backgroundColor: '#0F172A', color: '#F8FAFC' }}
                                         onChange={(e) => {
                                             const v = e.target.value;
                                             setLang(v);
@@ -349,13 +360,13 @@ function NavbarContent() {
                                             localStorage.setItem('preferredLanguageManual', '1');
                                             window.dispatchEvent(new Event('jarvis-languagechange'));
                                         }}
-                                        className="px-2 py-1 border border-gray-300 rounded text-sm"
+                                        className="px-2 py-1 border border-cyan-200/20 bg-slate-950/52 text-slate-100 rounded text-sm"
                                     >
-                                        <option value="zh-CN"><FormattedMessage id="navbar.lang.zhCN" /></option>
-                                        <option value="en-US"><FormattedMessage id="navbar.lang.enUS" /></option>
-                                        <option value="fr-FR"><FormattedMessage id="navbar.lang.frFR" /></option>
-                                        <option value="de-DE"><FormattedMessage id="navbar.lang.deDE" /></option>
-                                        <option value="es-ES"><FormattedMessage id="navbar.lang.esES" /></option>
+                                        <option value="zh-CN" style={{ backgroundColor: '#0F172A', color: '#F8FAFC' }}><FormattedMessage id="navbar.lang.zhCN" /></option>
+                                        <option value="en-US" style={{ backgroundColor: '#0F172A', color: '#F8FAFC' }}><FormattedMessage id="navbar.lang.enUS" /></option>
+                                        <option value="fr-FR" style={{ backgroundColor: '#0F172A', color: '#F8FAFC' }}><FormattedMessage id="navbar.lang.frFR" /></option>
+                                        <option value="de-DE" style={{ backgroundColor: '#0F172A', color: '#F8FAFC' }}><FormattedMessage id="navbar.lang.deDE" /></option>
+                                        <option value="es-ES" style={{ backgroundColor: '#0F172A', color: '#F8FAFC' }}><FormattedMessage id="navbar.lang.esES" /></option>
                                     </select>
                                 </div>
                             </div>

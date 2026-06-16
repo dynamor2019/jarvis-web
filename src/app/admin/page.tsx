@@ -4,7 +4,7 @@
 
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { FormattedMessage, useIntl } from 'react-intl';
@@ -39,6 +39,9 @@ interface FeatureRank {
     total: number;
 }
 
+type UserSortField = 'user' | 'role' | 'balance' | 'totalSpent' | 'transactions' | 'usageRecords' | 'isActive' | 'createdAt';
+type SortDirection = 'asc' | 'desc';
+
 export default function AdminPage() {
     const router = useRouter();
     const intl = useIntl();
@@ -50,6 +53,10 @@ export default function AdminPage() {
     const [page, setPage] = useState(1);
     const [totalPages, setTotalPages] = useState(1);
     const [mounted, setMounted] = useState(false);
+    const [userSort, setUserSort] = useState<{ field: UserSortField; direction: SortDirection }>({
+        field: 'createdAt',
+        direction: 'desc',
+    });
 
     const fetchStats = useCallback(async (token: string) => {
         try {
@@ -124,6 +131,58 @@ export default function AdminPage() {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         router.push('/');
+    };
+
+    const handleUserSort = (field: UserSortField) => {
+        setUserSort((current) => ({
+            field,
+            direction: current.field === field && current.direction === 'asc' ? 'desc' : 'asc',
+        }));
+    };
+
+    const sortedUsers = useMemo(() => {
+        return [...users].sort((a, b) => {
+            let result = 0;
+
+            if (userSort.field === 'user') {
+                const aName = a.name || a.username || a.email;
+                const bName = b.name || b.username || b.email;
+                result = aName.localeCompare(bName, 'zh-CN');
+            } else if (userSort.field === 'role') {
+                result = a.role.localeCompare(b.role, 'zh-CN');
+            } else if (userSort.field === 'balance') {
+                result = a.balance - b.balance;
+            } else if (userSort.field === 'totalSpent') {
+                result = a.totalSpent - b.totalSpent;
+            } else if (userSort.field === 'transactions') {
+                result = a._count.transactions - b._count.transactions;
+            } else if (userSort.field === 'usageRecords') {
+                result = a._count.usageRecords - b._count.usageRecords;
+            } else if (userSort.field === 'isActive') {
+                result = Number(a.isActive) - Number(b.isActive);
+            } else {
+                result = new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime();
+            }
+
+            return userSort.direction === 'asc' ? result : -result;
+        });
+    }, [users, userSort]);
+
+    const renderSortableHeader = (field: UserSortField, label: string) => {
+        const isActive = userSort.field === field;
+        const sortMark = isActive ? (userSort.direction === 'asc' ? '↑' : '↓') : '↕';
+
+        return (
+            <button
+                type="button"
+                onClick={() => handleUserSort(field)}
+                className="inline-flex items-center gap-1 uppercase hover:text-gray-900"
+                title={`点击按${label}排序`}
+            >
+                <span>{label}</span>
+                <span className="text-[10px]" aria-hidden="true">{sortMark}</span>
+            </button>
+        );
     };
 
     if (!mounted || loading) {
@@ -270,18 +329,18 @@ export default function AdminPage() {
                         <table className="w-full">
                             <thead className="bg-gray-50">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"><FormattedMessage id="admin.table.user" defaultMessage="用户" /></th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"><FormattedMessage id="admin.table.role" defaultMessage="角色" /></th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"><FormattedMessage id="admin.table.balance" defaultMessage="余额" /></th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"><FormattedMessage id="admin.table.spent" defaultMessage="消费" /></th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"><FormattedMessage id="admin.table.transactions" defaultMessage="交易" /></th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"><FormattedMessage id="admin.table.usage" defaultMessage="使用" /></th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"><FormattedMessage id="admin.table.status" defaultMessage="状态" /></th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase"><FormattedMessage id="admin.table.registered" defaultMessage="注册时间" /></th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{renderSortableHeader('user', intl.formatMessage({ id: 'admin.table.user', defaultMessage: '用户' }))}</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{renderSortableHeader('role', intl.formatMessage({ id: 'admin.table.role', defaultMessage: '角色' }))}</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{renderSortableHeader('balance', intl.formatMessage({ id: 'admin.table.balance', defaultMessage: '余额' }))}</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{renderSortableHeader('totalSpent', intl.formatMessage({ id: 'admin.table.spent', defaultMessage: '消费' }))}</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{renderSortableHeader('transactions', intl.formatMessage({ id: 'admin.table.transactions', defaultMessage: '交易' }))}</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{renderSortableHeader('usageRecords', intl.formatMessage({ id: 'admin.table.usage', defaultMessage: '使用' }))}</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{renderSortableHeader('isActive', intl.formatMessage({ id: 'admin.table.status', defaultMessage: '状态' }))}</th>
+                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">{renderSortableHeader('createdAt', intl.formatMessage({ id: 'admin.table.registered', defaultMessage: '注册时间' }))}</th>
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200">
-                                {users.map((user) => (
+                                {sortedUsers.map((user) => (
                                     <tr key={user.id} className="hover:bg-gray-50">
                                         <td className="px-6 py-4">
                                             <div>

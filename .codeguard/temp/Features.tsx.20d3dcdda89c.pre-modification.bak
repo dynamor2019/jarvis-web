@@ -1,0 +1,104 @@
+"use client";
+type FeatureIcon = 'ai' | 'formula' | 'assistant' | 'document';
+const features = [
+    {
+        title: "Word 成稿工作台",
+        iconKey: "ai" as FeatureIcon,
+        items: [
+            "AI 生成、改写、续写、摘要、翻译集中处理",
+            "278 种 AI 咒语模板覆盖常见写作场景",
+            "提示词历史和个人预设可复用",
+            "生成内容直接落入 Word 文档"
+        ],
+        color: "#4F46E5"
+    },
+    {
+        title: "文档格式中枢",
+        iconKey: "formula" as FeatureIcon,
+        items: [
+            "正文、H1-H6 标题、表格格式独立配置",
+            "页眉页脚、页码和目录统一收口",
+            "空格、空行、标点和隐藏格式清理",
+            "统计、拆分、PDF 导出辅助最终交付"
+        ],
+        color: "#EC4899"
+    },
+    {
+        title: "公式表格专线",
+        iconKey: "assistant" as FeatureIcon,
+        items: [
+            "LaTeX 转 Word 公式并自动编号",
+            "支持矩阵、分段函数、积分、上下标",
+            "每个文档独立计数，重启后可继续递增",
+            "表格缩进、三线表、跨页表头批量整理"
+        ],
+        color: "#10B981"
+    },
+    {
+        title: "订阅配置闭环",
+        iconKey: "document" as FeatureIcon,
+        items: [
+            "购买后生成加密订阅配置文件",
+            "PC 端解密服务读取 API 密钥和模型信息",
+            "配置默认 7 天有效，支持重新生成",
+            "设备绑定、签名验证和错误码方便排查"
+        ],
+        color: "#F59E0B"
+    }
+];
+
+import { FormattedMessage } from 'react-intl';
+import ProMonolineIcon from '@/components/ProMonolineIcon';
+
+export default function Features() {
+    return (
+        <section id="features" className="relative overflow-hidden bg-[linear-gradient(180deg,#f8fafc_0%,#eef7ff_58%,#ffffff_100%)] py-14 md:py-16" style={{ scrollMarginTop: '80px' }}>
+            <div className="pointer-events-none absolute left-[-12%] top-8 h-72 w-72 rounded-full bg-cyan-200/30 blur-3xl" />
+            <div className="pointer-events-none absolute right-[-10%] bottom-10 h-80 w-80 rounded-full bg-fuchsia-200/30 blur-3xl" />
+            <div className="container mx-auto px-4">
+                <div className="mx-auto mb-10 max-w-3xl text-center">
+                    <div className="mb-3 inline-flex rounded-full border border-white/70 bg-white/70 px-4 py-2 text-sm font-semibold text-indigo-700 shadow-sm backdrop-blur-xl">能力总览</div>
+                    <h2 className="text-4xl md:text-4xl font-bold mb-3 text-slate-950">
+                        <FormattedMessage id="features.heading.prefix" defaultMessage="核心" />
+                        <span className="gradient-text"><FormattedMessage id="features.heading.emphasis" defaultMessage="特色" /></span>
+                    </h2>
+                    <p className="mx-auto max-w-5xl text-base leading-7 text-slate-600 md:whitespace-nowrap">
+                        <FormattedMessage id="features.subtitle" defaultMessage="JarvisAI 提供全方位的写作辅助功能，让你的文档创作事半功倍" />
+                    </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {features.map((feature, index) => (
+                        <div
+                            key={index}
+                            className="group relative overflow-hidden rounded-2xl border border-white/70 bg-white/74 p-5 shadow-[0_18px_48px_rgba(15,23,42,0.08)] backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_26px_58px_rgba(15,23,42,0.12)]"
+                        >
+                            <div className="absolute inset-x-0 top-0 h-1" style={{ background: `linear-gradient(90deg, ${feature.color}, #06B6D4)` }} />
+                            <div className="mb-5 flex items-center gap-3">
+                                <span
+                                    className="w-12 h-12 rounded-2xl flex items-center justify-center text-2xl flex-shrink-0 shadow-sm"
+                                    style={{ backgroundColor: `${feature.color}18`, color: feature.color }}
+                                >
+                                    <ProMonolineIcon className="h-7 w-7" variant={feature.iconKey} />
+                                </span>
+                                <h3 className="font-semibold leading-tight text-slate-950">
+                                    <span className="text-lg font-bold">
+                                        <FormattedMessage id={`features.list.${index}.title`} defaultMessage={feature.title} />
+                                    </span>
+                                </h3>
+                            </div>
+                            <ul className="space-y-3 text-slate-700 text-sm">
+                                {feature.items.map((item, i) => (
+                                    <li key={i} className="flex items-start gap-2.5">
+                                        <span style={{ color: feature.color }} className="flex-shrink-0 mt-1.5 h-1.5 w-1.5 rounded-full" />
+                                        <span className="leading-relaxed"><FormattedMessage id={`features.list.${index}.item.${i}`} defaultMessage={item} /></span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}

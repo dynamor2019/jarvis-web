@@ -5,6 +5,7 @@ import Themes from '@/components/Themes';
 import TechHighlights from '@/components/TechHighlights';
 import QuickStart from '@/components/QuickStart';
 import Footer from '@/components/Footer';
+import HomeHorizontalScroll from '@/components/HomeHorizontalScroll';
 import { getSystemConfig } from '@/lib/config';
 import type { Metadata } from 'next';
 
@@ -50,14 +51,28 @@ export default async function Home() {
   const landingDownloadUrl = normalizedConfiguredUrl || DEFAULT_LANDING_DOWNLOAD_URL;
 
   return (
-    <div className="flex flex-col min-h-screen">
-      <Hero downloadUrl={landingDownloadUrl} />
-      <Features />
-      <Functions />
-      <Themes />
-      <TechHighlights />
-      <QuickStart downloadUrl={landingDownloadUrl} />
-      <Footer />
-    </div>
+    <HomeHorizontalScroll>
+      <div className="h-full bg-[#020617]">
+        <Hero downloadUrl={landingDownloadUrl} />
+      </div>
+      <div className="h-full overflow-hidden bg-[#050816]">
+        <Features />
+      </div>
+      <div className="h-full overflow-hidden bg-[#111827]">
+        <Functions />
+      </div>
+      <div className="h-full overflow-hidden bg-[#050816]">
+        <Themes />
+      </div>
+      <div className="h-full overflow-hidden bg-[#07111f]">
+        <TechHighlights />
+      </div>
+      <div className="h-full overflow-hidden bg-[#050816]">
+        <QuickStart downloadUrl={landingDownloadUrl} />
+      </div>
+      <div className="h-full overflow-hidden bg-[#020617]">
+        <Footer />
+      </div>
+    </HomeHorizontalScroll>
   );
 }

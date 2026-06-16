@@ -333,6 +333,26 @@ model FeatureRequest {
   @@index([createdAt])
 }
 
+model StorePlugin {
+  id          String   @id
+  name        String
+  version     String   @default("1.0.0")
+  price       Float    @default(0)
+  description String   @default("暂无描述")
+  fileName    String
+  author      String   @default("Jarvis")
+  group       String   @default("工具")
+  icon        String   @default("🔧")
+  featured    Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([isActive])
+  @@index([featured])
+  @@index([createdAt])
+}
+
 // 鍔熻兘璇锋眰鎶曠エ
 model FeatureVote {
   id        String         @id @default(uuid())

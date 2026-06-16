@@ -96,10 +96,10 @@ export default function DocsContent() {
       <div className="container mx-auto px-4">
         {/* Header */}
         <div className="mb-12 text-center">
-          <h1 className="text-5xl font-bold mb-4">
+          <h1 className="mb-4 bg-[linear-gradient(92deg,#f8fafc_0%,#93c5fd_38%,#5eead4_72%,#f9a8d4_100%)] bg-clip-text text-5xl font-black text-transparent">
             <FormattedMessage id="docs.title" defaultMessage="插件使用说明" />
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="mx-auto max-w-2xl text-xl leading-8 text-slate-300">
             <FormattedMessage 
               id="docs.subtitle" 
               defaultMessage="详细的功能指南和使用教程，帮助你充分利用 JarvisAI 的所有功能"
@@ -110,8 +110,8 @@ export default function DocsContent() {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
           {/* Sidebar Navigation */}
           <div className="lg:col-span-1">
-            <div className="sticky top-24 bg-white rounded-xl shadow-lg p-6">
-              <h3 className="text-lg font-bold mb-4">
+            <div className="sticky top-24 rounded-xl border border-cyan-200/15 bg-slate-950/44 p-6 shadow-[0_24px_72px_rgba(0,0,0,0.26)] backdrop-blur-xl">
+              <h3 className="mb-4 text-lg font-bold text-white">
                 <FormattedMessage id="docs.categories" defaultMessage="功能分类" />
               </h3>
               <nav className="space-y-2">
@@ -124,8 +124,8 @@ export default function DocsContent() {
                     }}
                     className={`w-full text-left px-4 py-3 rounded-lg transition-all ${
                       expandedSection === section.id
-                        ? 'bg-gradient-to-r from-indigo-500 to-pink-500 text-white font-semibold'
-                        : 'text-gray-700 hover:bg-gray-100'
+                        ? 'bg-gradient-to-r from-cyan-500 to-fuchsia-500 text-white font-semibold'
+                        : 'text-slate-300 hover:bg-white/8 hover:text-white'
                     }`}
                   >
                     <span className="mr-2">{section.icon}</span>
@@ -142,12 +142,12 @@ export default function DocsContent() {
               expandedSection === section.id && (
                 <div key={section.id} className="space-y-6">
                   {/* Section Header */}
-                  <div className="bg-white rounded-xl shadow-lg p-8 border-l-4" style={{ borderColor: section.color }}>
-                    <h2 className="text-4xl font-bold mb-2 flex items-center">
+                  <div className="rounded-xl border border-white/10 bg-white/[0.065] p-8 shadow-[0_24px_72px_rgba(0,0,0,0.24)] backdrop-blur-xl" style={{ borderLeftColor: section.color, borderLeftWidth: 4 }}>
+                    <h2 className="mb-2 flex items-center text-4xl font-bold text-white">
                       <span className="text-4xl mr-3">{section.icon}</span>
                       <FormattedMessage id={`docs.section.${section.id}.title`} />
                     </h2>
-                    <p className="text-gray-600">
+                    <p className="text-slate-300">
                       <FormattedMessage 
                         id={`docs.section.${section.id}.desc`}
                       />
@@ -159,7 +159,7 @@ export default function DocsContent() {
                     {section.subsections.map((subsection) => (
                       <div
                         key={subsection.id}
-                        className={`bg-white rounded-xl shadow-lg overflow-hidden transition-all cursor-pointer hover:shadow-xl ${
+                        className={`overflow-hidden rounded-xl border border-white/10 bg-white/[0.06] shadow-[0_18px_54px_rgba(0,0,0,0.22)] transition-all cursor-pointer hover:bg-white/[0.085] ${
                           expandedSubsection === subsection.id ? 'ring-2' : ''
                         }`}
                         
@@ -167,18 +167,18 @@ export default function DocsContent() {
                           expandedSubsection === subsection.id ? null : subsection.id
                         )}
                       >
-                        <div className="p-6 bg-gradient-to-r from-gray-50 to-white">
-                          <h3 className="text-2xl font-bold text-gray-900">
+                        <div className="bg-white/[0.04] p-6">
+                          <h3 className="text-2xl font-bold text-white">
                             <FormattedMessage id={`docs.section.${section.id}.sub.${subsection.id}.title`} />
                           </h3>
-                          <p className="text-gray-600 mt-2">
+                          <p className="mt-2 text-slate-300">
                             <FormattedMessage id={`docs.section.${section.id}.sub.${subsection.id}.desc`} />
                           </p>
                         </div>
 
                         {expandedSubsection === subsection.id && (
-                          <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
-                            <h4 className="font-semibold text-gray-900 mb-4">
+                          <div className="border-t border-white/10 bg-slate-950/24 px-6 py-4">
+                            <h4 className="mb-4 font-semibold text-white">
                               <FormattedMessage id="docs.features" defaultMessage="主要功能" />
                             </h4>
                             <ul className="space-y-3">
@@ -190,7 +190,7 @@ export default function DocsContent() {
                                   >
                                     ✓
                                   </span>
-                                  <span className="text-gray-700">
+                                  <span className="text-slate-300">
                                     <FormattedMessage id={`docs.section.${section.id}.sub.${subsection.id}.feat.${index}`} />
                                   </span>
                                 </li>
@@ -208,12 +208,12 @@ export default function DocsContent() {
         </div>
 
         {/* Tips Section */}
-        <div className="mt-16 bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 border-l-4 border-blue-500">
-          <h3 className="text-2xl font-bold mb-4 flex items-center">
+        <div className="mt-16 rounded-xl border border-cyan-200/15 bg-slate-950/42 p-8 shadow-[0_24px_72px_rgba(0,0,0,0.24)] backdrop-blur-xl">
+          <h3 className="mb-4 flex items-center text-2xl font-bold text-white">
             <span className="text-2xl mr-3">💡</span>
             <FormattedMessage id="docs.tips.title" defaultMessage="使用提示" />
           </h3>
-          <ul className="space-y-3 text-gray-700">
+          <ul className="space-y-3 text-slate-300">
             <li className="flex items-start">
               <span className="mr-3">•</span>
               <span>

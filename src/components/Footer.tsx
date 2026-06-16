@@ -1,38 +1,288 @@
+// [CodeGuard Feature Index]
+// - Footer link data and final steps -> line 8
+// - AnimeJS interactive galaxy animation -> line 47
+// - Footer layout and link columns -> line 250
+// - Copyright and ICP filing -> line 354
+// [/CodeGuard Feature Index]
+
 "use client";
+import { animate, stagger } from 'animejs';
+import { useEffect, useRef, type MouseEvent } from 'react';
 const footerLinks = {
     product: [
-        { name: "功能介绍", href: "#features" },
-        { name: "使用教程", href: "#start" },
-        { name: "价格方案", href: "/dashboard" },
-        { name: "更新日志", href: "#" }
+        { name: "先看能做什么", href: "#features" },
+        { name: "了解使用路径", href: "#functions" },
+        { name: "查看配置流程", href: "#start" },
+        { name: "进入个人中心", href: "/dashboard" }
     ],
     support: [
-        { name: "帮助中心", href: "#" },
-        { name: "联系我们", href: "/feedback" },
-        { name: "常见问题", href: "#" },
-        { name: "API文档", href: "#" }
+        { name: "阅读使用说明", href: "/docs" },
+        { name: "提交反馈", href: "/feedback" },
+        { name: "查看需求市场", href: "/features" },
+        { name: "获取支持", href: "/support" }
     ],
     legal: [
-        { name: "隐私政策", href: "#" },
-        { name: "服务条款", href: "#" },
-        { name: "Cookie政策", href: "#" },
-        { name: "知识产权", href: "#" }
+        { name: "配置安全", href: "#tech" },
+        { name: "设备绑定", href: "#tech" },
+        { name: "部署说明", href: "#tech" },
+        { name: "排错路径", href: "#start" }
     ]
 };
 
 const socialLinks = [
-    { icon: "🐙", name: "GitHub", href: "#" },
-    { icon: "🐦", name: "Twitter", href: "#" },
-    { icon: "💬", name: "WeChat", href: "#" }
+    { icon: "文", name: "Word", href: "#features" },
+    { icon: "密", name: "安全", href: "#tech" },
+    { icon: "问", name: "反馈", href: "/feedback" }
+];
+
+const finalSteps = [
+    ['01', '选模型', '选择适合当天任务的 AI 能力'],
+    ['02', '拿配置', '把权益和模型连接到本机'],
+    ['03', '进 Word', '生成、润色、排版直接完成'],
+    ['04', '可追踪', '订单、配置、错误状态都有反馈']
 ];
 
 import { FormattedMessage } from 'react-intl';
 
+function FooterTechAnimation() {
+    const rootRef = useRef<HTMLDivElement>(null);
+    const coreRef = useRef<SVGGElement>(null);
+    const washRef = useRef<HTMLDivElement>(null);
+
+    const ringConfigs = [
+        { rx: 328, ry: 68, angle: -10, color: 'url(#footerOrbitCyan)', particle: '#67e8f9' },
+        { rx: 282, ry: 96, angle: 22, color: 'url(#footerOrbitViolet)', particle: '#d8b4fe' },
+        { rx: 218, ry: 128, angle: -34, color: 'url(#footerOrbitPink)', particle: '#f0abfc' },
+        { rx: 168, ry: 54, angle: 8, color: 'url(#footerOrbitGreen)', particle: '#99f6e4' },
+    ];
+    const sparkPoints = [
+        [112, 72], [184, 236], [252, 96], [318, 214], [402, 60], [514, 246],
+        [586, 90], [668, 214], [744, 82], [812, 248], [96, 184], [828, 142],
+    ];
+
+    useEffect(() => {
+        const root = rootRef.current;
+        if (!root || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        const rings = root.querySelectorAll('[data-galaxy-ring]');
+        const orbitLines = root.querySelectorAll('[data-galaxy-orbit]');
+        const particles = root.querySelectorAll('[data-galaxy-particle]');
+        const sparks = root.querySelectorAll('[data-galaxy-spark]');
+        const scans = root.querySelectorAll('[data-galaxy-scan]');
+
+        animate(rings, {
+            rotate: (_, index) => index % 2 === 0 ? '360deg' : '-360deg',
+            duration: (_, index) => 16000 + index * 3600,
+            loop: true,
+            ease: 'linear',
+        });
+        animate(orbitLines, {
+            strokeDashoffset: [240, 0],
+            opacity: [0.18, 0.72],
+            duration: 2400,
+            delay: stagger(180),
+            ease: 'outExpo',
+        });
+        animate(particles, {
+            scale: [0.72, 1.18, 0.72],
+            opacity: [0.48, 1, 0.48],
+            duration: 2600,
+            delay: stagger(170),
+            loop: true,
+            ease: 'inOutSine',
+        });
+        animate(sparks, {
+            translateY: [0, -8, 0],
+            opacity: [0.12, 0.76, 0.12],
+            scale: [0.75, 1.28, 0.75],
+            duration: 3000,
+            delay: stagger(95),
+            loop: true,
+            ease: 'inOutSine',
+        });
+        animate(scans, {
+            translateX: [-90, 90, -90],
+            opacity: [0.12, 0.42, 0.12],
+            duration: 6200,
+            delay: stagger(420),
+            loop: true,
+            ease: 'inOutSine',
+        });
+        if (coreRef.current) {
+            animate(coreRef.current, {
+                scale: [0.96, 1.07, 0.96],
+                duration: 3200,
+                loop: true,
+                ease: 'inOutSine',
+            });
+        }
+    }, []);
+
+    const handlePointerEnter = () => {
+        const root = rootRef.current;
+        if (!root) return;
+        animate(root.querySelectorAll('[data-galaxy-ring]'), {
+            scale: [1, 1.045],
+            duration: 720,
+            ease: 'outExpo',
+        });
+    };
+
+    const handlePointerMove = (event: MouseEvent<HTMLDivElement>) => {
+        const root = rootRef.current;
+        const core = coreRef.current;
+        if (!root || !core) return;
+        const rect = root.getBoundingClientRect();
+        const x = ((event.clientX - rect.left) / rect.width - 0.5) * 22;
+        const y = ((event.clientY - rect.top) / rect.height - 0.5) * 18;
+        animate(core, {
+            translateX: x,
+            translateY: y,
+            duration: 680,
+            ease: 'outExpo',
+        });
+        if (washRef.current) {
+            animate(washRef.current, {
+                translateX: x * 1.4,
+                translateY: y * 1.2,
+                duration: 800,
+                ease: 'outExpo',
+            });
+        }
+    };
+
+    const handlePointerLeave = () => {
+        if (coreRef.current) {
+            animate(coreRef.current, { translateX: 0, translateY: 0, duration: 780, ease: 'outExpo' });
+        }
+        if (washRef.current) {
+            animate(washRef.current, { translateX: 0, translateY: 0, duration: 880, ease: 'outExpo' });
+        }
+    };
+
+    return (
+        <div
+            ref={rootRef}
+            onMouseEnter={handlePointerEnter}
+            onMouseMove={handlePointerMove}
+            onMouseLeave={handlePointerLeave}
+            className="relative mb-8 overflow-hidden rounded-[30px] border border-cyan-100/12 bg-slate-950/42 p-3 shadow-[0_26px_90px_rgba(2,6,23,0.34)] backdrop-blur-2xl"
+        >
+            <div ref={washRef} className="absolute -inset-20 bg-[radial-gradient(circle_at_50%_50%,rgba(34,211,238,0.2),transparent_28%),radial-gradient(circle_at_42%_58%,rgba(217,70,239,0.14),transparent_34%)] blur-2xl" />
+            <div className="relative min-h-[310px] overflow-hidden rounded-[26px] border border-white/8 bg-[linear-gradient(135deg,rgba(3,7,18,0.64),rgba(8,47,73,0.34),rgba(49,10,54,0.38))]">
+                <svg viewBox="0 0 920 320" className="absolute inset-0 h-full w-full" role="img" aria-label="交互式科技星系动画">
+                    <defs>
+                        <radialGradient id="footerCoreGlow" cx="50%" cy="50%" r="50%">
+                            <stop offset="0%" stopColor="#ffffff" stopOpacity="0.98" />
+                            <stop offset="28%" stopColor="#67e8f9" stopOpacity="0.95" />
+                            <stop offset="66%" stopColor="#7c3aed" stopOpacity="0.5" />
+                            <stop offset="100%" stopColor="#020617" stopOpacity="0" />
+                        </radialGradient>
+                        <linearGradient id="footerOrbitCyan" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#22d3ee" stopOpacity="0.05" />
+                            <stop offset="48%" stopColor="#a5f3fc" stopOpacity="0.78" />
+                            <stop offset="100%" stopColor="#22d3ee" stopOpacity="0.06" />
+                        </linearGradient>
+                        <linearGradient id="footerOrbitViolet" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#8b5cf6" stopOpacity="0.04" />
+                            <stop offset="50%" stopColor="#ddd6fe" stopOpacity="0.72" />
+                            <stop offset="100%" stopColor="#8b5cf6" stopOpacity="0.05" />
+                        </linearGradient>
+                        <linearGradient id="footerOrbitPink" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#ec4899" stopOpacity="0.03" />
+                            <stop offset="48%" stopColor="#f0abfc" stopOpacity="0.68" />
+                            <stop offset="100%" stopColor="#ec4899" stopOpacity="0.04" />
+                        </linearGradient>
+                        <linearGradient id="footerOrbitGreen" x1="0%" y1="0%" x2="100%" y2="0%">
+                            <stop offset="0%" stopColor="#14b8a6" stopOpacity="0.04" />
+                            <stop offset="52%" stopColor="#99f6e4" stopOpacity="0.72" />
+                            <stop offset="100%" stopColor="#14b8a6" stopOpacity="0.04" />
+                        </linearGradient>
+                        <filter id="footerSoftGlow" x="-80%" y="-80%" width="260%" height="260%">
+                            <feGaussianBlur stdDeviation="9" result="blur" />
+                            <feMerge>
+                                <feMergeNode in="blur" />
+                                <feMergeNode in="SourceGraphic" />
+                            </feMerge>
+                        </filter>
+                    </defs>
+
+                    <path data-galaxy-scan d="M110 76 C260 26 392 26 538 78 S744 126 842 74" fill="none" stroke="#67e8f9" strokeWidth="1" opacity="0.2" />
+                    <path data-galaxy-scan d="M98 244 C266 278 376 248 516 222 S724 188 846 244" fill="none" stroke="#f0abfc" strokeWidth="1" opacity="0.16" />
+                    <path d="M184 160 H736" fill="none" stroke="rgba(255,255,255,0.12)" strokeDasharray="2 18" />
+
+                    {sparkPoints.map(([cx, cy], index) => (
+                        <circle key={index} data-galaxy-spark cx={cx} cy={cy} r={index % 3 === 0 ? 2.6 : 1.7} fill={index % 2 ? '#d8b4fe' : '#67e8f9'} opacity="0.28" />
+                    ))}
+
+                    {ringConfigs.map((ring, index) => (
+                        <g key={index} data-galaxy-ring style={{ transformOrigin: '460px 160px' }}>
+                            <ellipse
+                                data-galaxy-orbit
+                                cx="460"
+                                cy="160"
+                                rx={ring.rx}
+                                ry={ring.ry}
+                                transform={`rotate(${ring.angle} 460 160)`}
+                                fill="none"
+                                stroke={ring.color}
+                                strokeWidth="1.5"
+                                strokeDasharray="18 18"
+                                strokeLinecap="round"
+                                opacity="0.36"
+                            />
+                            <circle data-galaxy-particle cx={460 + ring.rx} cy="160" r={index === 0 ? 5.2 : 4.2} fill={ring.particle} filter="url(#footerSoftGlow)" />
+                            <circle data-galaxy-particle cx={460 - ring.rx * 0.62} cy="160" r="2.8" fill="#ffffff" opacity="0.9" filter="url(#footerSoftGlow)" />
+                        </g>
+                    ))}
+
+                    <g ref={coreRef} style={{ transformOrigin: '460px 160px' }}>
+                        <circle cx="460" cy="160" r="68" fill="url(#footerCoreGlow)" filter="url(#footerSoftGlow)" opacity="0.94" />
+                        <circle cx="460" cy="160" r="26" fill="rgba(255,255,255,0.72)" />
+                        <path d="M444 160 H476 M460 144 V176" stroke="#082f49" strokeWidth="3" strokeLinecap="round" opacity="0.72" />
+                    </g>
+                </svg>
+            </div>
+        </div>
+    );
+}
+
 export default function Footer() {
     return (
-        <footer className="bg-[#1E293B] text-white py-12">
-            <div className="container mx-auto px-4">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+        <footer className="relative flex min-h-[calc(100vh-64px)] items-center overflow-hidden bg-[#0f172a] py-12 text-white">
+            <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_16%_22%,rgba(45,212,191,0.12),transparent_30%),radial-gradient(circle_at_82%_72%,rgba(99,102,241,0.13),transparent_34%)]" />
+            <div className="container relative mx-auto px-4">
+                <FooterTechAnimation />
+                <div className="relative mb-10 overflow-hidden rounded-[34px] border border-cyan-200/14 bg-white/[0.045] p-6 shadow-[0_30px_100px_rgba(2,6,23,0.28)] backdrop-blur-xl md:p-8">
+                    <img src="/assets/showcase/writing-flow.jpg" alt="" className="absolute inset-0 h-full w-full object-cover opacity-10 mix-blend-luminosity" />
+                    <div className="absolute inset-0 bg-[linear-gradient(105deg,rgba(2,6,23,0.94),rgba(8,47,73,0.62),rgba(30,41,59,0.86))]" />
+                    <div className="pointer-events-none absolute left-8 right-8 top-1/2 h-px bg-gradient-to-r from-transparent via-cyan-200/70 to-transparent" />
+                    <div className="relative grid gap-7 md:grid-cols-[0.82fr_1.18fr] md:items-center">
+                        <div>
+                            <div className="mb-3 inline-flex rounded-full border border-cyan-200/20 bg-cyan-300/10 px-3 py-1 text-xs font-semibold text-cyan-100">从选择到成稿</div>
+                            <h2 className="text-3xl font-black leading-tight md:text-4xl">
+                                <FormattedMessage id="footer.final.title" defaultMessage="把复杂 AI 文档流程，收进一条清晰路径。" />
+                            </h2>
+                            <p className="mt-4 max-w-md text-sm leading-6 text-slate-300">
+                                从模型、配置到 Word 成稿，最后一屏给用户一个明确的收束感和下一步入口。
+                            </p>
+                        </div>
+                        <div className="grid gap-3 sm:grid-cols-4">
+                            {finalSteps.map((item) => (
+                                <div key={item[0]} className="relative min-h-[138px] rounded-2xl border border-white/10 bg-slate-950/40 p-4 shadow-[0_18px_54px_rgba(8,47,73,0.22)]">
+                                    <div className="mb-5 flex items-center justify-between">
+                                        <span className="text-xs font-black text-cyan-100/70">{item[0]}</span>
+                                        <span className="h-2.5 w-2.5 rounded-full bg-cyan-200 shadow-[0_0_20px_rgba(125,211,252,0.9)]" />
+                                    </div>
+                                    <div className="text-lg font-bold text-white">{item[1]}</div>
+                                    <div className="mt-2 text-xs leading-5 text-slate-300">{item[2]}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-8 md:grid-cols-4">
                     {/* Brand */}
                     <div>
                         <div className="flex items-center gap-3 mb-4">
@@ -41,7 +291,7 @@ export default function Footer() {
                             </div>
                             <h2 className="text-xl font-bold">JarvisAI</h2>
                         </div>
-                        <p className="text-gray-400 mb-4 text-sm">
+                        <p className="text-slate-400 mb-4 text-sm leading-6">
                             <FormattedMessage id="footer.tagline" defaultMessage="智能Word写作助手，让AI赋能你的文档创作" />
                         </p>
                         <div className="flex gap-4">
@@ -49,7 +299,7 @@ export default function Footer() {
                                 <a 
                                     key={index}
                                     href={social.href} 
-                                    className="text-2xl hover:scale-110 transition-transform"
+                                    className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-sm font-bold hover:scale-110 hover:bg-white/10 transition-transform"
                                     title={social.name}
                                 >
                                     {social.icon}
@@ -102,8 +352,9 @@ export default function Footer() {
                 </div>
 
                 {/* Copyright */}
-                <div className="border-t border-gray-800 mt-10 pt-6 text-center text-gray-500">
-                    <FormattedMessage id="footer.copyright" defaultMessage="© 2025 Jarvis AI. All rights reserved." />
+                <div className="mt-10 border-t border-white/10 pt-6 text-center text-sm text-slate-500">
+                    <div><FormattedMessage id="footer.copyright" defaultMessage="© 2025 Jarvis AI. All rights reserved." /></div>
+                    <div className="mt-2">津ICP备2026000398号-1</div>
                 </div>
             </div>
         </footer>

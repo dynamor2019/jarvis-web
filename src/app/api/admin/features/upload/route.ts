@@ -1,0 +1,150 @@
+import { NextRequest, NextResponse } from 'next/server';
+import { promises as fs } from 'fs';
+import path from 'path';
+import { verifyToken } from '@/lib/auth';
+import { prisma } from '@/lib/prisma';
+
+export const runtime = 'nodejs';
+
+const ALLOWED_EXTENSIONS = new Set(['.jarv']);
+const MAX_SIZE = 1024 * 1024 * 1024;
+
+export async function ensureStorePluginTable() {
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "StorePlugin" (
+      "id" TEXT NOT NULL PRIMARY KEY,
+      "name" TEXT NOT NULL,
+      "version" TEXT NOT NULL DEFAULT '1.0.0',
+      "price" REAL NOT NULL DEFAULT 0,
+      "description" TEXT NOT NULL DEFAULT '暂无描述',
+      "fileName" TEXT NOT NULL,
+      "author" TEXT NOT NULL DEFAULT 'Jarvis',
+      "group" TEXT NOT NULL DEFAULT '工具',
+      "icon" TEXT NOT NULL DEFAULT '🔧',
+      "featured" BOOLEAN NOT NULL DEFAULT false,
+      "isActive" BOOLEAN NOT NULL DEFAULT true,
+      "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+}
+
+function cleanText(value: FormDataEntryValue | null, fallback: string) {
+  const text = typeof value === 'string' ? value.trim() : '';
+  return text || fallback;
+}
+
+function cleanPrice(value: FormDataEntryValue | null) {
+  const raw = typeof value === 'string' ? value.trim() : '';
+  if (!raw) return 0;
+  const price = Number(raw);
+  return Number.isFinite(price) && price >= 0 ? price : 0;
+}
+
+function cleanPluginId(value: FormDataEntryValue | null) {
+  const raw = typeof value === 'string' ? value.trim() : '';
+  const safe = raw.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 120);
+  return safe.replace(/\.jarv$/i, '');
+}
+
+function getSafeExtension(filename: string) {
+  const ext = path.extname(filename || '').toLowerCase();
+  return ALLOWED_EXTENSIONS.has(ext) ? ext : '';
+}
+
+export async function requireAdmin(request: NextRequest) {
+  const authHeader = request.headers.get('authorization');
+  if (!authHeader?.startsWith('Bearer ')) return false;
+
+  const payload = verifyToken(authHeader.substring(7));
+  if (!payload?.userId) return false;
+
+  const admin = await prisma.user.findUnique({
+    where: { id: payload.userId },
+    select: { role: true },
+  });
+
+  return admin?.role === 'admin';
+}
+
+export async function POST(request: NextRequest) {
+  try {
+    const isAdmin = await requireAdmin(request);
+    if (!isAdmin) {
+      return NextResponse.json({ success: false, error: '需要管理员权限' }, { status: 403 });
+    }
+
+    const form = await request.formData();
+    const file = form.get('featurePackage');
+    const rawName = form.get('name');
+    const rawVersion = form.get('version');
+    const rawDescription = form.get('description');
+    const rawPrice = form.get('price');
+    const rawPluginId = form.get('pluginId');
+    if (!(file instanceof File)) {
+      return NextResponse.json({ success: false, error: '请上传 .jarv 功能包文件' }, { status: 400 });
+    }
+
+    if (
+      typeof rawName !== 'string' || !rawName.trim() ||
+      typeof rawVersion !== 'string' || !rawVersion.trim() ||
+      typeof rawDescription !== 'string' || !rawDescription.trim()
+    ) {
+      return NextResponse.json({ success: false, error: '请填写智能体名称、版本号和描述' }, { status: 400 });
+    }
+
+    if (typeof rawPrice !== 'string' || !Number.isFinite(Number(rawPrice)) || Number(rawPrice) < 0) {
+      return NextResponse.json({ success: false, error: '费用必须是大于等于 0 的数字' }, { status: 400 });
+    }
+
+    if (file.size <= 0 || file.size > MAX_SIZE) {
+      return NextResponse.json({ success: false, error: '文件大小不合法（最大 1GB）' }, { status: 400 });
+    }
+
+    const ext = getSafeExtension(file.name);
+    if (!ext) {
+      return NextResponse.json({ success: false, error: '只支持 .jarv 文件' }, { status: 400 });
+    }
+
+    const pluginsDir = process.env.JARVIS_PLUGIN_DIR || path.join(process.cwd(), 'plugins');
+    await fs.mkdir(pluginsDir, { recursive: true });
+
+    const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_').slice(0, 120);
+    const requestedPluginId = cleanPluginId(rawPluginId);
+    const finalName = requestedPluginId ? `${requestedPluginId}${ext}` : (safeName.endsWith(ext) ? safeName : `${safeName || 'jarvis_agent'}${ext}`);
+    const pluginId = finalName.replace(/\.jarv$/i, '');
+    const finalPath = path.join(pluginsDir, finalName);
+
+    const bytes = await file.arrayBuffer();
+    await fs.writeFile(finalPath, Buffer.from(bytes));
+
+    const name = cleanText(rawName, pluginId);
+    const version = cleanText(rawVersion, '1.0.0');
+    const description = cleanText(rawDescription, '暂无描述');
+    const price = cleanPrice(rawPrice);
+
+    await ensureStorePluginTable();
+    await prisma.$executeRaw`
+      INSERT INTO "StorePlugin" ("id", "name", "version", "price", "description", "fileName", "updatedAt")
+      VALUES (${pluginId}, ${name}, ${version}, ${price}, ${description}, ${finalName}, CURRENT_TIMESTAMP)
+      ON CONFLICT("id") DO UPDATE SET
+        "name" = excluded."name",
+        "version" = excluded."version",
+        "price" = excluded."price",
+        "description" = excluded."description",
+        "fileName" = excluded."fileName",
+        "isActive" = true,
+        "updatedAt" = CURRENT_TIMESTAMP
+    `;
+
+    return NextResponse.json({
+      success: true,
+      plugin: { id: pluginId, name, version, price, description },
+      url: `/api/store/download?pluginId=${encodeURIComponent(pluginId)}`,
+      name: finalName,
+    });
+  } catch (error) {
+    console.error('upload feature package failed:', error);
+    return NextResponse.json({ success: false, error: '上传失败' }, { status: 500 });
+  }
+}

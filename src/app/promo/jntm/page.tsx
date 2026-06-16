@@ -1,3 +1,10 @@
+// [CodeGuard Feature Index]
+// - Promo header and rights explanation -> line 13
+// - Promotion process and rules sections -> line 89
+// - Referral, transfer, and buyback actions -> line 172
+// - Promotion stats, records, and unified dark layout -> line 418
+// [/CodeGuard Feature Index]
+
 "use client"
 import { useEffect, useMemo, useState, useCallback } from 'react'
 import Link from 'next/link'
@@ -421,15 +428,95 @@ function ComplianceFooter() {
 
 export default function Page() {
   return (
-    <div className="max-w-6xl mx-auto px-4 md:px-6 py-6 md:py-10 space-y-6">
-      <HeaderBanner />
-      <RightsTable />
-      <ProcessFlow />
-      <RulesAccordion />
-      <FunctionsHub />
-      <DataDashboard />
-      <Records />
-      <ComplianceFooter />
+    <div className="jntm-page relative min-h-screen overflow-hidden bg-[#050816] px-4 py-8 text-white md:px-6 md:py-12">
+      <div className="pointer-events-none absolute inset-0">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_14%_12%,rgba(34,211,238,0.22),transparent_28%),radial-gradient(circle_at_82%_18%,rgba(236,72,153,0.2),transparent_30%),radial-gradient(circle_at_52%_86%,rgba(79,70,229,0.2),transparent_36%),linear-gradient(180deg,#050816_0%,#0f172a_58%,#111827_100%)]" />
+        <div className="absolute inset-0 opacity-35 [background-image:radial-gradient(circle,rgba(125,211,252,0.8)_1px,transparent_1px)] [background-size:88px_88px]" />
+      </div>
+      <div className="relative mx-auto max-w-6xl space-y-6">
+        <HeaderBanner />
+        <RightsTable />
+        <ProcessFlow />
+        <RulesAccordion />
+        <FunctionsHub />
+        <DataDashboard />
+        <Records />
+        <ComplianceFooter />
+      </div>
+      <style jsx global>{`
+        .jntm-page .bg-gradient-to-r.from-amber-300 {
+          border: 1px solid rgba(255, 255, 255, 0.16);
+          background: linear-gradient(135deg, rgba(14, 165, 233, 0.22), rgba(168, 85, 247, 0.22), rgba(236, 72, 153, 0.18));
+          box-shadow: 0 30px 100px rgba(2, 6, 23, 0.38);
+          backdrop-filter: blur(24px);
+          color: #f8fafc;
+        }
+        .jntm-page .bg-gradient-to-r.from-amber-300 .text-gray-700,
+        .jntm-page .text-gray-600,
+        .jntm-page .text-gray-700 {
+          color: rgb(203 213 225 / 0.88);
+        }
+        .jntm-page .border {
+          border-color: rgb(255 255 255 / 0.12);
+        }
+        .jntm-page .rounded-xl,
+        .jntm-page .rounded-lg {
+          box-shadow: 0 24px 70px rgba(2, 6, 23, 0.28);
+        }
+        .jntm-page div.border.rounded-xl,
+        .jntm-page div.border.rounded-lg {
+          background: rgb(15 23 42 / 0.48);
+          backdrop-filter: blur(20px);
+        }
+        .jntm-page .bg-white,
+        .jntm-page .bg-gray-100,
+        .jntm-page .bg-rose-50 {
+          background: rgb(255 255 255 / 0.07);
+        }
+        .jntm-page .bg-amber-400 {
+          background: linear-gradient(180deg, #67e8f9, #8b5cf6);
+        }
+        .jntm-page table {
+          color: rgb(226 232 240 / 0.92);
+        }
+        .jntm-page thead tr {
+          color: rgb(165 243 252 / 0.9);
+        }
+        .jntm-page tr.border-t {
+          border-color: rgb(255 255 255 / 0.1);
+        }
+        .jntm-page input {
+          border-color: rgb(255 255 255 / 0.14);
+          background: rgb(2 6 23 / 0.42);
+          color: #f8fafc;
+          outline: none;
+        }
+        .jntm-page input::placeholder {
+          color: rgb(148 163 184 / 0.78);
+        }
+        .jntm-page button,
+        .jntm-page a.bg-blue-600,
+        .jntm-page .bg-gray-900 {
+          border: 1px solid rgb(255 255 255 / 0.12);
+          background: linear-gradient(90deg, #2563eb, #9333ea);
+          color: white;
+          box-shadow: 0 18px 46px rgb(37 99 235 / 0.22);
+          transition: transform 180ms ease, box-shadow 180ms ease, opacity 180ms ease;
+        }
+        .jntm-page button:hover,
+        .jntm-page a.bg-blue-600:hover {
+          transform: translateY(-1px);
+          box-shadow: 0 24px 58px rgb(147 51 234 / 0.28);
+        }
+        .jntm-page .text-blue-600,
+        .jntm-page .text-amber-500,
+        .jntm-page .text-rose-700 {
+          color: #67e8f9;
+        }
+        .jntm-page .list-disc li::marker {
+          color: #22d3ee;
+        }
+      `}</style>
     </div>
   )
 }

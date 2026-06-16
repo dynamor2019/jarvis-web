@@ -8,7 +8,7 @@ export const metadata: Metadata = {
 
 export default function DocsPage() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_18%_16%,rgba(34,211,238,0.18),transparent_30%),radial-gradient(circle_at_82%_18%,rgba(236,72,153,0.14),transparent_32%),linear-gradient(180deg,#020617_0%,#07111f_48%,#0f172a_100%)] text-white">
       <DocsContent />
     </div>
   );

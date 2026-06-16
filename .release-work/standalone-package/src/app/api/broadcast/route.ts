@@ -1,3 +1,14 @@
+// [CodeGuard Feature Index]
+// - pushToPcBackend -> line 49
+// - getPcBackendBroadcastStatus -> line 71
+// - loadBroadcasts -> line 96
+// - saveBroadcasts -> line 116
+// - GET -> line 191
+// - POST -> line 270
+// - DELETE -> line 468
+// - OPTIONS -> line 509
+// [/CodeGuard Feature Index]
+
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
 import { promises as fs } from 'fs';
@@ -210,43 +221,6 @@ export async function GET(request: NextRequest) {
 
       
 
-      // 只在首次获取时增加计数（通过检查lastDisplayTime）
-      // 如果距离上次显示超过1分钟，则认为是新的一次显示
-      const oneMinuteAgo = now - 60000;
-      const broadcastsToUpdate = activeBroadcasts.filter(b => 
-        !b.lastDisplayTime || b.lastDisplayTime < oneMinuteAgo
-      );
-
-      if (broadcastsToUpdate.length > 0) {
-        
-        
-        // 更新计数和最后显示时间，并记录发送时间
-        broadcastsToUpdate.forEach(b => {
-          b.displayCount = (b.displayCount || 0) + 1;
-          b.lastDisplayTime = now;
-          
-          // 记录发送时间
-          if (!b.sendRecords) {
-            b.sendRecords = [];
-          }
-          const sendTime = new Date(now);
-          b.sendRecords.push({
-            timestamp: now,
-            time: sendTime.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit', second: '2-digit' }),
-            count: b.displayCount
-          });
-        });
-        
-        // 保存更新
-        const updatedBroadcasts = broadcasts.map(b => {
-          const updated = broadcastsToUpdate.find(u => u.id === b.id);
-          return updated || b;
-        });
-        await saveBroadcasts(updatedBroadcasts);
-      }
-
-      
-      
       return NextResponse.json({
         success: true,
         broadcasts: activeBroadcasts

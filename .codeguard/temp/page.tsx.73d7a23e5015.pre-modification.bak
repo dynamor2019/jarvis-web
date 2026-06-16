@@ -9,7 +9,7 @@ import { getSystemConfig } from '@/lib/config';
 import type { Metadata } from 'next';
 
 const DEFAULT_LANDING_DOWNLOAD_URL = 'https://share.weiyun.com/5LObuK4n';
-export const revalidate = 600;
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: '小贾AI官网 - 中文办公写作提效工具',

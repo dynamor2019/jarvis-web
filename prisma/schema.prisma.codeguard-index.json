@@ -1,20 +1,24 @@
 {
   "file": "prisma/schema.prisma",
-  "updated_at": "2026-03-23T10:36:49",
-  "line_count": 403,
-  "file_hash": "a12a1fcaf2df9e448d577894292134150b8444511a7959ccc13cf63fb8fde995",
+  "updated_at": "2026-06-10T20:59:18",
+  "line_count": 505,
+  "file_hash": "ff1b576013d7ffbf5fce865ae84aa9267df5df9f74c6bd96fd0dd55e8019bb58",
   "entries": [
     {
-      "feature": "User identity and balance fields",
+      "feature": "Core user billing and license models",
       "line": 13
     },
     {
-      "feature": "Order and license billing models",
-      "line": 188
+      "feature": "Feature request demand market models",
+      "line": 298
     },
     {
-      "feature": "Token package and subscription config",
-      "line": 347
+      "feature": "Store plugin marketplace metadata",
+      "line": 337
+    },
+    {
+      "feature": "System configuration and AI model settings",
+      "line": 398
     }
   ]
 }

@@ -1,6 +1,46 @@
+// [CodeGuard Feature Index]
+// - Store plugin marketplace listing and jarv metadata merge -> line 7
+// - StorePlugin database fallback and response shaping -> line 22
+// - Jarv metadata parser -> line 177
+// [/CodeGuard Feature Index]
+
 import { NextResponse } from 'next/server';
 import { readdir, readFile } from 'fs/promises';
 import { join } from 'path';
+import { prisma } from '@/lib/prisma';
+
+type StorePluginRecord = {
+  id: string;
+  name: string;
+  version: string;
+  price: number;
+  description: string;
+  author: string;
+  group: string;
+  icon: string;
+  featured: boolean | number;
+  updatedAt: Date | string;
+};
+
+async function ensureStorePluginTable() {
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "StorePlugin" (
+      "id" TEXT NOT NULL PRIMARY KEY,
+      "name" TEXT NOT NULL,
+      "version" TEXT NOT NULL DEFAULT '1.0.0',
+      "price" REAL NOT NULL DEFAULT 0,
+      "description" TEXT NOT NULL DEFAULT '暂无描述',
+      "fileName" TEXT NOT NULL,
+      "author" TEXT NOT NULL DEFAULT 'Jarvis',
+      "group" TEXT NOT NULL DEFAULT '工具',
+      "icon" TEXT NOT NULL DEFAULT '🔧',
+      "featured" BOOLEAN NOT NULL DEFAULT false,
+      "isActive" BOOLEAN NOT NULL DEFAULT true,
+      "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+}
 
 // 插件配置
 const getPluginConfig = async () => {
@@ -39,6 +79,14 @@ export async function GET() {
     // 读取插件配置
     const pluginConfig = await getPluginConfig();
 
+    await ensureStorePluginTable();
+    const dbPlugins = await prisma.$queryRaw<StorePluginRecord[]>`
+      SELECT "id", "name", "version", "price", "description", "author", "group", "icon", "featured", "updatedAt"
+      FROM "StorePlugin"
+      WHERE "isActive" = true
+      ORDER BY "featured" DESC, "updatedAt" DESC
+    `;
+    const dbPluginMap = new Map(dbPlugins.map(plugin => [plugin.id, plugin]));
     const plugins = [];
 
     for (const file of jarvFiles) {
@@ -50,17 +98,18 @@ export async function GET() {
         const metadata = parseJarvMetadata(content);
         const pluginId = file.replace('.jarv', '');
         const config = pluginConfig[pluginId] || {};
+        const dbPlugin = dbPluginMap.get(pluginId);
         
         plugins.push({
           id: pluginId,
-          name: metadata.name || pluginId,
-          version: metadata.version || '1.0.0',
-          price: config.price || 0,
-          description: metadata.description || '暂无描述',
-          author: metadata.author || 'Jarvis',
-          group: metadata.group || config.category || '工具',
-          icon: metadata.icon || '🔧',
-          featured: config.featured || false,
+          name: dbPlugin?.name || metadata.name || pluginId,
+          version: dbPlugin?.version || metadata.version || '1.0.0',
+          price: dbPlugin?.price ?? config.price ?? 0,
+          description: dbPlugin?.description || metadata.description || '暂无描述',
+          author: dbPlugin?.author || metadata.author || 'Jarvis',
+          group: dbPlugin?.group || metadata.group || config.category || '工具',
+          icon: dbPlugin?.icon || metadata.icon || '🔧',
+          featured: dbPlugin?.featured ?? config.featured ?? false,
           downloads: Math.floor(Math.random() * 1000) + 100, // 模拟下载数
           rating: 4.5 + Math.random() * 0.5, // 模拟评分
           features: [
@@ -77,6 +126,28 @@ export async function GET() {
       } catch (fileError) {
         console.error(`解析文件失败: ${file}`, fileError);
       }
+    }
+
+    for (const dbPlugin of dbPlugins) {
+      if (plugins.some(plugin => plugin.id === dbPlugin.id)) continue;
+      plugins.push({
+        id: dbPlugin.id,
+        name: dbPlugin.name,
+        version: dbPlugin.version,
+        price: dbPlugin.price,
+        description: dbPlugin.description,
+        author: dbPlugin.author,
+        group: dbPlugin.group,
+        icon: dbPlugin.icon,
+        featured: Boolean(dbPlugin.featured),
+        downloads: 0,
+        rating: 5,
+        features: [dbPlugin.description],
+        fileSize: '已上传',
+        lastUpdated: new Date(dbPlugin.updatedAt).toISOString().slice(0, 10),
+        compatibility: ['Word 2016+', 'Word 365'],
+        tags: [dbPlugin.group, '效率', 'Word']
+      });
     }
 
     // 按特色和名称排序

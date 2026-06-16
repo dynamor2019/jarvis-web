@@ -1,0 +1,87 @@
+"use client";
+import ProMonolineIcon from '@/components/ProMonolineIcon';
+type HighlightIcon = 'lightning' | 'shield' | 'puzzle';
+const highlights = [
+    {
+        title: "安全链路",
+        iconKey: "lightning" as HighlightIcon,
+        color: "var(--google-blue)",
+        features: [
+            "AES-256-GCM 认证加密",
+            "设备指纹参与密钥派生",
+            "签名覆盖密文、IV、标签、时间戳"
+        ]
+    },
+    {
+        title: "性能与兼容",
+        iconKey: "shield" as HighlightIcon,
+        color: "var(--google-green)",
+        features: [
+            "配置生成 < 200ms，下载 < 100ms",
+            "Chrome/Firefox/Safari/Edge 主流浏览器支持",
+            "Windows 10/11、macOS 12+、Ubuntu 20+ 兼容"
+        ]
+    },
+    {
+        title: "排错可控",
+        iconKey: "puzzle" as HighlightIcon,
+        color: "var(--google-yellow)",
+        features: [
+            "配置不存在、过期、设备不匹配均有指引",
+            "浏览器控制台、网络请求和设备信息可定位",
+            "PC 服务配置路径与日志检查步骤明确"
+        ]
+    }
+];
+import { FormattedMessage } from 'react-intl';
+
+export default function TechHighlights() {
+    return (
+        <section id="tech" className="relative overflow-hidden bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)] py-14 md:py-16" style={{ scrollMarginTop: '80px' }}>
+            <div className="container mx-auto px-4">
+                <div className="mx-auto mb-9 max-w-3xl text-center">
+                    <div className="mb-3 inline-flex rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 shadow-sm">可信底座</div>
+                    <h2 className="text-4xl md:text-4xl font-bold leading-tight mb-3">
+                        <FormattedMessage id="tech.heading.prefix" />
+                        <span className="gradient-text"><FormattedMessage id="tech.heading.emphasis" /></span>
+                    </h2>
+                    <p className="text-slate-600 max-w-2xl mx-auto leading-7">
+                        <FormattedMessage id="tech.subtitle" />
+                    </p>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {highlights.map((highlight, index) => (
+                        <div 
+                            key={index} 
+                            className="rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_16px_40px_rgba(15,23,42,0.07)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_24px_54px_rgba(15,23,42,0.1)]"
+                        >
+                            <div className="flex items-center gap-3 mb-4">
+                                <span 
+                                    className="w-14 h-14 rounded-2xl flex items-center justify-center text-3xl flex-shrink-0"
+                                    style={{ backgroundColor: `${highlight.color}20` }}
+                                >
+                                    <ProMonolineIcon className="h-8 w-8" variant={highlight.iconKey} />
+                                </span>
+                                <h3 className="font-semibold">
+                                    <span className="text-base font-medium whitespace-nowrap">
+                                        <FormattedMessage id={`tech.list.${index}.title`} defaultMessage={highlight.title} />
+                                    </span>
+                                </h3>
+                            </div>
+                            <ul className="space-y-3 text-slate-600">
+                                {highlight.features.map((feature, i) => (
+                                    <li key={i} className="flex items-start gap-2.5">
+                                        <span className="mt-1 inline-flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-emerald-50 text-xs font-bold text-emerald-600">✓</span>
+                                        <span><FormattedMessage id={`tech.list.${index}.item.${i}`} defaultMessage={feature} /></span>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    );
+}
+

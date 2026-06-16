@@ -1,13 +1,11 @@
 import './globals.css';
 import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
-import { Suspense } from 'react';
 import LanguageProvider from '@/components/LanguageProvider';
 import IconProviderClient from '@/components/IconProviderClient';
 import UserProfileSyncClient from '@/components/UserProfileSyncClient';
 
 const Navbar = dynamic(() => import('@/components/Navbar'));
-const BroadcastLauncher = dynamic(() => import('@/components/BroadcastLauncher'));
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_BASE_URL || 'https://www.jarvisai.com.cn'),
@@ -47,13 +45,10 @@ export default function RootLayout({
             <main className="min-h-screen" style={{ paddingTop: '64px' }}>
               {children}
             </main>
-            <div className="w-full border-t border-gray-200 bg-white py-3 text-center text-xs text-gray-500">
+            <div className="w-full border-t border-white/10 bg-[#0f172a] py-3 text-center text-xs text-slate-500">
               津ICP备2026000398号-1
             </div>
             <UserProfileSyncClient />
-            <Suspense fallback={null}>
-              <BroadcastLauncher />
-            </Suspense>
           </LanguageProvider>
         </IconProviderClient>
       </body>

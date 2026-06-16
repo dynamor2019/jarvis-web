@@ -1,0 +1,96 @@
+"use client";
+type ModuleIcon =
+    | 'ai'
+    | 'text'
+    | 'paragraph'
+    | 'table';
+const functionModules = [
+    {
+        title: "选择模型",
+        iconKey: "ai" as ModuleIcon,
+        color: "#4F46E5",
+        items: [
+            "模型选择界面通过测试，单选逻辑清晰",
+            "支持 OpenAI、Google、豆包等多种模型配置",
+            "未选择模型时会阻止购买并给出提示"
+        ]
+    },
+    {
+        title: "购买生成",
+        iconKey: "text" as ModuleIcon,
+        color: "#EC4899",
+        items: [
+            "月付、季付、年付套餐购买流程完整",
+            "支付成功后自动触发配置文件生成",
+            "配置文件包含 API 密钥、模型和设备信息"
+        ]
+    },
+    {
+        title: "下载解密",
+        iconKey: "paragraph" as ModuleIcon,
+        color: "#10B981",
+        items: [
+            "通过 Bearer Token 下载加密配置文件",
+            "PC 端验证设备指纹、时间戳和数字签名",
+            "解密失败、过期、无权限都有明确错误码"
+        ]
+    },
+    {
+        title: "交付维护",
+        iconKey: "table" as ModuleIcon,
+        color: "#06B6D4",
+        items: [
+            "API 密钥验证接口响应快并支持封禁拒绝",
+            "配置更新前自动备份，临时错误可重试",
+            "Standalone 部署，start.sh 负责 Linux 启动自检"
+        ]
+    }
+];
+
+import { FormattedMessage } from 'react-intl';
+import ProMonolineIcon from '@/components/ProMonolineIcon';
+
+export default function Functions() {
+    return (
+        <section id="functions" className="relative overflow-hidden bg-white py-14 md:py-16" style={{ scrollMarginTop: '64px' }}>
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-cyan-200 to-transparent" />
+            <div className="container mx-auto px-4">
+                <div className="mx-auto mb-9 max-w-3xl text-center">
+                    <div className="mb-3 inline-flex rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-sm font-semibold text-slate-700">工作流</div>
+                    <h2 className="text-4xl md:text-4xl font-bold mb-3 text-slate-950">
+                        <FormattedMessage id="functions.heading.prefix" />
+                        <span className="gradient-text"><FormattedMessage id="functions.heading.emphasis" /></span>
+                    </h2>
+                    <p className="text-slate-600 max-w-2xl mx-auto text-base leading-7">
+                        <FormattedMessage id="functions.subtitle" />
+                    </p>
+                </div>
+
+                <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-4">
+                    {functionModules.map((module, index) => {
+                        return (
+                            <div key={index} className="relative rounded-2xl border border-slate-200 bg-[linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)] p-5 shadow-[0_14px_34px_rgba(15,23,42,0.06)] transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_22px_48px_rgba(15,23,42,0.1)]">
+                                <div className="mb-5 flex items-center justify-between">
+                                    <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl" style={{ backgroundColor: `${module.color}18`, color: module.color }}>
+                                        <ProMonolineIcon className="h-7 w-7" variant={module.iconKey} />
+                                    </span>
+                                    <span className="text-sm font-black" style={{ color: module.color }}>0{index + 1}</span>
+                                </div>
+                                <h3 className="mb-4 text-xl font-bold text-slate-950"><FormattedMessage id={`functions.list.${index}.title`} defaultMessage={module.title} /></h3>
+                                <ul className="space-y-3 text-sm text-slate-600">
+                                    {module.items.map((item, i) => (
+                                        <li key={i} className="flex items-start gap-2.5">
+                                            <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full" style={{ backgroundColor: module.color }} />
+                                            <span className="leading-relaxed text-slate-600"><FormattedMessage id={`functions.list.${index}.item.${i}`} defaultMessage={item} /></span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        );
+                    })}
+                </div>
+
+            </div>
+        </section>
+    );
+}

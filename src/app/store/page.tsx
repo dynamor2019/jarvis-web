@@ -41,6 +41,64 @@ type WindowWithChromeWebview = Window & typeof globalThis & {
   };
 };
 
+function ProviderBrandIcon({ provider }: { provider: string }) {
+  const normalized = (provider || '').toLowerCase();
+  const iconClass = 'h-10 w-10 shrink-0 p-1.5';
+
+  if (normalized === 'gpt4' || normalized === 'openai') {
+    return (
+      <div className={iconClass} aria-label="ChatGPT logo">
+        <svg viewBox="0 0 40 40" role="img" className="h-full w-full">
+          <circle cx="20" cy="20" r="18" fill="#111827" />
+          <g fill="none" stroke="#f8fafc" strokeLinecap="round" strokeLinejoin="round" strokeWidth="3.1">
+            <path d="M20 7.8c3.1 0 5.6 2.4 5.9 5.4l-5.7 3.3-5.5-3.2A5.9 5.9 0 0 1 20 7.8Z" />
+            <path d="M28.8 11.8c2.7 1.5 3.7 4.9 2.3 7.7l-5.7 3.3v-6.4l-5.2-3" />
+            <path d="M31.1 22.7c.4 3.1-1.8 5.9-4.8 6.6l-5.7-3.3 5.5-3.2v-6" />
+            <path d="M20 32.2c-3.1 0-5.6-2.4-5.9-5.4l5.7-3.3 5.5 3.2a5.9 5.9 0 0 1-5.3 5.5Z" />
+            <path d="M11.2 28.2c-2.7-1.5-3.7-4.9-2.3-7.7l5.7-3.3v6.4l5.2 3" />
+            <path d="M8.9 17.3c-.4-3.1 1.8-5.9 4.8-6.6l5.7 3.3-5.5 3.2v6" />
+          </g>
+          <circle cx="20" cy="20" r="3.2" fill="#f8fafc" />
+        </svg>
+      </div>
+    );
+  }
+
+  if (normalized === 'claude' || normalized === 'anthropic') {
+    return (
+      <div className={iconClass} aria-label="Claude logo">
+        <img
+          src="https://upload.wikimedia.org/wikipedia/commons/b/b0/Claude_AI_symbol.svg"
+          alt="Claude logo"
+          className="h-full w-full object-contain"
+          loading="lazy"
+        />
+      </div>
+    );
+  }
+
+  if (normalized === 'gemini') {
+    return (
+      <div className={iconClass} aria-label="Gemini logo">
+        <svg viewBox="0 0 40 40" role="img" className="h-full w-full">
+          <defs>
+            <linearGradient id="geminiIconGradient" x1="6" y1="34" x2="34" y2="6" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#1d4ed8" />
+              <stop offset=".48" stopColor="#8b5cf6" />
+              <stop offset="1" stopColor="#38bdf8" />
+            </linearGradient>
+          </defs>
+          <circle cx="20" cy="20" r="18" fill="#eef2ff" />
+          <path d="M20 5.8c2.2 8.1 6 12 14.2 14.2C26 22.2 22.2 26 20 34.2 17.8 26 14 22.2 5.8 20 14 17.8 17.8 13.9 20 5.8Z" fill="url(#geminiIconGradient)" />
+          <path d="M29.5 4.8c.8 3.1 2.4 4.7 5.7 5.7-3.3.9-4.9 2.5-5.7 5.7-.9-3.2-2.5-4.8-5.7-5.7 3.2-1 4.8-2.6 5.7-5.7Z" fill="#7dd3fc" />
+        </svg>
+      </div>
+    );
+  }
+
+  return null;
+}
+
 function hasDesktopWebView(): boolean {
   return typeof window !== 'undefined' && !!(window as WindowWithChromeWebview).chrome?.webview;
 }
@@ -141,13 +199,13 @@ function ModelsList() {
       id: 'gpt4',
       name: intl.formatMessage({ id: 'store.model.gpt4.name', defaultMessage: 'ChatGPT' }),
       desc: intl.formatMessage({ id: 'store.model.gpt4.desc', defaultMessage: 'OpenAI GPT-5.4' }),
-      color: 'bg-gray-800'
+      color: 'bg-slate-100 text-slate-950'
     },
     {
       id: 'claude',
       name: intl.formatMessage({ id: 'store.model.claude.name', defaultMessage: 'Claude' }),
       desc: intl.formatMessage({ id: 'store.model.claude.desc', defaultMessage: 'Anthropic' }),
-      color: 'bg-amber-700'
+      color: 'bg-orange-100 text-orange-950'
     }
   ];
   const domesticModels = models.filter(m => ['deepseek', 'kimi', 'qwen', 'doubao', 'zhipu', 'siliconflow'].includes(m.id));
@@ -164,7 +222,7 @@ function ModelsList() {
       </div>
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {domesticModels.map(m => (
-          <div key={m.id} className="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow group">
+          <div key={m.id} data-enter-card className="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow group">
              <div className="flex items-center gap-4 mb-4">
                 <div className={`w-12 h-12 rounded-xl ${m.color} flex items-center justify-center text-white font-bold text-xl shadow-md group-hover:scale-110 transition-transform`}>
                   {m.name.substring(0, 1)}
@@ -183,7 +241,7 @@ function ModelsList() {
           <div className="h-px flex-1 bg-gray-200" />
         </div>
         {foreignModels.map(m => (
-          <div key={m.id} className="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow group">
+          <div key={m.id} data-enter-card className="bg-white p-6 rounded-xl shadow-md border border-gray-100 hover:shadow-lg transition-shadow group">
              <div className="flex items-center gap-4 mb-4">
                 <div className={`w-12 h-12 rounded-xl ${m.color} flex items-center justify-center text-white font-bold text-xl shadow-md group-hover:scale-110 transition-transform`}>
                   {m.name.substring(0, 1)}
@@ -208,7 +266,7 @@ export function Store({ enableMock = false, initialTab = 'subscription' }: { ena
   const [payOpen, setPayOpen] = useState(false);
   const [payInfo, setPayInfo] = useState<PayOpenPayload | null>(null);
   const [isInWordPlugin, setIsInWordPlugin] = useState(false);
-  const [channel, setChannel] = useState<'mock'|'wechat'|'alipay'>(enableMock ? 'mock' : 'wechat')
+  const [channel, setChannel] = useState<'mock'|'wechat'|'alipay'>(enableMock ? 'mock' : 'alipay')
   const [skillCatalog, setSkillCatalog] = useState<Array<{ id?: string; name: string; nameEn?: string; url: string; description: string; descriptionEn?: string }>>([]);
   const [skillInstallState, setSkillInstallState] = useState<{ status: 'idle' | 'installing' | 'done' | 'failed'; progress: number; message: string }>({
     status: 'idle',
@@ -361,6 +419,40 @@ export function Store({ enableMock = false, initialTab = 'subscription' }: { ena
   }, [initialTab]);
 
   useEffect(() => {
+    const root = document.querySelector('.store-showcase-page');
+    if (!root) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((entry) => {
+        const element = entry.target as HTMLElement;
+        if (entry.isIntersecting) {
+          element.classList.remove('store-card-in');
+          window.requestAnimationFrame(() => element.classList.add('store-card-in'));
+        } else {
+          element.classList.remove('store-card-in');
+        }
+      });
+    }, { threshold: 0.18 });
+    const observedCards = new WeakSet<HTMLElement>();
+    const observeCards = () => {
+      root.querySelectorAll<HTMLElement>('[data-enter-card]').forEach((card) => {
+        if (!observedCards.has(card)) {
+          observedCards.add(card);
+          observer.observe(card);
+        }
+      });
+    };
+    const mutationObserver = new MutationObserver(observeCards);
+
+    observeCards();
+    mutationObserver.observe(root, { childList: true, subtree: true });
+    return () => {
+      mutationObserver.disconnect();
+      observer.disconnect();
+    };
+  }, [activeTab, skillCatalog.length]);
+
+  useEffect(() => {
     let alive = true;
     const loadSkills = async () => {
       try {
@@ -391,33 +483,33 @@ export function Store({ enableMock = false, initialTab = 'subscription' }: { ena
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
+    <div className="store-showcase-page min-h-screen bg-[radial-gradient(circle_at_16%_18%,rgba(34,211,238,0.18),transparent_30%),radial-gradient(circle_at_84%_20%,rgba(236,72,153,0.14),transparent_32%),linear-gradient(180deg,#020617_0%,#07111f_48%,#0f172a_100%)] text-white">
       <div className="max-w-7xl mx-auto px-4 py-12">
         {/* Header */}
         <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-4 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="mb-4 bg-[linear-gradient(92deg,#f8fafc_0%,#93c5fd_38%,#5eead4_72%,#f9a8d4_100%)] bg-clip-text text-4xl font-black text-transparent">
             <FormattedMessage id="store.title" defaultMessage="Jarvis Power" />
           </h1>
-          <p className="text-gray-600 text-lg">
+          <p className="text-lg text-slate-300">
             <FormattedMessage id="store.subtitle" defaultMessage="Choose the right plan and start your AI writing journey" />
           </p>
           <div className="mt-4 inline-flex items-center gap-2 text-sm">
-            <span className="text-gray-600"><FormattedMessage id="store.payment_channel" defaultMessage="Payment Channel" />:</span>
-            {enableMock && <button onClick={() => setChannel('mock')} className={`px-3 py-1 rounded ${channel==='mock'?'bg-blue-600 text-white':'border border-gray-300'}`}><FormattedMessage id="store.payment.mock" defaultMessage="模拟支付" /></button>}
-            <button onClick={() => setChannel('wechat')} className={`px-3 py-1 rounded ${channel==='wechat'?'bg-blue-600 text-white':'border border-gray-300'}`}><FormattedMessage id="store.payment.wechat" defaultMessage="WeChat" /></button>
-            <button onClick={() => setChannel('alipay')} className={`px-3 py-1 rounded ${channel==='alipay'?'bg-blue-600 text-white':'border border-gray-300'}`}><FormattedMessage id="store.payment.alipay" defaultMessage="Alipay" /></button>
+            <span className="text-slate-300"><FormattedMessage id="store.payment_channel" defaultMessage="Payment Channel" />:</span>
+            {enableMock && <button onClick={() => setChannel('mock')} className={`px-3 py-1 rounded ${channel==='mock'?'bg-cyan-500 text-white':'border border-white/15 text-slate-300'}`}><FormattedMessage id="store.payment.mock" defaultMessage="模拟支付" /></button>}
+            <button onClick={() => setChannel('alipay')} className={`px-3 py-1 rounded ${channel==='alipay'?'bg-cyan-500 text-white':'border border-white/15 text-slate-300'}`}><FormattedMessage id="store.payment.alipay" defaultMessage="Alipay" /></button>
+            <button onClick={() => setChannel('wechat')} className={`px-3 py-1 rounded ${channel==='wechat'?'bg-cyan-500 text-white':'border border-white/15 text-slate-300'}`}><FormattedMessage id="store.payment.wechat" defaultMessage="WeChat" /></button>
           </div>
         </div>
 
         {/* Tabs */}
         <div className="flex justify-center mb-12">
-          <div className="inline-flex rounded-lg border border-gray-200 bg-white p-1">
+          <div className="inline-flex rounded-lg border border-white/10 bg-slate-950/48 p-1 backdrop-blur-xl">
             <button
               onClick={() => setActiveTab('subscription')}
               className={`px-6 py-2 rounded-md transition-all ${
                 activeTab === 'subscription'
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-cyan-500 text-white shadow-md'
+                  : 'text-slate-300 hover:text-white'
               }`}
             >
               <FormattedMessage id="store.tab.subscription" defaultMessage="Subscription Service" />
@@ -426,8 +518,8 @@ export function Store({ enableMock = false, initialTab = 'subscription' }: { ena
               onClick={() => setActiveTab('tokens')}
               className={`px-6 py-2 rounded-md transition-all ${
                 activeTab === 'tokens'
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-cyan-500 text-white shadow-md'
+                  : 'text-slate-300 hover:text-white'
               }`}
             >
               <FormattedMessage id="store.tab.tokens" defaultMessage="Traffic Service" />
@@ -436,8 +528,8 @@ export function Store({ enableMock = false, initialTab = 'subscription' }: { ena
               onClick={() => setActiveTab('lifetime')}
               className={`px-6 py-2 rounded-md transition-all ${
                 activeTab === 'lifetime'
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-cyan-500 text-white shadow-md'
+                  : 'text-slate-300 hover:text-white'
               }`}
             >
               <FormattedMessage id="store.tab.lifetime" defaultMessage="Lifetime" />
@@ -446,8 +538,8 @@ export function Store({ enableMock = false, initialTab = 'subscription' }: { ena
               onClick={() => setActiveTab('plugins')}
               className={`px-6 py-2 rounded-md transition-all ${
                 activeTab === 'plugins'
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-cyan-500 text-white shadow-md'
+                  : 'text-slate-300 hover:text-white'
               }`}
             >
               <FormattedMessage id="store.tab.plugins" defaultMessage="Plugins" />
@@ -456,8 +548,8 @@ export function Store({ enableMock = false, initialTab = 'subscription' }: { ena
               onClick={() => setActiveTab('talent')}
               className={`px-6 py-2 rounded-md transition-all ${
                 activeTab === 'talent'
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-cyan-500 text-white shadow-md'
+                  : 'text-slate-300 hover:text-white'
               }`}
             >
               {isZhLocale ? '\u5929\u8d4b\u70b9\u4eae' : 'AI Skill'}
@@ -466,8 +558,8 @@ export function Store({ enableMock = false, initialTab = 'subscription' }: { ena
               onClick={() => setActiveTab('purchased')}
               className={`px-6 py-2 rounded-md transition-all ${
                 activeTab === 'purchased'
-                  ? 'bg-blue-600 text-white shadow-md'
-                  : 'text-gray-600 hover:text-gray-900'
+                  ? 'bg-cyan-500 text-white shadow-md'
+                  : 'text-slate-300 hover:text-white'
               }`}
             >
               <FormattedMessage id="store.tab.purchased" defaultMessage="Purchased" />
@@ -510,6 +602,85 @@ export function Store({ enableMock = false, initialTab = 'subscription' }: { ena
           onClose={() => { setPayOpen(false); setPayInfo(null); }}
         />
       )}
+      <style>{`
+        .store-showcase-page .bg-white {
+          background: rgba(15, 23, 42, 0.58) !important;
+          border-color: rgba(255, 255, 255, 0.1) !important;
+          color: #e2e8f0;
+          backdrop-filter: blur(18px);
+        }
+        .store-showcase-page .bg-gray-50,
+        .store-showcase-page .bg-gray-100 {
+          background: rgba(15, 23, 42, 0.42) !important;
+        }
+        .store-showcase-page .text-gray-400,
+        .store-showcase-page .text-gray-500,
+        .store-showcase-page .text-gray-600,
+        .store-showcase-page .text-gray-700 {
+          color: #cbd5e1 !important;
+        }
+        .store-showcase-page .text-gray-800,
+        .store-showcase-page .text-gray-900 {
+          color: #f8fafc !important;
+        }
+        .store-showcase-page input,
+        .store-showcase-page textarea,
+        .store-showcase-page select {
+          background: rgba(2, 6, 23, 0.72) !important;
+          border-color: rgba(255, 255, 255, 0.14) !important;
+          color: #f8fafc !important;
+        }
+        .store-showcase-page button {
+          transition: background 180ms ease, border-color 180ms ease, color 180ms ease, box-shadow 180ms ease, transform 180ms ease;
+        }
+        .store-showcase-page button[class*="border"]:hover,
+        .store-showcase-page button[class*="hover:bg-gray"]:hover,
+        .store-showcase-page button[class*="hover:text-gray"]:hover {
+          background: rgba(34, 211, 238, 0.1) !important;
+          border-color: rgba(103, 232, 249, 0.34) !important;
+          color: #e0f2fe !important;
+          box-shadow: 0 0 0 1px rgba(103, 232, 249, 0.12), 0 12px 30px rgba(8, 47, 73, 0.18);
+        }
+        .store-showcase-page button[class*="bg-cyan"]:hover,
+        .store-showcase-page button[class*="from-blue"]:hover,
+        .store-showcase-page button[class*="from-cyan"]:hover {
+          filter: saturate(1.08) brightness(1.04);
+          box-shadow: 0 16px 38px rgba(34, 211, 238, 0.22);
+        }
+        @keyframes storeCardScaleIn {
+          0% {
+            opacity: 0;
+            transform: scale(0.92) translateY(18px);
+            filter: blur(4px);
+          }
+          100% {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            filter: blur(0);
+          }
+        }
+        .store-showcase-page [data-enter-card] {
+          transform-origin: center;
+          will-change: transform, opacity, filter;
+        }
+        .store-showcase-page [data-enter-card].store-card-in {
+          animation: storeCardScaleIn 520ms cubic-bezier(0.18, 0.9, 0.22, 1) both;
+        }
+        @media (prefers-reduced-motion: reduce) {
+          .store-showcase-page [data-enter-card].store-card-in {
+            animation: none;
+          }
+        }
+        .store-showcase-page label:hover,
+        .store-showcase-page .group:hover,
+        .store-showcase-page [class*="hover:bg-gray"]:hover,
+        .store-showcase-page [class*="hover:shadow"]:hover {
+          background: rgba(34, 211, 238, 0.08) !important;
+          border-color: rgba(103, 232, 249, 0.28) !important;
+          color: #e2e8f0 !important;
+          box-shadow: 0 16px 42px rgba(8, 47, 73, 0.2) !important;
+        }
+      `}</style>
     </div>
   );
 }
@@ -566,15 +737,15 @@ function PluginList({ channel, onOpenPay }: { channel: 'mock'|'wechat'|'alipay',
   }
 
   return (
-    <div className="grid md:grid-cols-3 gap-8">
+    <div className="grid gap-8 md:grid-cols-2 xl:grid-cols-3">
       {items.map((it) => (
-        <div key={it.id} className="bg-white rounded-xl p-6 ring-1 ring-gray-200 shadow-lg flex flex-col">
-          <div className="text-xl font-bold mb-1">{it.name}</div>
-          <div className="text-sm text-gray-600 mb-3">v{it.version}</div>
-          <div className="text-3xl font-bold text-blue-600 mb-4">{it.price>0?`¥${it.price}`:intl.formatMessage({ id: 'store.price.free', defaultMessage: 'Free' })}</div>
-          <div className="text-gray-700 flex-grow">{it.description}</div>
-          <button disabled={loadingId === it.id} onClick={() => purchase(it)} className="mt-6 w-full bg-gradient-to-r from-blue-600 to-purple-600 text-white py-3 rounded-lg font-semibold disabled:opacity-50">
-            {loadingId === it.id ? intl.formatMessage({ id: 'store.btn.processing', defaultMessage: 'Processing...' }) : (it.price>0?intl.formatMessage({ id: 'store.btn.buy_and_install', defaultMessage: 'Buy & Install' }):intl.formatMessage({ id: 'store.btn.install', defaultMessage: 'Install' }))}
+        <div key={it.id} data-enter-card className="flex min-h-[260px] flex-col rounded-xl border border-white/80 bg-slate-950/34 p-6 text-white shadow-[0_24px_80px_rgba(2,6,23,0.28)] backdrop-blur-xl">
+          <div className="mb-1 text-xl font-extrabold leading-tight">{it.name}</div>
+          <div className="mb-4 text-sm text-slate-200">v{it.version}</div>
+          <div className="mb-5 text-3xl font-black text-blue-500">{it.price>0?`¥${it.price}`:intl.formatMessage({ id: 'store.price.free', defaultMessage: '免费' })}</div>
+          <div className="min-h-[48px] flex-grow text-sm leading-6 text-slate-200">{it.description}</div>
+          <button disabled={loadingId === it.id} onClick={() => purchase(it)} className="mt-7 w-full rounded-lg bg-gradient-to-r from-blue-600 to-purple-600 py-3 font-semibold text-white disabled:opacity-50">
+            {loadingId === it.id ? intl.formatMessage({ id: 'store.btn.processing', defaultMessage: '处理中...' }) : (it.price>0?intl.formatMessage({ id: 'store.btn.buy_and_install', defaultMessage: '购买并安装' }):intl.formatMessage({ id: 'store.btn.install', defaultMessage: '安装' }))}
           </button>
         </div>
       ))}
@@ -602,7 +773,7 @@ function TalentSkills({
 
   return (
     <div className="space-y-8">
-      <div className="bg-white rounded-xl p-5 ring-1 ring-gray-200">
+      <div data-enter-card className="bg-white rounded-xl p-5 ring-1 ring-gray-200">
         <div className="text-lg font-semibold mb-3">自定义 Skill 地址</div>
         <div className="flex gap-3">
           <input
@@ -621,7 +792,7 @@ function TalentSkills({
       </div>
 
       {installState.status !== 'idle' && (
-        <div className="bg-white rounded-xl p-5 ring-1 ring-gray-200">
+        <div data-enter-card className="bg-white rounded-xl p-5 ring-1 ring-gray-200">
           <div className="flex items-center justify-between mb-2">
             <div className="font-semibold">安装进度</div>
             <div className="text-sm text-gray-500">{installState.progress}%</div>
@@ -647,7 +818,7 @@ function TalentSkills({
           const key = item.id || item.url || `skill-${index}`;
           const loading = installingId === key || installingId === item.url;
           return (
-            <div key={key} className="bg-white rounded-xl p-6 ring-1 ring-gray-200 shadow-sm flex flex-col">
+            <div key={key} data-enter-card className="bg-white rounded-xl p-6 ring-1 ring-gray-200 shadow-sm flex flex-col">
               <div className="text-xl font-bold mb-1">{isZh ? item.name : (item.nameEn || item.name)}</div>
               <div className="text-xs text-gray-400 mb-3 break-all">{item.url}</div>
               <div className="text-gray-700 text-sm flex-grow">{isZh ? item.description : (item.descriptionEn || item.description)}</div>
@@ -703,7 +874,7 @@ function PurchasedList() {
   return (
     <div className="grid md:grid-cols-3 gap-8">
       {items.map((it) => (
-        <div key={it.pluginId} className="bg-white rounded-xl p-6 ring-1 ring-gray-200 shadow-lg flex flex-col">
+        <div key={it.pluginId} data-enter-card className="bg-white rounded-xl p-6 ring-1 ring-gray-200 shadow-lg flex flex-col">
           <div className="text-xl font-bold mb-1">{it.pluginId}</div>
           <div className="text-sm text-gray-600 mb-3"><FormattedMessage id="store.label.expires_at" defaultMessage="有效期至" /> {new Date(it.expires).toLocaleString()}</div>
           <div className="mt-4 flex gap-3">
@@ -1279,11 +1450,11 @@ function SubscriptionPlans({ onOpenPay, channel }: { onOpenPay: (p: { paymentId:
     anthropic: 'Claude',
   };
   const providerLogoMap: Record<string, string> = {
-    openai: 'https://cdn.oaistatic.com/assets/favicon-l4nq08hd.svg',
-    gpt4: 'https://cdn.oaistatic.com/assets/favicon-l4nq08hd.svg',
+    openai: 'https://cdn.simpleicons.org/openai/f8fafc',
+    gpt4: 'https://cdn.simpleicons.org/openai/f8fafc',
     gemini: 'https://cdn.simpleicons.org/googlegemini/1d4ed8',
-    claude: 'https://cdn.simpleicons.org/anthropic/111827',
-    anthropic: 'https://cdn.simpleicons.org/anthropic/111827',
+    claude: 'https://cdn.simpleicons.org/anthropic/f8fafc',
+    anthropic: 'https://cdn.simpleicons.org/anthropic/f8fafc',
     deepseek: '/deepseek-logo.ico',
     siliconflow: 'https://icon.horse/icon/siliconflow.cn',
     dashscope: 'https://icon.horse/icon/dashscope.aliyun.com',
@@ -1321,10 +1492,10 @@ function SubscriptionPlans({ onOpenPay, channel }: { onOpenPay: (p: { paymentId:
     ...providerLogoMap,
     siliconflow: 'https://icon.horse/icon/siliconflow.cn',
     gemini: 'https://cdn.simpleicons.org/googlegemini/1d4ed8',
-    gpt4: 'https://cdn.oaistatic.com/assets/favicon-l4nq08hd.svg',
-    openai: 'https://cdn.oaistatic.com/assets/favicon-l4nq08hd.svg',
-    claude: 'https://cdn.simpleicons.org/anthropic/111827',
-    anthropic: 'https://cdn.simpleicons.org/anthropic/111827',
+    gpt4: 'https://cdn.simpleicons.org/openai/f8fafc',
+    openai: 'https://cdn.simpleicons.org/openai/f8fafc',
+    claude: 'https://cdn.simpleicons.org/anthropic/f8fafc',
+    anthropic: 'https://cdn.simpleicons.org/anthropic/f8fafc',
   };
   const providerDisplayIntroMap: Record<string, string> = {
     ...modelIntroMap,
@@ -1438,7 +1609,7 @@ function SubscriptionPlans({ onOpenPay, channel }: { onOpenPay: (p: { paymentId:
           }));
 
         if (!canceled) {
-          const merged = [...normalized, ...fallback];
+          const merged = [...normalized, ...fallbackModels];
           const deduped = new Map<string, { id: string; name: string; value: string; provider: string }>();
           for (const model of merged) {
             const key = model.provider.toLowerCase();
@@ -1544,7 +1715,7 @@ function SubscriptionPlans({ onOpenPay, channel }: { onOpenPay: (p: { paymentId:
               }
               const model = item.model;
               return (
-              <label key={model.id} className="block p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+              <label key={model.id} data-enter-card className="block p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
                 <div className="flex items-start gap-3">
                   <input
                     type="radio"
@@ -1564,19 +1735,21 @@ function SubscriptionPlans({ onOpenPay, channel }: { onOpenPay: (p: { paymentId:
                       <div className="text-xs text-gray-500 mt-1">{providerDisplayIntroMap[model.provider] || '通用场景可用，按需选择即可'}</div>
                     </div>
                     <div className="flex items-center justify-center">
-                      <img
-                        src={providerDisplayLogoMap[model.provider] || `https://icon.horse/icon/${model.provider}.com`}
-                        alt={`${providerDisplayNameMap[model.provider] || model.provider} logo`}
-                        className="w-10 h-10 rounded-md shrink-0"
-                        loading="lazy"
-                        onError={(e) => {
-                          const target = e.currentTarget as HTMLImageElement;
-                          if (!target.dataset.fallbackApplied) {
-                            target.dataset.fallbackApplied = '1';
-                            target.src = '/favicon.ico';
-                          }
-                        }}
-                      />
+                      {ProviderBrandIcon({ provider: model.provider }) || (
+                        <img
+                          src={providerDisplayLogoMap[model.provider] || `https://icon.horse/icon/${model.provider}.com`}
+                          alt={`${providerDisplayNameMap[model.provider] || model.provider} logo`}
+                          className="w-10 h-10 rounded-md shrink-0"
+                          loading="lazy"
+                          onError={(e) => {
+                            const target = e.currentTarget as HTMLImageElement;
+                            if (!target.dataset.fallbackApplied) {
+                              target.dataset.fallbackApplied = '1';
+                              target.src = '/favicon.ico';
+                            }
+                          }}
+                        />
+                      )}
                     </div>
                   </div>
                 </div>
@@ -1675,27 +1848,27 @@ function TokenPackages({ onOpenPay, channel }: { onOpenPay: (p: { paymentId: str
       </div>
 
       {/* Token说明 */}
-      <div className="mt-12 p-6 bg-blue-50 rounded-xl max-w-3xl mx-auto">
-        <h3 className="font-semibold mb-4 text-lg"><FormattedMessage id="store.token.guide.title" defaultMessage="💡 Token 使用说明" /></h3>
-        <div className="grid md:grid-cols-2 gap-4 text-sm text-gray-700">
-          <div>
-            <p className="mb-2"><strong><FormattedMessage id="store.token.guide.conversion" defaultMessage="📊 Token换算" /></strong></p>
-            <ul className="space-y-1 ml-4">
+      <div className="mx-auto mt-12 max-w-3xl rounded-2xl border border-cyan-200/18 bg-slate-950/48 p-6 text-slate-300 shadow-[0_24px_72px_rgba(0,0,0,0.24)] backdrop-blur-xl">
+        <h3 className="mb-5 text-lg font-bold text-cyan-100"><FormattedMessage id="store.token.guide.title" defaultMessage="💡 Token 使用说明" /></h3>
+        <div className="grid gap-5 text-sm md:grid-cols-2">
+          <div className="rounded-xl border border-white/10 bg-white/[0.045] p-4">
+            <p className="mb-3 font-semibold text-white"><FormattedMessage id="store.token.guide.conversion" defaultMessage="📊 Token换算" /></p>
+            <ul className="space-y-2 text-slate-300">
               <li><FormattedMessage id="store.token.guide.conv1" defaultMessage="• 1万Token ≈ 7500个汉字" /></li>
               <li><FormattedMessage id="store.token.guide.conv2" defaultMessage="• 写一篇3000字文章 ≈ 4000 Token" /></li>
               <li><FormattedMessage id="store.token.guide.conv3" defaultMessage="• 润色1000字 ≈ 1500 Token" /></li>
             </ul>
           </div>
-          <div>
-            <p className="mb-2"><strong><FormattedMessage id="store.token.guide.models" defaultMessage="🤖 模型消耗" /></strong></p>
-            <ul className="space-y-1 ml-4">
+          <div className="rounded-xl border border-white/10 bg-white/[0.045] p-4">
+            <p className="mb-3 font-semibold text-white"><FormattedMessage id="store.token.guide.models" defaultMessage="🤖 模型消耗" /></p>
+            <ul className="space-y-2 text-slate-300">
               <li><FormattedMessage id="store.token.guide.model1" defaultMessage="• Gemini：最省（推荐）" /></li>
               <li><FormattedMessage id="store.token.guide.model2" defaultMessage="• 豆包：经济实惠" /></li>
               <li><FormattedMessage id="store.token.guide.model3" defaultMessage="• GPT-4：效果最好但较贵" /></li>
             </ul>
           </div>
         </div>
-        <p className="mt-4 text-sm text-gray-600">
+        <p className="mt-5 rounded-xl border border-cyan-200/12 bg-cyan-300/8 px-4 py-3 text-sm text-cyan-100">
           <FormattedMessage id="store.token.guide.footer" defaultMessage="⏰ Token永久有效，不过期 | 📈 可随时查看余额和使用记录" />
         </p>
       </div>
@@ -1773,7 +1946,8 @@ function PricingCard({ name, price, period, tokens, features, badge, popular, ty
   };
 
   return (
-    <div 
+    <div
+      data-enter-card
       className={`relative bg-white rounded-2xl p-8 transition-all duration-300 cursor-pointer flex flex-col ${
         popular ? 'ring-2 ring-blue-600' : 'ring-1 ring-gray-200'
       } ${
@@ -1904,7 +2078,8 @@ function TokenPackCard({ tokens, price, bonus, desc, popular, onOpenPay, channel
   };
   
   return (
-    <div 
+    <div
+      data-enter-card
       className={`bg-white rounded-xl p-6 transition-all duration-300 cursor-pointer flex flex-col ${
         popular ? 'ring-2 ring-blue-600' : 'ring-1 ring-gray-200'
       } ${
