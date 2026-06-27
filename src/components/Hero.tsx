@@ -14,6 +14,7 @@
 
 "use client";
 import { useEffect, useState, type CSSProperties, type MouseEvent } from 'react';
+import { FormattedMessage } from 'react-intl';
 import HeroRightRibbon from './HeroRightRibbon';
 
 interface HeroProps {
@@ -21,85 +22,85 @@ interface HeroProps {
 }
 
 type Scenario = {
-    tab: string;
-    prompt: string;
-    inputTag: string;
-    inputLines: string[];
-    outputTitle: string;
-    outputTags: string[];
+    tabId: string;
+    promptId: string;
+    inputTagId: string;
+    inputLineIds: string[];
+    outputTitleId: string;
+    outputTagIds: string[];
     providers: string[];
     stats: [string, string][];
 };
 
 const SCENARIOS: Scenario[] = [
     {
-        tab: '万言文案秒成章',
-        prompt: '从提纲、扩写到润色一步完成，万言内容直接落进 Word，不再手工拼段落',
-        inputTag: '长文成章',
-        inputLines: ['提纲：目标、受众、结构', '扩写：每章分段生成', '润色：语气统一与降重', '=> 一次输出万言成稿'],
-        outputTitle: '万言文案成章.docx',
-        outputTags: ['长文一气呵成', '结构自动成章', '交付无需拼接'],
+        tabId: 'hero.ribbon.0.tab',
+        promptId: 'hero.ribbon.0.prompt',
+        inputTagId: 'hero.ribbon.0.input_tag',
+        inputLineIds: ['hero.ribbon.0.line.0', 'hero.ribbon.0.line.1', 'hero.ribbon.0.line.2', 'hero.ribbon.0.line.3'],
+        outputTitleId: 'hero.ribbon.0.output_title',
+        outputTagIds: ['hero.ribbon.0.tag.0', 'hero.ribbon.0.tag.1', 'hero.ribbon.0.tag.2'],
         providers: ['OpenAI', 'Claude', 'DeepSeek'],
-        stats: [['1次', '万言成章'], ['秒级', '落入 Word'], ['0拼接', '直接交稿']],
+        stats: [['1次', 'hero.ribbon.0.stat.0'], ['秒级', 'hero.ribbon.0.stat.1'], ['0拼接', 'hero.ribbon.0.stat.2']],
     },
     {
-        tab: '全模通吃任意绑',
-        prompt: '主流模型、本地模型和专用模型都能任意绑定，用同一套流程统一输出',
-        inputTag: '任意绑定',
-        inputLines: ['OpenAI：方案主稿', 'Claude：语气校对', 'DeepSeek：成本优化', '=> 任意组合统一出口'],
-        outputTitle: '任意绑定方案.docx',
-        outputTags: ['多模型任意绑', '统一工作流', '同口径输出'],
+        tabId: 'hero.ribbon.1.tab',
+        promptId: 'hero.ribbon.1.prompt',
+        inputTagId: 'hero.ribbon.1.input_tag',
+        inputLineIds: ['hero.ribbon.1.line.0', 'hero.ribbon.1.line.1', 'hero.ribbon.1.line.2', 'hero.ribbon.1.line.3'],
+        outputTitleId: 'hero.ribbon.1.output_title',
+        outputTagIds: ['hero.ribbon.1.tag.0', 'hero.ribbon.1.tag.1', 'hero.ribbon.1.tag.2'],
         providers: ['OpenAI', 'Claude', 'Gemini'],
-        stats: [['全模', '都能接入'], ['任意', '自由组合'], ['1套', '统一出口']],
+        stats: [['全模', 'hero.ribbon.1.stat.0'], ['任意', 'hero.ribbon.1.stat.1'], ['1套', 'hero.ribbon.1.stat.2']],
     },
     {
-        tab: '高质低价随心换',
-        prompt: '99% 功能免费开放，付费功能最低 9.9 元即可享受 100000 tokens；覆盖流量、订阅、买断三种模式，按需选择',
-        inputTag: '流量 / 订阅 / 买断',
-        inputLines: ['流量模式：按量付费，轻量上手', '订阅模式：免调试，开箱即用', '买断模式：一次购买，长期使用', '推广返利：赚取 Token 畅享 AI'],
-        outputTitle: '预算友好版成稿.docx',
-        outputTags: [],
+        tabId: 'hero.ribbon.2.tab',
+        promptId: 'hero.ribbon.2.prompt',
+        inputTagId: 'hero.ribbon.2.input_tag',
+        inputLineIds: ['hero.ribbon.2.line.0', 'hero.ribbon.2.line.1', 'hero.ribbon.2.line.2', 'hero.ribbon.2.line.3'],
+        outputTitleId: 'hero.ribbon.2.output_title',
+        outputTagIds: [],
         providers: ['DeepSeek', 'Qwen', 'Kimi'],
-        stats: [['99%', '功能免费'], ['9.9元', '100000 tokens'], ['3模', '随心切换']],
+        stats: [['99%', 'hero.ribbon.2.stat.0'], ['9.9元', 'hero.ribbon.2.stat.1'], ['3模', 'hero.ribbon.2.stat.2']],
     },
     {
-        tab: '一键提效成倍涨',
-        prompt: '标题、列表、段落、术语和空格批量统一，文档处理效率成倍提升',
-        inputTag: '批量提效',
-        inputLines: ['标题层级混乱', '列表缩进不一致', '术语前后不统一', '=> 一键统一全部格式'],
-        outputTitle: '批量提效结果.docx',
-        outputTags: ['一键批量处理', '提效成倍增长', '减少人工返工'],
+        tabId: 'hero.ribbon.3.tab',
+        promptId: 'hero.ribbon.3.prompt',
+        inputTagId: 'hero.ribbon.3.input_tag',
+        inputLineIds: ['hero.ribbon.3.line.0', 'hero.ribbon.3.line.1', 'hero.ribbon.3.line.2', 'hero.ribbon.3.line.3'],
+        outputTitleId: 'hero.ribbon.3.output_title',
+        outputTagIds: ['hero.ribbon.3.tag.0', 'hero.ribbon.3.tag.1', 'hero.ribbon.3.tag.2'],
         providers: ['OpenAI', 'DeepSeek', 'Qwen'],
-        stats: [['2x+', '处理提速'], ['1键', '全局整理'], ['90%', '手工减少']],
+        stats: [['2x+', 'hero.ribbon.3.stat.0'], ['1键', 'hero.ribbon.3.stat.1'], ['90%', 'hero.ribbon.3.stat.2']],
     },
     {
-        tab: '极简界面超高效',
-        prompt: '界面轻、步骤短、入口清晰，需要时打开就用，不需要时不打断写作',
-        inputTag: '极简高效',
-        inputLines: ['一屏聚焦核心操作', '切换场景不跳页', '文档流转更顺手', '=> 低学习成本上手'],
-        outputTitle: '极简高效工作流.docx',
-        outputTags: ['界面极简', '上手成本低', '写作不打断'],
+        tabId: 'hero.ribbon.4.tab',
+        promptId: 'hero.ribbon.4.prompt',
+        inputTagId: 'hero.ribbon.4.input_tag',
+        inputLineIds: ['hero.ribbon.4.line.0', 'hero.ribbon.4.line.1', 'hero.ribbon.4.line.2', 'hero.ribbon.4.line.3'],
+        outputTitleId: 'hero.ribbon.4.output_title',
+        outputTagIds: ['hero.ribbon.4.tag.0', 'hero.ribbon.4.tag.1', 'hero.ribbon.4.tag.2'],
         providers: ['OpenAI', 'Claude', 'Kimi'],
-        stats: [['极简', '更好上手'], ['高效', '更快完成'], ['低负担', '持续使用']],
+        stats: [['极简', 'hero.ribbon.4.stat.0'], ['高效', 'hero.ribbon.4.stat.1'], ['低负担', 'hero.ribbon.4.stat.2']],
     },
     {
-        tab: '个性装饰乐活享',
-        prompt: '主题色、封面感、重点标注和版面气质一键切换，让文档既好用，也更有记忆点',
-        inputTag: '乐活装饰',
-        inputLines: ['主题色：品牌联动', '封面样式：多风格可选', '重点内容：自动高亮', '=> 输出更有辨识度'],
-        outputTitle: '乐活装饰方案.docx',
-        outputTags: ['个性风格切换', '表达更有趣', '文档更有辨识度'],
+        tabId: 'hero.ribbon.5.tab',
+        promptId: 'hero.ribbon.5.prompt',
+        inputTagId: 'hero.ribbon.5.input_tag',
+        inputLineIds: ['hero.ribbon.5.line.0', 'hero.ribbon.5.line.1', 'hero.ribbon.5.line.2', 'hero.ribbon.5.line.3'],
+        outputTitleId: 'hero.ribbon.5.output_title',
+        outputTagIds: ['hero.ribbon.5.tag.0', 'hero.ribbon.5.tag.1', 'hero.ribbon.5.tag.2'],
         providers: ['OpenAI', 'Claude', 'Gemini'],
-        stats: [['3套+', '风格模板'], ['1键', '完成切换'], ['乐活感', '更有吸引力']],
+        stats: [['3套+', 'hero.ribbon.5.stat.0'], ['1键', 'hero.ribbon.5.stat.1'], ['乐活感', 'hero.ribbon.5.stat.2']],
     },
 ];
 
 const PROMISES = [
-    { title: '升职加薪', desc: '方案交付比拼专业团队' },
-    { title: '完善论文', desc: '结构、排版一次到位' },
-    { title: '上班摸鱼', desc: '碎片时间也能快速出稿' },
+    { titleId: 'hero.promise.0.title', descId: 'hero.promise.0.desc' },
+    { titleId: 'hero.promise.1.title', descId: 'hero.promise.1.desc' },
+    { titleId: 'hero.promise.2.title', descId: 'hero.promise.2.desc' },
 ];
-const USE_CASES = ['论文', '方案', '合同协议', '招投标文件', '会议纪要', '产品需求', '行政材料'];
+const USE_CASES = ['hero.usecase.0', 'hero.usecase.1', 'hero.usecase.2', 'hero.usecase.3', 'hero.usecase.4', 'hero.usecase.5', 'hero.usecase.6'];
 
 export default function Hero({ downloadUrl }: HeroProps) {
     const [scenarioIndex, setScenarioIndex] = useState(0);
@@ -157,30 +158,30 @@ export default function Hero({ downloadUrl }: HeroProps) {
                     <div className="hero-copy max-w-[620px] space-y-6">
                         <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/25 bg-slate-950/45 px-4 py-2 text-[13px] font-semibold text-cyan-100 shadow-[0_12px_30px_rgba(8,47,73,0.24)] backdrop-blur-xl">
                             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse-soft" />
-                            跃动在 Word 字里行间的 AI 智能体
+                            <FormattedMessage id="hero.badge" defaultMessage="跃动在 Word 字里行间的 AI 智能体" />
                         </div>
 
                         <h1 className="max-w-[760px]" style={{ lineHeight: 1.08 }}>
                             <span className="block bg-[linear-gradient(92deg,#f8fafc_0%,#93c5fd_32%,#5eead4_66%,#f9a8d4_100%)] bg-clip-text text-[40px] font-black tracking-[-0.035em] text-transparent drop-shadow-[0_18px_44px_rgba(8,47,73,0.36)] md:text-[54px] lg:text-[66px]">
-                                拥有小贾AI
+                                <FormattedMessage id="hero.title.line1" defaultMessage="拥有小贾AI" />
                             </span>
                             <span className="mt-2 block bg-[linear-gradient(92deg,#f8fafc_0%,#93c5fd_32%,#5eead4_66%,#f9a8d4_100%)] bg-clip-text text-[40px] font-black tracking-[-0.035em] text-transparent drop-shadow-[0_18px_44px_rgba(8,47,73,0.36)] sm:whitespace-nowrap md:text-[54px] lg:text-[66px]">
-                                WORD 文采卓尔不群
+                                <FormattedMessage id="hero.title.line2" defaultMessage="WORD 文采卓尔不群" />
                             </span>
                         </h1>
 
                         <div className="hero-rainbow-border relative max-w-[620px] rounded-[24px] border border-cyan-200/20 bg-[linear-gradient(135deg,rgba(15,23,42,0.74),rgba(15,23,42,0.42))] px-5 py-4 text-slate-200 shadow-[0_24px_70px_rgba(2,6,23,0.3)] backdrop-blur-xl">
-                            <span className="hero-drop-in hero-drop-line-1 block text-[30px] font-black leading-[1.1] text-white">99% 功能免费</span>
-                            <span className="hero-drop-in hero-drop-line-2 mt-2 block text-[22px] font-semibold leading-tight text-cyan-100">付费功能最低 9.9 元即可享受 100000 tokens</span>
-                            <span className="hero-drop-in hero-drop-line-3 mt-2 block text-[20px] font-semibold leading-7 text-slate-300">覆盖流量、订阅、买断三种模式，按需选择</span>
+                            <span className="hero-drop-in hero-drop-line-1 block text-[30px] font-black leading-[1.1] text-white"><FormattedMessage id="hero.value.0" defaultMessage="99% 功能免费" /></span>
+                            <span className="hero-drop-in hero-drop-line-2 mt-2 block text-[22px] font-semibold leading-tight text-cyan-100"><FormattedMessage id="hero.value.1" defaultMessage="付费功能最低 9.9 元即可享受 100000 tokens" /></span>
+                            <span className="hero-drop-in hero-drop-line-3 mt-2 block text-[20px] font-semibold leading-7 text-slate-300"><FormattedMessage id="hero.value.2" defaultMessage="覆盖流量、订阅、买断三种模式，按需选择" /></span>
                         </div>
 
                         <div className="grid max-w-[640px] grid-cols-1 gap-3 pt-1 sm:grid-cols-3">
                             {PROMISES.map((item) => (
-                                <div key={item.title} className="hero-proof-card rounded-[22px] border border-cyan-200/20 bg-slate-950/35 px-4 py-4 text-sm leading-6 text-slate-300 shadow-[0_18px_46px_rgba(2,6,23,0.26)] backdrop-blur-xl">
+                                <div key={item.titleId} className="hero-proof-card rounded-[22px] border border-cyan-200/20 bg-slate-950/35 px-4 py-4 text-sm leading-6 text-slate-300 shadow-[0_18px_46px_rgba(2,6,23,0.26)] backdrop-blur-xl">
                                     <span className="block h-1.5 w-10 rounded-full bg-gradient-to-r from-[#2563eb] via-[#06b6d4] to-[#ec4899]" />
-                                    <span className="mt-3 block text-[20px] font-black leading-7 text-white">{item.title}</span>
-                                    <span className="mt-1 block text-[15px] font-medium leading-6 text-slate-300">{item.desc}</span>
+                                    <span className="mt-3 block text-[20px] font-black leading-7 text-white"><FormattedMessage id={item.titleId} defaultMessage={item.titleId} /></span>
+                                    <span className="mt-1 block text-[15px] font-medium leading-6 text-slate-300"><FormattedMessage id={item.descId} defaultMessage={item.descId} /></span>
                                 </div>
                             ))}
                         </div>
@@ -192,21 +193,21 @@ export default function Hero({ downloadUrl }: HeroProps) {
                                 rel="noopener noreferrer"
                                 className="hero-primary-cta inline-flex items-center justify-center gap-2 rounded-full px-8 py-3.5 text-base font-bold text-white no-underline hover:no-underline md:text-lg"
                             >
-                                下载尊享
+                                <FormattedMessage id="hero.cta.download" defaultMessage="下载尊享" />
                                 <span className="text-lg leading-none text-amber-300" aria-hidden="true">👑</span>
                             </a>
                             <a
                                 href="/docs"
                                 className="inline-flex items-center justify-center rounded-full border border-cyan-200/25 bg-slate-950/40 px-8 py-3.5 text-base font-semibold text-cyan-100 shadow-[0_12px_34px_rgba(2,6,23,0.24)] backdrop-blur-xl transition-all hover:border-cyan-200/60 hover:text-white md:text-lg"
                             >
-                                查看完整能力
+                                <FormattedMessage id="hero.cta.view" defaultMessage="查看完整能力" />
                             </a>
                         </div>
 
                         <div className="flex flex-wrap gap-2 pt-2 text-sm text-slate-300">
                             {USE_CASES.map((item) => (
                                 <span key={item} className="rounded-full border border-cyan-200/20 bg-slate-950/30 px-3.5 py-1.5 shadow-sm backdrop-blur-xl">
-                                    {item}
+                                    <FormattedMessage id={item} defaultMessage={item} />
                                 </span>
                             ))}
                         </div>
@@ -214,12 +215,12 @@ export default function Hero({ downloadUrl }: HeroProps) {
 
                     <div className="hero-product-orbit relative lg:pl-2 lg:pt-2">
                         <div className="absolute inset-5 -z-10 rounded-[40px] bg-[radial-gradient(circle_at_40%_16%,rgba(94,234,212,0.28),transparent_38%),linear-gradient(135deg,rgba(37,99,235,0.3),rgba(6,182,212,0.16),rgba(236,72,153,0.18))] blur-3xl" />
-                        <HeroRightRibbon
-                            scenarios={SCENARIOS}
-                            scenarioIndex={scenarioIndex}
-                            onSelect={setScenarioIndex}
-                            onHoverChange={setIsRibbonHovered}
-                        />
+        <HeroRightRibbon
+            scenarios={SCENARIOS}
+            scenarioIndex={scenarioIndex}
+            onSelect={setScenarioIndex}
+            onHoverChange={setIsRibbonHovered}
+        />
                     </div>
                 </div>
             </div>

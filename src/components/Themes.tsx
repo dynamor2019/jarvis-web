@@ -1,7 +1,12 @@
 // [CodeGuard Feature Index]
-// - Theme customization section and skin carousel -> line 34
-// - Theme entry animation and carousel styles -> line 78
-// - Theme preview layout and skin image display -> line 138
+// - use client -> line 12
+// - setIsSectionVisible(entry.isIntersecting -> line 52
+// - transform: scale(0.76 -> line 90
+// - will-change: transform, opacity, filter -> line 127
+// - <div> -> line 155
+// - src={activeSkin.image -> line 183
+// - <span className="rounded-full border border-white/10 bg-white... -> line 216
+// - </section> -> line 260
 // [/CodeGuard Feature Index]
 
 "use client";
@@ -12,18 +17,18 @@ import { FormattedMessage } from 'react-intl';
 type SkinIcon = 'spark' | 'theme' | 'pet' | 'palette' | 'pro' | 'assistant';
 
 const skinThemes = [
-    { name: "透明悬浮", iconKey: "spark" as SkinIcon, image: "/assets/theme-skins-display/transparent.jpg", accent: "from-cyan-200 to-sky-400", surface: "from-[#e4fcff] via-[#9cefff] to-[#27c7ee]", note: "更轻，不挡文档" },
-    { name: "科技蓝", iconKey: "theme" as SkinIcon, image: "/assets/theme-skins-display/blue.jpg", accent: "from-sky-200 to-blue-500", surface: "from-[#e7f3ff] via-[#86c6ff] to-[#2563eb]", note: "清晰、稳定" },
-    { name: "清爽绿", iconKey: "pet" as SkinIcon, image: "/assets/theme-skins-display/green.jpg", accent: "from-emerald-200 to-teal-400", surface: "from-[#edfff7] via-[#7bf0cf] to-[#10b981]", note: "校对更舒服" },
-    { name: "灵感紫", iconKey: "palette" as SkinIcon, image: "/assets/theme-skins-display/purple.jpg", accent: "from-violet-200 to-fuchsia-400", surface: "from-[#f5eaff] via-[#d8a7ff] to-[#a855f7]", note: "更有个性" },
-    { name: "轻松粉", iconKey: "assistant" as SkinIcon, image: "/assets/theme-skins-display/pink.jpg", accent: "from-rose-200 to-pink-400", surface: "from-[#fff0f7] via-[#ffabd0] to-[#f472b6]", note: "柔和写作" },
-    { name: "极简白", iconKey: "pro" as SkinIcon, image: "/assets/theme-skins-display/white.jpg", accent: "from-white to-slate-300", surface: "from-[#ffffff] via-[#edf7ff] to-[#c9e7ff]", note: "干净交付" }
+    { nameId: 'themes.skin.0.name', noteId: 'themes.skin.0.note', iconKey: "spark" as SkinIcon, image: "/assets/theme-skins-display/transparent.jpg", accent: "from-cyan-200 to-sky-400", surface: "from-[#e4fcff] via-[#9cefff] to-[#27c7ee]" },
+    { nameId: 'themes.skin.1.name', noteId: 'themes.skin.1.note', iconKey: "theme" as SkinIcon, image: "/assets/theme-skins-display/blue.jpg", accent: "from-sky-200 to-blue-500", surface: "from-[#e7f3ff] via-[#86c6ff] to-[#2563eb]" },
+    { nameId: 'themes.skin.2.name', noteId: 'themes.skin.2.note', iconKey: "pet" as SkinIcon, image: "/assets/theme-skins-display/green.jpg", accent: "from-emerald-200 to-teal-400", surface: "from-[#edfff7] via-[#7bf0cf] to-[#10b981]" },
+    { nameId: 'themes.skin.3.name', noteId: 'themes.skin.3.note', iconKey: "palette" as SkinIcon, image: "/assets/theme-skins-display/purple.jpg", accent: "from-violet-200 to-fuchsia-400", surface: "from-[#f5eaff] via-[#d8a7ff] to-[#a855f7]" },
+    { nameId: 'themes.skin.4.name', noteId: 'themes.skin.4.note', iconKey: "assistant" as SkinIcon, image: "/assets/theme-skins-display/pink.jpg", accent: "from-rose-200 to-pink-400", surface: "from-[#fff0f7] via-[#ffabd0] to-[#f472b6]" },
+    { nameId: 'themes.skin.5.name', noteId: 'themes.skin.5.note', iconKey: "pro" as SkinIcon, image: "/assets/theme-skins-display/white.jpg", accent: "from-white to-slate-300", surface: "from-[#ffffff] via-[#edf7ff] to-[#c9e7ff]" }
 ];
 
 const detailItems = [
-    { title: "菜单皮肤", desc: "直接改变 Word 里小贾菜单的颜色、边框和透明度" },
-    { title: "助手头像", desc: "入口图标和桌面挂件可以跟随主题一起切换" },
-    { title: "使用状态", desc: "常用主题可保存，换设备也能延续自己的工作习惯" }
+    { titleId: "themes.detail.0.title", descId: "themes.detail.0.desc" },
+    { titleId: "themes.detail.1.title", descId: "themes.detail.1.desc" },
+    { titleId: "themes.detail.2.title", descId: "themes.detail.2.desc" }
 ];
 
 export default function Themes() {
@@ -145,7 +150,9 @@ export default function Themes() {
                     <div className="flex h-full flex-col rounded-[30px] border border-white/12 bg-white/[0.06] p-5 shadow-[0_30px_100px_rgba(2,6,23,0.4)] backdrop-blur-2xl">
                         <div className="mb-4 flex items-center justify-between gap-4">
                             <div>
-                                <p className="text-sm font-semibold text-cyan-100">UI 自定义</p>
+                                <p className="text-sm font-semibold text-cyan-100">
+                                    <FormattedMessage id="themes.ui_custom" defaultMessage="UI 自定义" />
+                                </p>
                             </div>
                             <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/8 text-cyan-100">
                                 <ProMonolineIcon className="h-5 w-5" variant="palette" />
@@ -156,9 +163,9 @@ export default function Themes() {
                             <div className="absolute inset-x-6 top-6 z-10 flex items-center justify-between rounded-2xl border border-white/12 bg-slate-950/44 px-4 py-3 text-sm backdrop-blur-xl">
                                 <div className="flex min-w-0 items-center gap-3">
                                     <span className={`h-3 w-3 flex-shrink-0 rounded-full bg-gradient-to-r ${activeSkin.accent}`} />
-                                    <span className="truncate font-semibold text-white">{activeSkin.name}</span>
+                                    <span className="truncate font-semibold text-white"><FormattedMessage id={activeSkin.nameId} defaultMessage={activeSkin.nameId} /></span>
                                 </div>
-                                <span className="text-xs text-slate-200">{activeSkin.note}</span>
+                                <span className="text-xs text-slate-200"><FormattedMessage id={activeSkin.noteId} defaultMessage={activeSkin.noteId} /></span>
                             </div>
                             <div className={`absolute inset-x-6 bottom-6 top-[78px] rounded-[24px] border border-white/10 bg-gradient-to-br ${activeSkin.accent} p-[1px] shadow-[0_26px_80px_rgba(2,6,23,0.42)] [perspective:1400px]`}>
                                 <div className="relative flex h-full items-center justify-center overflow-hidden rounded-[23px] bg-white/5 backdrop-blur-sm transition-colors duration-1000">
@@ -188,11 +195,14 @@ export default function Themes() {
                             <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
                                 <div>
                                     <p className="text-sm font-semibold text-cyan-100"><FormattedMessage id="themes.preview.title" defaultMessage="今天的工作入口" /></p>
-                                    <h3 className="mt-1 text-xl font-semibold text-white">{activeSkin.name}效果预览</h3>
+                                    <h3 className="mt-1 text-xl font-semibold text-white">
+                                        <FormattedMessage id={activeSkin.nameId} defaultMessage={activeSkin.nameId} />
+                                        <FormattedMessage id="themes.preview.suffix" defaultMessage="效果预览" />
+                                    </h3>
                                 </div>
                                 <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/8 px-3 py-2 text-xs text-slate-300">
                                     <span className={`h-2 w-2 rounded-full bg-gradient-to-r ${activeSkin.accent}`} />
-                                    Word 插件菜单
+                                    <FormattedMessage id="themes.word_menu" defaultMessage="Word 插件菜单" />
                                 </div>
                             </div>
 
@@ -200,8 +210,8 @@ export default function Themes() {
                                 <div className="relative min-h-[370px] overflow-hidden rounded-[28px] border border-white/10 bg-[linear-gradient(135deg,rgba(15,23,42,0.96),rgba(67,56,202,0.22),rgba(8,47,73,0.78))]">
                                     <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-white/10 to-transparent" />
                                     <div className="absolute inset-x-6 top-6 flex items-center justify-between text-xs text-slate-300">
-                                        <span className="rounded-full border border-white/10 bg-white/8 px-3 py-1">胶囊入口</span>
-                                        <span className="rounded-full border border-white/10 bg-white/8 px-3 py-1">展开 / 收起</span>
+                                        <span className="rounded-full border border-white/10 bg-white/8 px-3 py-1"><FormattedMessage id="themes.capsule.entry" defaultMessage="胶囊入口" /></span>
+                                        <span className="rounded-full border border-white/10 bg-white/8 px-3 py-1"><FormattedMessage id="themes.capsule.toggle" defaultMessage="展开 / 收起" /></span>
                                     </div>
                                     <div className="absolute inset-x-8 top-1/2 -translate-y-1/2 rounded-[30px] border border-white/12 bg-white/[0.055] px-6 py-10 shadow-[0_28px_80px_rgba(2,6,23,0.42)] backdrop-blur-xl">
                                         <img
@@ -211,24 +221,24 @@ export default function Themes() {
                                         />
                                     </div>
                                     <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-slate-950/58 px-4 py-3 text-sm backdrop-blur-xl">
-                                        <span className="font-semibold text-white">原生 UI 动效</span>
-                                        <span className="text-xs text-slate-400">胶囊展开，收放自如</span>
+                                        <span className="font-semibold text-white"><FormattedMessage id="themes.motion.title" defaultMessage="原生 UI 动效" /></span>
+                                        <span className="text-xs text-slate-400"><FormattedMessage id="themes.motion.subtitle" defaultMessage="胶囊展开，收放自如" /></span>
                                     </div>
                                 </div>
 
                                 <div className="grid content-stretch gap-3">
-                                    {detailItems.map((item, index) => (
-                                        <div key={item.title} className="rounded-2xl border border-white/10 bg-white/[0.055] p-3">
+                                {detailItems.map((item, index) => (
+                                        <div key={item.titleId} className="rounded-2xl border border-white/10 bg-white/[0.055] p-3">
                                             <div className="mb-2 flex items-center gap-3">
                                                 <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl border border-white/10 bg-white/8 text-xs font-semibold text-cyan-100">0{index + 1}</span>
-                                                <p className="font-semibold text-white">{item.title}</p>
+                                                <p className="font-semibold text-white"><FormattedMessage id={item.titleId} defaultMessage={item.titleId} /></p>
                                             </div>
-                                            <p className="text-sm leading-5 text-slate-300">{item.desc}</p>
+                                            <p className="text-sm leading-5 text-slate-300"><FormattedMessage id={item.descId} defaultMessage={item.descId} /></p>
                                         </div>
                                     ))}
                                     <div className="rounded-2xl border border-cyan-200/18 bg-cyan-200/8 p-3">
                                         <p className="text-sm font-semibold text-white"><FormattedMessage id="themes.decoration.title" /></p>
-                                        <p className="mt-1 text-sm leading-5 text-slate-300">{detailItems.length ? "桌面挂件会跟随主题保持统一。" : ""}</p>
+                                        <p className="mt-1 text-sm leading-5 text-slate-300"><FormattedMessage id="themes.decoration.subtitle" defaultMessage="桌面挂件会跟随主题保持统一。" /></p>
                                         <div className="mt-2 h-16 overflow-hidden rounded-2xl bg-white/8">
                                             <img
                                                 src="/assets/desktop-widget-full.gif"

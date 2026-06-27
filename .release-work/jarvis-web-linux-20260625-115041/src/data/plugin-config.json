@@ -1,0 +1,17 @@
+{
+  "Screenshot": {
+    "price": 0,
+    "featured": true,
+    "category": "图像工具"
+  },
+  "GenerateTOC": {
+    "price": 0,
+    "featured": true,
+    "category": "文档工具"
+  },
+  "LatexToEquation": {
+    "price": 19.9,
+    "featured": true,
+    "category": "学术工具"
+  }
+}

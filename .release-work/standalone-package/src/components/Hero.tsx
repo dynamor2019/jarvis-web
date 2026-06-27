@@ -13,7 +13,7 @@
 // [/CodeGuard Feature Index]
 
 "use client";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type CSSProperties, type MouseEvent } from 'react';
 import HeroRightRibbon from './HeroRightRibbon';
 
 interface HeroProps {
@@ -104,6 +104,7 @@ const USE_CASES = ['论文', '方案', '合同协议', '招投标文件', '会�
 export default function Hero({ downloadUrl }: HeroProps) {
     const [scenarioIndex, setScenarioIndex] = useState(0);
     const [isRibbonHovered, setIsRibbonHovered] = useState(false);
+    const [pointer, setPointer] = useState({ x: 0, y: 0, active: 0 });
     const scenarioCount = SCENARIOS.length;
 
     useEffect(() => {
@@ -118,39 +119,68 @@ export default function Hero({ downloadUrl }: HeroProps) {
         return () => clearInterval(timer);
     }, [isRibbonHovered, scenarioCount]);
 
+    const heroStyle = {
+        '--hero-pointer-x': `${pointer.x}px`,
+        '--hero-pointer-y': `${pointer.y}px`,
+        '--hero-pointer-active': pointer.active,
+    } as CSSProperties;
+
+    const handlePointerMove = (event: MouseEvent<HTMLElement>) => {
+        const rect = event.currentTarget.getBoundingClientRect();
+        const x = event.clientX - rect.left - rect.width / 2;
+        const y = event.clientY - rect.top - rect.height / 2;
+        setPointer({ x, y, active: 1 });
+    };
+
+    const handlePointerLeave = () => {
+        setPointer({ x: 0, y: 0, active: 0 });
+    };
+
     return (
-        <section className="relative overflow-hidden pt-8 pb-16 md:pt-10 md:pb-20 lg:pt-12 lg:pb-24">
-            <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(79,70,229,0.18),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(236,72,153,0.15),transparent_30%),linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)]" />
-            <div className="absolute right-[8%] top-[18%] -z-10 h-56 w-56 rounded-full bg-fuchsia-200/30 blur-3xl" />
+        <section
+            className="hero-stage relative overflow-hidden pt-8 pb-16 md:pt-10 md:pb-20 lg:pt-12 lg:pb-24"
+            style={heroStyle}
+            onMouseMove={handlePointerMove}
+            onMouseLeave={handlePointerLeave}
+        >
+            <div className="hero-ambient absolute inset-0 -z-20" />
+            <div className="hero-grid absolute inset-0 -z-20" />
+            <div className="hero-depth-orbit hero-depth-orbit-one absolute -z-10" />
+            <div className="hero-depth-orbit hero-depth-orbit-two absolute -z-10" />
+            <div className="hero-light-field absolute inset-0 -z-10" aria-hidden="true">
+                <div className="hero-light-ribbon hero-light-ribbon-one" />
+                <div className="hero-light-ribbon hero-light-ribbon-two" />
+                <div className="hero-light-ribbon hero-light-ribbon-three" />
+            </div>
             <div className="container relative z-10 mx-auto px-5">
                 <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,0.88fr)_minmax(560px,1.12fr)] lg:gap-16">
-                    <div className="max-w-[620px] space-y-6">
-                        <div className="inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/92 px-4 py-2 text-[13px] font-semibold text-indigo-700 shadow-[0_8px_24px_rgba(79,70,229,0.08)] backdrop-blur">
+                    <div className="hero-copy max-w-[620px] space-y-6">
+                        <div className="inline-flex items-center gap-2 rounded-full border border-cyan-300/25 bg-slate-950/45 px-4 py-2 text-[13px] font-semibold text-cyan-100 shadow-[0_12px_30px_rgba(8,47,73,0.24)] backdrop-blur-xl">
                             <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse-soft" />
                             跃动在 Word 字里行间的 AI 智能体
                         </div>
 
                         <h1 className="max-w-[760px]" style={{ lineHeight: 1.08 }}>
-                            <span className="block bg-[linear-gradient(90deg,#7c3aed_0%,#8b5cf6_22%,#b25af6_58%,#ec4899_100%)] bg-clip-text text-[40px] font-black tracking-[-0.035em] text-transparent md:text-[54px] lg:text-[66px]">
+                            <span className="block bg-[linear-gradient(92deg,#f8fafc_0%,#93c5fd_32%,#5eead4_66%,#f9a8d4_100%)] bg-clip-text text-[40px] font-black tracking-[-0.035em] text-transparent drop-shadow-[0_18px_44px_rgba(8,47,73,0.36)] md:text-[54px] lg:text-[66px]">
                                 拥有小贾AI
                             </span>
-                            <span className="mt-2 block bg-[linear-gradient(90deg,#7c3aed_0%,#8b5cf6_22%,#b25af6_58%,#ec4899_100%)] bg-clip-text text-[40px] font-black tracking-[-0.035em] text-transparent sm:whitespace-nowrap md:text-[54px] lg:text-[66px]">
+                            <span className="mt-2 block bg-[linear-gradient(92deg,#f8fafc_0%,#93c5fd_32%,#5eead4_66%,#f9a8d4_100%)] bg-clip-text text-[40px] font-black tracking-[-0.035em] text-transparent drop-shadow-[0_18px_44px_rgba(8,47,73,0.36)] sm:whitespace-nowrap md:text-[54px] lg:text-[66px]">
                                 WORD 文采卓尔不群
                             </span>
                         </h1>
 
-                        <div className="hero-rainbow-border relative max-w-[620px] rounded-[24px] border border-amber-100 bg-[linear-gradient(135deg,rgba(255,251,235,0.98),rgba(255,247,237,0.92))] px-5 py-4 text-slate-700 shadow-[0_14px_40px_rgba(245,158,11,0.08)]">
-                            <span className="hero-drop-in hero-drop-line-1 block text-[30px] font-black leading-[1.1] text-slate-900">99% 功能免费</span>
-                            <span className="hero-drop-in hero-drop-line-2 mt-2 block text-[22px] font-semibold leading-tight">付费功能最低 9.9 元即可享受 100000 tokens</span>
-                            <span className="hero-drop-in hero-drop-line-3 mt-2 block text-[20px] font-semibold leading-7">覆盖流量、订阅、买断三种模式，按需选择</span>
+                        <div className="hero-rainbow-border relative max-w-[620px] rounded-[24px] border border-cyan-200/20 bg-[linear-gradient(135deg,rgba(15,23,42,0.74),rgba(15,23,42,0.42))] px-5 py-4 text-slate-200 shadow-[0_24px_70px_rgba(2,6,23,0.3)] backdrop-blur-xl">
+                            <span className="hero-drop-in hero-drop-line-1 block text-[30px] font-black leading-[1.1] text-white">99% 功能免费</span>
+                            <span className="hero-drop-in hero-drop-line-2 mt-2 block text-[22px] font-semibold leading-tight text-cyan-100">付费功能最低 9.9 元即可享受 100000 tokens</span>
+                            <span className="hero-drop-in hero-drop-line-3 mt-2 block text-[20px] font-semibold leading-7 text-slate-300">覆盖流量、订阅、买断三种模式，按需选择</span>
                         </div>
 
                         <div className="grid max-w-[640px] grid-cols-1 gap-3 pt-1 sm:grid-cols-3">
                             {PROMISES.map((item) => (
-                                <div key={item.title} className="rounded-[22px] border border-slate-200 bg-white/88 px-4 py-4 text-sm leading-6 text-slate-700 shadow-[0_12px_28px_rgba(15,23,42,0.06)]">
-                                    <span className="block h-1.5 w-10 rounded-full bg-gradient-to-r from-[#4F46E5] to-[#EC4899]" />
-                                    <span className="mt-3 block text-[20px] font-black leading-7 text-slate-900">{item.title}</span>
-                                    <span className="mt-1 block text-[15px] font-medium leading-6 text-slate-600">{item.desc}</span>
+                                <div key={item.title} className="hero-proof-card rounded-[22px] border border-cyan-200/20 bg-slate-950/35 px-4 py-4 text-sm leading-6 text-slate-300 shadow-[0_18px_46px_rgba(2,6,23,0.26)] backdrop-blur-xl">
+                                    <span className="block h-1.5 w-10 rounded-full bg-gradient-to-r from-[#2563eb] via-[#06b6d4] to-[#ec4899]" />
+                                    <span className="mt-3 block text-[20px] font-black leading-7 text-white">{item.title}</span>
+                                    <span className="mt-1 block text-[15px] font-medium leading-6 text-slate-300">{item.desc}</span>
                                 </div>
                             ))}
                         </div>
@@ -160,30 +190,30 @@ export default function Hero({ downloadUrl }: HeroProps) {
                                 href={downloadUrl}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="glow-button inline-flex items-center justify-center gap-2 rounded-full px-8 py-3.5 text-base font-bold text-white no-underline hover:no-underline md:text-lg"
+                                className="hero-primary-cta inline-flex items-center justify-center gap-2 rounded-full px-8 py-3.5 text-base font-bold text-white no-underline hover:no-underline md:text-lg"
                             >
                                 下载尊享
                                 <span className="text-lg leading-none text-amber-300" aria-hidden="true">👑</span>
                             </a>
                             <a
                                 href="/docs"
-                                className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-8 py-3.5 text-base font-semibold text-slate-700 shadow-sm transition-all hover:border-[#4F46E5] hover:text-[#4F46E5] md:text-lg"
+                                className="inline-flex items-center justify-center rounded-full border border-cyan-200/25 bg-slate-950/40 px-8 py-3.5 text-base font-semibold text-cyan-100 shadow-[0_12px_34px_rgba(2,6,23,0.24)] backdrop-blur-xl transition-all hover:border-cyan-200/60 hover:text-white md:text-lg"
                             >
                                 查看完整能力
                             </a>
                         </div>
 
-                        <div className="flex flex-wrap gap-2 pt-2 text-sm text-slate-600">
+                        <div className="flex flex-wrap gap-2 pt-2 text-sm text-slate-300">
                             {USE_CASES.map((item) => (
-                                <span key={item} className="rounded-full border border-slate-200 bg-white/80 px-3.5 py-1.5 shadow-sm">
+                                <span key={item} className="rounded-full border border-cyan-200/20 bg-slate-950/30 px-3.5 py-1.5 shadow-sm backdrop-blur-xl">
                                     {item}
                                 </span>
                             ))}
                         </div>
                     </div>
 
-                    <div className="relative lg:pl-2 lg:pt-2">
-                        <div className="absolute inset-5 -z-10 rounded-[40px] bg-gradient-to-br from-indigo-200/65 via-sky-100/40 to-fuchsia-200/45 blur-3xl" />
+                    <div className="hero-product-orbit relative lg:pl-2 lg:pt-2">
+                        <div className="absolute inset-5 -z-10 rounded-[40px] bg-[radial-gradient(circle_at_40%_16%,rgba(94,234,212,0.28),transparent_38%),linear-gradient(135deg,rgba(37,99,235,0.3),rgba(6,182,212,0.16),rgba(236,72,153,0.18))] blur-3xl" />
                         <HeroRightRibbon
                             scenarios={SCENARIOS}
                             scenarioIndex={scenarioIndex}
@@ -260,6 +290,190 @@ export default function Hero({ downloadUrl }: HeroProps) {
                     background: linear-gradient(110deg, rgba(255,122,24,0.55) 0%, rgba(255,210,0,0.5) 18%, rgba(124,255,107,0.45) 36%, rgba(57,216,255,0.45) 56%, rgba(109,91,255,0.5) 76%, rgba(255,79,216,0.55) 100%);
                     filter: blur(10px);
                     z-index: -1;
+                }
+                .hero-stage {
+                    --hero-pointer-x: 0px;
+                    --hero-pointer-y: 0px;
+                    --hero-pointer-active: 0;
+                    min-height: calc(100vh - 76px);
+                    isolation: isolate;
+                    background: #020617;
+                }
+                .hero-ambient {
+                    background:
+                        radial-gradient(circle at calc(50% + var(--hero-pointer-x) * 0.12) calc(42% + var(--hero-pointer-y) * 0.12), rgba(125,211,252,calc(0.08 + var(--hero-pointer-active) * 0.18)), transparent 20%),
+                        radial-gradient(circle at 14% 18%, rgba(37,99,235,0.36), transparent 31%),
+                        radial-gradient(circle at 76% 22%, rgba(6,182,212,0.3), transparent 30%),
+                        radial-gradient(circle at 86% 72%, rgba(236,72,153,0.22), transparent 32%),
+                        linear-gradient(180deg, #020617 0%, #07111f 48%, #0b1020 82%, #0f172a 100%);
+                }
+                .hero-grid {
+                    opacity: 0.42;
+                    background-image:
+                        linear-gradient(rgba(125,211,252,0.08) 1px, transparent 1px),
+                        linear-gradient(90deg, rgba(125,211,252,0.08) 1px, transparent 1px);
+                    background-size: 72px 72px;
+                    mask-image: radial-gradient(circle at 56% 36%, black 0%, transparent 70%);
+                    transform: translate3d(calc(var(--hero-pointer-x) * -0.018), calc(var(--hero-pointer-y) * -0.018), 0);
+                    transition: transform 140ms ease-out;
+                }
+                .hero-light-field {
+                    pointer-events: none;
+                    filter: saturate(1.1);
+                    transform: translate3d(calc(var(--hero-pointer-x) * 0.025), calc(var(--hero-pointer-y) * 0.025), 0);
+                    transition: transform 120ms ease-out;
+                }
+                .hero-light-ribbon {
+                    position: absolute;
+                    left: 50%;
+                    top: 50%;
+                    width: min(960px, 74vw);
+                    height: 170px;
+                    border-radius: 999px;
+                    opacity: 0.72;
+                    filter: blur(14px);
+                    mix-blend-mode: screen;
+                    will-change: transform;
+                }
+                .hero-light-ribbon::before {
+                    content: '';
+                    position: absolute;
+                    inset: 0;
+                    border-radius: inherit;
+                    background: linear-gradient(90deg, transparent 0%, rgba(37,99,235,0.1) 12%, rgba(6,182,212,0.64) 38%, rgba(129,140,248,0.5) 62%, rgba(236,72,153,0.34) 84%, transparent 100%);
+                }
+                .hero-light-ribbon-one {
+                    transform: translate(-47%, -55%) rotate(-18deg);
+                    animation: heroRibbonFlowOne 12s ease-in-out infinite;
+                }
+                .hero-light-ribbon-two {
+                    width: min(820px, 68vw);
+                    height: 130px;
+                    opacity: 0.5;
+                    transform: translate(-24%, -8%) rotate(20deg);
+                    animation: heroRibbonFlowTwo 15s ease-in-out infinite;
+                }
+                .hero-light-ribbon-three {
+                    width: min(620px, 58vw);
+                    height: 110px;
+                    opacity: 0.42;
+                    transform: translate(-72%, 64%) rotate(8deg);
+                    animation: heroRibbonFlowThree 18s ease-in-out infinite;
+                }
+                .hero-depth-orbit {
+                    border-radius: 999px;
+                    border: 1px solid rgba(14,165,233,0.18);
+                    box-shadow: inset 0 0 40px rgba(59,130,246,0.08), 0 0 54px rgba(14,165,233,0.09);
+                }
+                .hero-depth-orbit-one {
+                    right: -10%;
+                    top: 12%;
+                    width: 520px;
+                    height: 520px;
+                    transform: rotate(-22deg) scaleX(1.3);
+                }
+                .hero-depth-orbit-two {
+                    left: -14%;
+                    bottom: 8%;
+                    width: 380px;
+                    height: 380px;
+                    transform: rotate(18deg) scaleX(1.25);
+                }
+                .hero-copy,
+                .hero-product-orbit {
+                    animation: heroFloatIn 900ms cubic-bezier(0.22, 0.9, 0.22, 1) both;
+                }
+                .hero-product-orbit {
+                    animation-delay: 120ms;
+                }
+                .hero-proof-card {
+                    transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+                }
+                .hero-proof-card:hover {
+                    transform: translateY(-4px);
+                    border-color: rgba(125,211,252,0.9);
+                    box-shadow: 0 24px 48px rgba(15,23,42,0.12);
+                }
+                .hero-primary-cta {
+                    position: relative;
+                    overflow: hidden;
+                    background: linear-gradient(92deg, #1d4ed8 0%, #06b6d4 48%, #db2777 100%);
+                    box-shadow: 0 18px 42px rgba(37,99,235,0.28), 0 0 0 1px rgba(255,255,255,0.36) inset;
+                    isolation: isolate;
+                    transition: transform 220ms ease, box-shadow 220ms ease;
+                }
+                .hero-primary-cta::before {
+                    content: '';
+                    position: absolute;
+                    inset: -120% -40%;
+                    background: linear-gradient(120deg, transparent 36%, rgba(255,255,255,0.5) 50%, transparent 64%);
+                    transform: translateX(-42%);
+                    animation: heroCtaSweep 4.8s ease-in-out infinite;
+                    z-index: -1;
+                }
+                .hero-primary-cta:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 22px 54px rgba(37,99,235,0.34), 0 0 0 1px rgba(255,255,255,0.44) inset;
+                }
+                .hero-primary-cta > * {
+                    position: relative;
+                    z-index: 1;
+                }
+                @keyframes heroRibbonFlowOne {
+                    0%, 100% { transform: translate(-47%, -55%) rotate(-18deg) scale(1); }
+                    50% { transform: translate(-43%, -62%) rotate(-12deg) scale(1.08); }
+                }
+                @keyframes heroRibbonFlowTwo {
+                    0%, 100% { transform: translate(-24%, -8%) rotate(20deg) scale(1); }
+                    50% { transform: translate(-29%, -2%) rotate(14deg) scale(1.06); }
+                }
+                @keyframes heroRibbonFlowThree {
+                    0%, 100% { transform: translate(-72%, 64%) rotate(8deg) scale(1); }
+                    50% { transform: translate(-66%, 58%) rotate(14deg) scale(1.1); }
+                }
+                @keyframes heroFloatIn {
+                    from { opacity: 0; transform: translateY(24px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+                @keyframes heroCtaSweep {
+                    0%, 40% { transform: translateX(-42%) rotate(8deg); }
+                    72%, 100% { transform: translateX(42%) rotate(8deg); }
+                }
+                @media (max-width: 768px) {
+                    .hero-stage {
+                        min-height: auto;
+                    }
+                    .hero-light-ribbon {
+                        width: 118vw;
+                        height: 110px;
+                        filter: blur(18px);
+                        opacity: 0.48;
+                    }
+                    .hero-light-ribbon-two,
+                    .hero-light-ribbon-three,
+                    .hero-depth-orbit-two,
+                    .hero-depth-orbit-two {
+                        display: none;
+                    }
+                    .hero-grid {
+                        background-size: 48px 48px;
+                        opacity: 0.28;
+                    }
+                }
+                @media (prefers-reduced-motion: reduce) {
+                    .hero-light-ribbon,
+                    .hero-copy,
+                    .hero-product-orbit,
+                    .hero-primary-cta::before,
+                    .hero-drop-in,
+                    .hero-rainbow-border::before,
+                    .hero-rainbow-border::after {
+                        animation: none !important;
+                    }
+                    .hero-proof-card,
+                    .hero-primary-cta {
+                        transition: none;
+                    }
                 }
             `}</style>
         </section>

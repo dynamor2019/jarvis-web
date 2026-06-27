@@ -10,36 +10,36 @@ import { animate, stagger } from 'animejs';
 import { useEffect, useRef, type MouseEvent } from 'react';
 const footerLinks = {
     product: [
-        { name: "先看能做什么", href: "#features" },
-        { name: "了解使用路径", href: "#functions" },
-        { name: "查看配置流程", href: "#start" },
-        { name: "进入个人中心", href: "/dashboard" }
+        { nameId: "footer.links.product.0", href: "#features" },
+        { nameId: "footer.links.product.1", href: "#functions" },
+        { nameId: "footer.links.product.2", href: "#start" },
+        { nameId: "footer.links.product.3", href: "/dashboard" }
     ],
     support: [
-        { name: "阅读使用说明", href: "/docs" },
-        { name: "提交反馈", href: "/feedback" },
-        { name: "查看需求市场", href: "/features" },
-        { name: "获取支持", href: "/support" }
+        { nameId: "footer.links.support.0", href: "/docs" },
+        { nameId: "footer.links.support.1", href: "/feedback" },
+        { nameId: "footer.links.support.2", href: "/features" },
+        { nameId: "footer.links.support.3", href: "/support" }
     ],
     legal: [
-        { name: "配置安全", href: "#tech" },
-        { name: "设备绑定", href: "#tech" },
-        { name: "部署说明", href: "#tech" },
-        { name: "排错路径", href: "#start" }
+        { nameId: "footer.links.legal.0", href: "#tech" },
+        { nameId: "footer.links.legal.1", href: "#tech" },
+        { nameId: "footer.links.legal.2", href: "#tech" },
+        { nameId: "footer.links.legal.3", href: "#start" }
     ]
 };
 
 const socialLinks = [
-    { icon: "文", name: "Word", href: "#features" },
-    { icon: "密", name: "安全", href: "#tech" },
-    { icon: "问", name: "反馈", href: "/feedback" }
+    { icon: "W", nameId: "footer.social.0", href: "#features" },
+    { icon: "S", nameId: "footer.social.1", href: "#tech" },
+    { icon: "?", nameId: "footer.social.2", href: "/feedback" }
 ];
 
 const finalSteps = [
-    ['01', '选模型', '选择适合当天任务的 AI 能力'],
-    ['02', '拿配置', '把权益和模型连接到本机'],
-    ['03', '进 Word', '生成、润色、排版直接完成'],
-    ['04', '可追踪', '订单、配置、错误状态都有反馈']
+    ['01', 'footer.step.0.title', 'footer.step.0.desc'],
+    ['02', 'footer.step.1.title', 'footer.step.1.desc'],
+    ['03', 'footer.step.2.title', 'footer.step.2.desc'],
+    ['04', 'footer.step.3.title', 'footer.step.3.desc']
 ];
 
 import { FormattedMessage } from 'react-intl';
@@ -170,7 +170,7 @@ function FooterTechAnimation() {
         >
             <div ref={washRef} className="absolute -inset-20 bg-[radial-gradient(circle_at_50%_50%,rgba(34,211,238,0.2),transparent_28%),radial-gradient(circle_at_42%_58%,rgba(217,70,239,0.14),transparent_34%)] blur-2xl" />
             <div className="relative min-h-[310px] overflow-hidden rounded-[26px] border border-white/8 bg-[linear-gradient(135deg,rgba(3,7,18,0.64),rgba(8,47,73,0.34),rgba(49,10,54,0.38))]">
-                <svg viewBox="0 0 920 320" className="absolute inset-0 h-full w-full" role="img" aria-label="交互式科技星系动画">
+                <svg viewBox="0 0 920 320" className="absolute inset-0 h-full w-full" role="img" aria-label="Interactive tech galaxy animation">
                     <defs>
                         <radialGradient id="footerCoreGlow" cx="50%" cy="50%" r="50%">
                             <stop offset="0%" stopColor="#ffffff" stopOpacity="0.98" />
@@ -259,12 +259,12 @@ export default function Footer() {
                     <div className="pointer-events-none absolute left-8 right-8 top-1/2 h-px bg-gradient-to-r from-transparent via-cyan-200/70 to-transparent" />
                     <div className="relative grid gap-7 md:grid-cols-[0.82fr_1.18fr] md:items-center">
                         <div>
-                            <div className="mb-3 inline-flex rounded-full border border-cyan-200/20 bg-cyan-300/10 px-3 py-1 text-xs font-semibold text-cyan-100">从选择到成稿</div>
+                            <div className="mb-3 inline-flex rounded-full border border-cyan-200/20 bg-cyan-300/10 px-3 py-1 text-xs font-semibold text-cyan-100"><FormattedMessage id="footer.ribbon" defaultMessage="从选择到成稿" /></div>
                             <h2 className="text-3xl font-black leading-tight md:text-4xl">
                                 <FormattedMessage id="footer.final.title" defaultMessage="把复杂 AI 文档流程，收进一条清晰路径。" />
                             </h2>
                             <p className="mt-4 max-w-md text-sm leading-6 text-slate-300">
-                                从模型、配置到 Word 成稿，最后一屏给用户一个明确的收束感和下一步入口。
+                                <FormattedMessage id="footer.final.desc" defaultMessage="从模型、配置到 Word 成稿，最后一屏给用户一个明确的收束感和下一步入口。" />
                             </p>
                         </div>
                         <div className="grid gap-3 sm:grid-cols-4">
@@ -274,8 +274,8 @@ export default function Footer() {
                                         <span className="text-xs font-black text-cyan-100/70">{item[0]}</span>
                                         <span className="h-2.5 w-2.5 rounded-full bg-cyan-200 shadow-[0_0_20px_rgba(125,211,252,0.9)]" />
                                     </div>
-                                    <div className="text-lg font-bold text-white">{item[1]}</div>
-                                    <div className="mt-2 text-xs leading-5 text-slate-300">{item[2]}</div>
+                                    <div className="text-lg font-bold text-white"><FormattedMessage id={item[1]} defaultMessage={item[1]} /></div>
+                                    <div className="mt-2 text-xs leading-5 text-slate-300"><FormattedMessage id={item[2]} defaultMessage={item[2]} /></div>
                                 </div>
                             ))}
                         </div>
@@ -300,7 +300,7 @@ export default function Footer() {
                                     key={index}
                                     href={social.href} 
                                     className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-white/5 text-sm font-bold hover:scale-110 hover:bg-white/10 transition-transform"
-                                    title={social.name}
+                                    title={social.nameId}
                                 >
                                     {social.icon}
                                 </a>
@@ -315,7 +315,7 @@ export default function Footer() {
                             {footerLinks.product.map((link, index) => (
                                 <li key={index}>
                                     <a href={link.href} className="hover:text-white transition-colors">
-                                        <FormattedMessage id={`footer.links.product.${index}`} defaultMessage={link.name} />
+                                        <FormattedMessage id={link.nameId} defaultMessage={link.nameId} />
                                     </a>
                                 </li>
                             ))}
@@ -329,7 +329,7 @@ export default function Footer() {
                             {footerLinks.support.map((link, index) => (
                                 <li key={index}>
                                     <a href={link.href} className="hover:text-white transition-colors">
-                                        <FormattedMessage id={`footer.links.support.${index}`} defaultMessage={link.name} />
+                                        <FormattedMessage id={link.nameId} defaultMessage={link.nameId} />
                                     </a>
                                 </li>
                             ))}
@@ -343,7 +343,7 @@ export default function Footer() {
                             {footerLinks.legal.map((link, index) => (
                                 <li key={index}>
                                     <a href={link.href} className="hover:text-white transition-colors">
-                                        <FormattedMessage id={`footer.links.legal.${index}`} defaultMessage={link.name} />
+                                        <FormattedMessage id={link.nameId} defaultMessage={link.nameId} />
                                     </a>
                                 </li>
                             ))}

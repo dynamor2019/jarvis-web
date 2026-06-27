@@ -1,0 +1,12 @@
+{
+  "file": "pack-web.ps1",
+  "updated_at": "2026-04-05T17:38:46",
+  "line_count": 371,
+  "file_hash": "ecbee497b0ebcd8f658e450abb93a8023885de25fe97411edb6733f28af74811",
+  "entries": [
+    {
+      "feature": "Remove-Item -Force -ErrorAction SilentlyContinue",
+      "line": 117
+    }
+  ]
+}

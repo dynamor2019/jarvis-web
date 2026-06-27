@@ -1,0 +1,40 @@
+{
+  "file": "src/i18n/messages/es-ES.json",
+  "updated_at": "2026-06-19T17:54:53",
+  "line_count": 1235,
+  "file_hash": "cafbd17f490ea9d05abea99aab1f22cb209d1a4db9de12e3e1a330b4c3ef399f",
+  "entries": [
+    {
+      "feature": "common.back",
+      "line": 2
+    },
+    {
+      "feature": "features.action.view_comments",
+      "line": 178
+    },
+    {
+      "feature": "admin.features.filter.type",
+      "line": 354
+    },
+    {
+      "feature": "admin.users.stats.admin",
+      "line": 530
+    },
+    {
+      "feature": "quick.special.0.title",
+      "line": 706
+    },
+    {
+      "feature": "docs.section.content-tools.sub.pdf-tools.feat.2",
+      "line": 882
+    },
+    {
+      "feature": "payment.order_no",
+      "line": 1058
+    },
+    {
+      "feature": "store.subscription.model_siliconflow",
+      "line": 1234
+    }
+  ]
+}

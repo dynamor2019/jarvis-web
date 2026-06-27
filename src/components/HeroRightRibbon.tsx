@@ -7,11 +7,15 @@
 // [/CodeGuard Feature Index]
 
 ﻿import React from 'react';
+import { FormattedMessage } from 'react-intl';
 
 type Scenario = {
-  tab: string;
-  prompt: string;
-  outputTags: string[];
+  tabId: string;
+  promptId: string;
+  inputTagId: string;
+  inputLineIds: string[];
+  outputTitleId: string;
+  outputTagIds: string[];
   stats: [string, string][];
 };
 
@@ -44,12 +48,17 @@ const PROVIDER_LOGOS = [
 
 export default function HeroRightRibbon({ scenarios, scenarioIndex, onSelect, onHoverChange }: HeroRightRibbonProps) {
   const activeScenario = scenarios[scenarioIndex] ?? scenarios[0];
+  const format_rows: Array<[string, string, string, string]> = [
+    ['H1', 'hero.ribbon.format.font.sans', 'hero.ribbon.format.size.h1', 'hero.ribbon.format.line.spacing'],
+    ['H2', 'hero.ribbon.format.font.hei', 'hero.ribbon.format.size.h2', 'hero.ribbon.format.line.spacing'],
+    ['H3', 'hero.ribbon.format.font.sans', 'hero.ribbon.format.size.h3', 'hero.ribbon.format.line.spacing'],
+  ];
 
   return (
     <div className="rounded-[34px] border border-slate-200/90 bg-white/94 p-4 shadow-[0_28px_90px_rgba(15,23,42,0.12)] backdrop-blur">
       <div className="rounded-[24px] border border-indigo-100/70 bg-[linear-gradient(180deg,rgba(249,251,255,0.95),rgba(242,246,255,0.9))] px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
         <p className="text-center text-[18px] font-semibold tracking-tight text-slate-800 md:text-[20px] lg:text-[22px] whitespace-nowrap">
-          {activeScenario?.tab}
+          <FormattedMessage id={activeScenario?.tabId || ''} defaultMessage={activeScenario?.tabId || ''} />
         </p>
       </div>
 
@@ -64,14 +73,9 @@ export default function HeroRightRibbon({ scenarios, scenarioIndex, onSelect, on
             const showBudgetPreview = idx === 2;
             const showEfficiencyPreview = idx === 3;
             const showTextGenPreview = idx === 0;
-            const budgetSegments = [
-              '99% 功能免费',
-              '付费功能最低 9.9 元即可享受 100000 tokens',
-              '覆盖流量、订阅、买断三种模式，按需选择',
-            ];
             return (
               <button
-                key={`${scenario.tab}-${idx}`}
+                key={`${scenario.tabId}-${idx}`}
                 type="button"
                 onClick={() => onSelect(idx)}
                 onMouseEnter={() => {
@@ -80,32 +84,26 @@ export default function HeroRightRibbon({ scenarios, scenarioIndex, onSelect, on
                 }}
                 className={`group relative h-full overflow-hidden rounded-[16px] border border-indigo-100/70 text-left transition-all duration-700 ease-out ${isActive ? 'flex-[1.8] shadow-[0_18px_40px_rgba(99,102,241,0.2)]' : 'flex-[0.32] shadow-[0_8px_18px_rgba(99,102,241,0.08)]'}`}
                 style={{ background: RIBBON_COLORS[idx % RIBBON_COLORS.length] }}
-                aria-label={`切换到${scenario.tab}`}
+                aria-label={`切换到${scenario.tabId}`}
               >
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.45),transparent_55%)]" />
                 {isActive ? (
                   <div className="relative z-10 h-full p-1.5">
                     <div className={`w-full rounded-[14px] border border-indigo-100/90 bg-white/95 p-3 shadow-[0_10px_24px_rgba(30,41,59,0.14)] ${showEfficiencyPreview || showBudgetPreview ? 'h-auto' : 'h-full flex flex-col'}`}>
                       <div>
-                        <p className="text-[12px] font-semibold tracking-[0.08em] text-slate-500">场景简介</p>
+                        <p className="text-[12px] font-semibold tracking-[0.08em] text-slate-500"><FormattedMessage id="hero.ribbon.scene_intro" defaultMessage="场景简介" /></p>
                         {showBudgetPreview ? (
                           <div className="mt-2 space-y-1.5 text-slate-800">
-                            <p className="text-[26px] font-black leading-[1.08]">
-                              {budgetSegments[0]}
-                            </p>
-                            <p className="text-[20px] font-semibold leading-tight">
-                              {budgetSegments[1]}
-                            </p>
-                            <p className="text-[16px] font-semibold leading-7">
-                              {budgetSegments[2]}
-                            </p>
+                            <p className="text-[26px] font-black leading-[1.08]"><FormattedMessage id="hero.ribbon.budget.0" defaultMessage="99% 功能免费" /></p>
+                            <p className="text-[20px] font-semibold leading-tight"><FormattedMessage id="hero.ribbon.budget.1" defaultMessage="付费功能最低 9.9 元即可享受 100000 tokens" /></p>
+                            <p className="text-[16px] font-semibold leading-7"><FormattedMessage id="hero.ribbon.budget.2" defaultMessage="覆盖流量、订阅、买断三种模式，按需选择" /></p>
                           </div>
                         ) : (
                           <>
-                            <p className="mt-1.5 line-clamp-3 text-[16px] font-semibold leading-7 text-slate-800">{scenario.prompt}</p>
+                            <p className="mt-1.5 line-clamp-3 text-[16px] font-semibold leading-7 text-slate-800"><FormattedMessage id={scenario.promptId} defaultMessage={scenario.promptId} /></p>
                             <div className="mt-2 flex flex-wrap gap-1.5">
-                              {scenario.outputTags.slice(0, 3).map((tag) => (
-                                <span key={tag} className="rounded-full border border-indigo-100 bg-indigo-50 px-2.5 py-1 text-[13px] font-medium text-indigo-700">{tag}</span>
+                              {scenario.outputTagIds.slice(0, 3).map((tagId) => (
+                                <span key={tagId} className="rounded-full border border-indigo-100 bg-indigo-50 px-2.5 py-1 text-[13px] font-medium text-indigo-700"><FormattedMessage id={tagId} defaultMessage={tagId} /></span>
                               ))}
                             </div>
                           </>
@@ -113,17 +111,17 @@ export default function HeroRightRibbon({ scenarios, scenarioIndex, onSelect, on
                       </div>
                       {showBudgetPreview && (
                         <div className="mt-3 rounded-xl border border-indigo-100 bg-[linear-gradient(180deg,#f8fbff_0%,#f3f6ff_100%)] p-2.5">
-                          <p className="text-center text-[14px] font-bold text-indigo-600">小贾电站</p>
-                          <p className="mt-1 text-center text-[11px] text-slate-600">选择合适方案，开启 AI 写作之旅</p>
+                          <p className="text-center text-[14px] font-bold text-indigo-600"><FormattedMessage id="hero.ribbon.buy.title" defaultMessage="小贾电站" /></p>
+                          <p className="mt-1 text-center text-[11px] text-slate-600"><FormattedMessage id="hero.ribbon.buy.subtitle" defaultMessage="选择合适方案，开启 AI 写作之旅" /></p>
                           <div className="mt-2 flex items-center justify-center gap-2">
-                            <span className="text-[11px] text-slate-600">支付方式:</span>
-                            <span className="rounded-md bg-[#2b63f6] px-2 py-1 text-[11px] font-semibold text-white">微信支付</span>
-                            <span className="rounded-md border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700">支付宝</span>
+                            <span className="text-[11px] text-slate-600"><FormattedMessage id="hero.ribbon.buy.pay_method" defaultMessage="支付方式:" /></span>
+                            <span className="rounded-md bg-[#2b63f6] px-2 py-1 text-[11px] font-semibold text-white"><FormattedMessage id="hero.ribbon.buy.wechat" defaultMessage="微信支付" /></span>
+                            <span className="rounded-md border border-slate-300 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700"><FormattedMessage id="hero.ribbon.buy.alipay" defaultMessage="支付宝" /></span>
                           </div>
                           <div className="mt-2 grid grid-cols-3 gap-1.5 text-center text-[10px] font-medium text-slate-700">
-                            {['订阅服务', '流量服务', '终身', '智能体市场', '天赋点亮', '已购项目'].map((tab) => (
-                              <span key={tab} className="rounded-md border border-slate-200 bg-white px-1.5 py-1">
-                                {tab}
+                            {['hero.ribbon.buy.tab.0', 'hero.ribbon.buy.tab.1', 'hero.ribbon.buy.tab.2', 'hero.ribbon.buy.tab.3', 'hero.ribbon.buy.tab.4', 'hero.ribbon.buy.tab.5'].map((tabId) => (
+                              <span key={tabId} className="rounded-md border border-slate-200 bg-white px-1.5 py-1">
+                                <FormattedMessage id={tabId} defaultMessage={tabId} />
                               </span>
                             ))}
                           </div>
@@ -133,25 +131,21 @@ export default function HeroRightRibbon({ scenarios, scenarioIndex, onSelect, on
                         <div className="mt-3 rounded-xl border border-indigo-100 bg-[linear-gradient(180deg,#f8fbff_0%,#f3f6ff_100%)] p-2.5">
                           <div className="flex items-center gap-1.5 rounded-md border border-slate-200 bg-white px-2 py-1.5">
                             <span className="h-3 w-3 rounded-sm bg-[#2b63f6]" />
-                            <span className="text-[11px] font-semibold text-slate-700">一键格式设置</span>
+                            <span className="text-[11px] font-semibold text-slate-700"><FormattedMessage id="hero.ribbon.format.title" defaultMessage="一键格式设置" /></span>
                           </div>
                           <div className="mt-2 rounded-md border border-slate-200 bg-white p-2">
                             <div className="grid grid-cols-[1.2fr_1fr_1fr] gap-1 text-[10px] font-semibold text-slate-600">
-                              <span>字体</span>
-                              <span>字号</span>
-                              <span>行距</span>
+                              <span><FormattedMessage id="hero.ribbon.format.font" defaultMessage="字体" /></span>
+                              <span><FormattedMessage id="hero.ribbon.format.size" defaultMessage="字号" /></span>
+                              <span><FormattedMessage id="hero.ribbon.format.spacing" defaultMessage="行距" /></span>
                             </div>
                             <div className="mt-1 space-y-1">
-                              {[
-                                ['H1', '宋体', '22 (二号)'],
-                                ['H2', '黑体', '12 (小四)'],
-                                ['H3', '宋体', '10.5 (五号)'],
-                              ].map(([level, font, size]) => (
+                              {format_rows.map(([level, fontId, sizeId, spacingId]) => (
                                 <div key={level} className="grid grid-cols-[0.5fr_1.2fr_1fr_1fr] items-center gap-1 rounded border border-slate-200 bg-slate-50 px-1.5 py-1">
                                   <span className="text-[10px] font-bold text-indigo-700">{level}</span>
-                                  <span className="text-[10px] text-slate-700">{font}</span>
-                                  <span className="text-[10px] text-slate-700">{size}</span>
-                                  <span className="text-[10px] text-slate-700">单倍</span>
+                                  <span className="text-[10px] text-slate-700"><FormattedMessage id={fontId} defaultMessage={fontId} /></span>
+                                  <span className="text-[10px] text-slate-700"><FormattedMessage id={sizeId} defaultMessage={sizeId} /></span>
+                                  <span className="text-[10px] text-slate-700"><FormattedMessage id={spacingId} defaultMessage={spacingId} /></span>
                                 </div>
                               ))}
                             </div>
@@ -162,7 +156,7 @@ export default function HeroRightRibbon({ scenarios, scenarioIndex, onSelect, on
                         <div className="mt-3 overflow-hidden rounded-xl border border-indigo-100 bg-white">
                           <img
                             src="/assets/textgen.gif"
-                            alt="万言文案秒成章演示"
+                            alt="hero ribbon demo"
                             className="h-[210px] w-full object-cover"
                             loading="lazy"
                           />
@@ -170,7 +164,7 @@ export default function HeroRightRibbon({ scenarios, scenarioIndex, onSelect, on
                       )}
                       {!showBudgetPreview && !showEfficiencyPreview && !showTextGenPreview && (
                         <div className="mt-3 flex-1 space-y-2">
-                          <p className="text-[12px] font-semibold tracking-[0.08em] text-slate-500">核心指标</p>
+                          <p className="text-[12px] font-semibold tracking-[0.08em] text-slate-500"><FormattedMessage id="hero.ribbon.metrics" defaultMessage="核心指标" /></p>
                           {scenario.stats.map(([value, label]) => (
                             <div key={label} className="flex items-center justify-between rounded-lg border border-slate-200 bg-slate-50/90 px-2.5 py-2">
                               <span className="text-[14px] font-bold text-indigo-700">{value}</span>
@@ -202,14 +196,14 @@ export default function HeroRightRibbon({ scenarios, scenarioIndex, onSelect, on
                     </div>
                   </div>
                 ) : (
-                  <div className="relative z-10 flex h-full items-center justify-center px-1">
-                    <span
-                      className="select-none whitespace-nowrap bg-[linear-gradient(180deg,#4f46e5_0%,#7c3aed_46%,#d946ef_100%)] bg-clip-text text-[22px] font-extrabold tracking-[0.08em] text-transparent [writing-mode:vertical-rl] transition-all duration-700"
-                      style={{ fontFamily: 'STKaiti, KaiTi, Kaiti SC, STFangsong, serif' }}
-                    >
-                      {scenario.tab}
-                    </span>
-                  </div>
+                      <div className="relative z-10 flex h-full items-center justify-center px-1">
+                        <span
+                          className="select-none whitespace-nowrap bg-[linear-gradient(180deg,#4f46e5_0%,#7c3aed_46%,#d946ef_100%)] bg-clip-text text-[22px] font-extrabold tracking-[0.08em] text-transparent [writing-mode:vertical-rl] transition-all duration-700"
+                          style={{ fontFamily: 'STKaiti, KaiTi, Kaiti SC, STFangsong, serif' }}
+                        >
+                      <FormattedMessage id={scenario.tabId} defaultMessage={scenario.tabId} />
+                        </span>
+                      </div>
                 )}
               </button>
             );

@@ -1,0 +1,20 @@
+// Policy: Do not modify directly. Explain reason before edits. Last confirm reason: 用户确认需要守护进程系统服务模板
+
+[Unit]
+Description=Jarvis Process Allowlist Guard
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/www/wwwroot/jarvis-web
+Environment=ENFORCE=1
+Environment=SCAN_INTERVAL=15
+Environment=LOG_DIR=/www/wwwroot/jarvis-web/logs
+ExecStart=/bin/bash /www/wwwroot/jarvis-web/scripts/process-allowlist-guard.sh
+Restart=always
+RestartSec=3
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target

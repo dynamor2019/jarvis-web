@@ -1,0 +1,281 @@
+﻿// [CodeGuard Feature Index]
+// - use client -> line 12
+// - inputLines: ['OpenAI锛氭柟妗堜富绋?, 'Claude锛氳姘旀牎瀵?, 'DeepSeek锛氭垚鏈紭鍖?, '... -> line 46
+// - providers: ['OpenAI', 'Claude', 'Kimi -> line 79
+// - <div className="max-w-[620px] space-y-6"> -> line 122
+// - className="glow-button inline-flex items-center justify-cente... -> line 160
+// - <div className="-mt-1 h-3 w-3 rotate-45 border-b border-r bor... -> line 211
+// - <div className="h-20 rounded-[20px] border border-dashed bord... -> line 257
+// - </section> -> line 315
+// [/CodeGuard Feature Index]
+
+"use client";
+import { useEffect, useState } from 'react';
+
+interface HeroProps {
+    downloadUrl: string;
+}
+
+type Scenario = {
+    tab: string;
+    prompt: string;
+    inputTag: string;
+    inputLines: string[];
+    outputTitle: string;
+    outputTags: string[];
+    providers: string[];
+    stats: [string, string][];
+};
+
+const SCENARIOS: Scenario[] = [
+    {
+        tab: '涓囪█鏂囨绉掓垚绔?,
+        prompt: '浠庢彁绾层€佹墿鍐欏埌娑﹁壊涓€姝ュ畬鎴愶紝涓囪█鍐呭鐩存帴钀借繘 Word锛屼笉鍐嶆墜宸ユ嫾娈佃惤',
+        inputTag: '闀挎枃鎴愮珷',
+        inputLines: ['鎻愮翰锛氱洰鏍囥€佸彈浼椼€佺粨鏋?, '鎵╁啓锛氭瘡绔犲垎娈电敓鎴?, '娑﹁壊锛氳姘旂粺涓€涓庨檷閲?, '=> 涓€娆¤緭鍑轰竾瑷€鎴愮'],
+        outputTitle: '涓囪█鏂囨鎴愮珷.docx',
+        outputTags: ['闀挎枃涓€姘斿懙鎴?, '缁撴瀯鑷姩鎴愮珷', '浜や粯鏃犻渶鎷兼帴'],
+        providers: ['OpenAI', 'Claude', 'DeepSeek'],
+        stats: [['1娆?, '涓囪█鎴愮珷'], ['绉掔骇', '钀藉叆 Word'], ['0鎷兼帴', '鐩存帴浜ょ']],
+    },
+    {
+        tab: '鍏ㄦā閫氬悆浠绘剰缁?,
+        prompt: '涓绘祦妯″瀷銆佹湰鍦版ā鍨嬪拰涓撶敤妯″瀷閮借兘浠绘剰缁戝畾锛岀敤鍚屼竴濂楁祦绋嬬粺涓€杈撳嚭',
+        inputTag: '浠绘剰缁戝畾',
+        inputLines: ['OpenAI锛氭柟妗堜富绋?, 'Claude锛氳姘旀牎瀵?, 'DeepSeek锛氭垚鏈紭鍖?, '=> 浠绘剰缁勫悎缁熶竴鍑哄彛'],
+        outputTitle: '浠绘剰缁戝畾鏂规.docx',
+        outputTags: ['澶氭ā鍨嬩换鎰忕粦', '缁熶竴宸ヤ綔娴?, '鍚屽彛寰勮緭鍑?],
+        providers: ['OpenAI', 'Claude', 'Gemini'],
+        stats: [['鍏ㄦā', '閮借兘鎺ュ叆'], ['浠绘剰', '鑷敱缁勫悎'], ['1濂?, '缁熶竴鍑哄彛']],
+    },
+    {
+        tab: '楂樿川浣庝环闅忓績鎹?,
+        prompt: '瑕嗙洊娴侀噺銆佽闃呫€佷拱鏂笁绉嶆ā寮忥紱璁㈤槄鍏嶈皟璇曞紑绠卞嵆鐢紱鎺ㄥ箍鍙禋 Token锛屾寔缁晠浜?AI 鑳藉姏',
+        inputTag: '娴侀噺 / 璁㈤槄 / 涔版柇',
+        inputLines: ['娴侀噺妯″紡锛氭寜閲忎粯璐癸紝杞婚噺涓婃墜', '璁㈤槄妯″紡锛氬厤璋冭瘯锛屽紑绠卞嵆鐢?, '涔版柇妯″紡锛氫竴娆¤喘涔帮紝闀挎湡浣跨敤', '鎺ㄥ箍杩斿埄锛氳禋鍙?Token 鐣呬韩 AI'],
+        outputTitle: '棰勭畻鍙嬪ソ鐗堟垚绋?docx',
+        outputTags: ['涓夌浠樿垂妯″紡', '璁㈤槄寮€绠卞嵆鐢?, '鎺ㄥ箍璧?Token'],
+        providers: ['DeepSeek', 'Qwen', 'Kimi'],
+        stats: [['3妯?, '闅忓績鍒囨崲'], ['楂樿川', '浣庝环鍙緱'], ['Token+', '鎺ㄥ箍鍙禋']],
+    },
+    {
+        tab: '涓€閿彁鏁堟垚鍊嶆定',
+        prompt: '鏍囬銆佸垪琛ㄣ€佹钀姐€佹湳璇拰绌烘牸鎵归噺缁熶竴锛屾枃妗ｅ鐞嗘晥鐜囨垚鍊嶆彁鍗?,
+        inputTag: '鎵归噺鎻愭晥',
+        inputLines: ['鏍囬灞傜骇娣蜂贡', '鍒楄〃缂╄繘涓嶄竴鑷?, '鏈鍓嶅悗涓嶇粺涓€', '=> 涓€閿粺涓€鍏ㄩ儴鏍煎紡'],
+        outputTitle: '鎵归噺鎻愭晥缁撴灉.docx',
+        outputTags: ['涓€閿壒閲忓鐞?, '鎻愭晥鎴愬€嶅闀?, '鍑忓皯浜哄伐杩斿伐'],
+        providers: ['OpenAI', 'DeepSeek', 'Qwen'],
+        stats: [['2x+', '澶勭悊鎻愰€?], ['1閿?, '鍏ㄥ眬鏁寸悊'], ['90%', '鎵嬪伐鍑忓皯']],
+    },
+    {
+        tab: '鏋佺畝鐣岄潰瓒呴珮鏁?,
+        prompt: '鐣岄潰杞汇€佹楠ょ煭銆佸叆鍙ｆ竻鏅帮紝闇€瑕佹椂鎵撳紑灏辩敤锛屼笉闇€瑕佹椂涓嶆墦鏂啓浣?,
+        inputTag: '鏋佺畝楂樻晥',
+        inputLines: ['涓€灞忚仛鐒︽牳蹇冩搷浣?, '鍒囨崲鍦烘櫙涓嶈烦椤?, '鏂囨。娴佽浆鏇撮『鎵?, '=> 浣庡涔犳垚鏈笂鎵?],
+        outputTitle: '鏋佺畝楂樻晥宸ヤ綔娴?docx',
+        outputTags: ['鐣岄潰鏋佺畝', '涓婃墜鎴愭湰浣?, '鍐欎綔涓嶆墦鏂?],
+        providers: ['OpenAI', 'Claude', 'Kimi'],
+        stats: [['鏋佺畝', '鏇村ソ涓婃墜'], ['楂樻晥', '鏇村揩瀹屾垚'], ['浣庤礋鎷?, '鎸佺画浣跨敤']],
+    },
+    {
+        tab: '涓€ц楗颁箰娲讳韩',
+        prompt: '涓婚鑹层€佸皝闈㈡劅銆侀噸鐐规爣娉ㄥ拰鐗堥潰姘旇川涓€閿垏鎹紝璁╂枃妗ｆ棦濂界敤锛屼篃鏇存湁璁板繂鐐?,
+        inputTag: '涔愭椿瑁呴グ',
+        inputLines: ['涓婚鑹诧細鍝佺墝鑱斿姩', '灏侀潰鏍峰紡锛氬椋庢牸鍙€?, '閲嶇偣鍐呭锛氳嚜鍔ㄩ珮浜?, '=> 杈撳嚭鏇存湁杈ㄨ瘑搴?],
+        outputTitle: '涔愭椿瑁呴グ鏂规.docx',
+        outputTags: ['涓€ч鏍煎垏鎹?, '琛ㄨ揪鏇存湁瓒?, '鏂囨。鏇存湁杈ㄨ瘑搴?],
+        providers: ['OpenAI', 'Claude', 'Gemini'],
+        stats: [['3濂?', '椋庢牸妯℃澘'], ['1閿?, '瀹屾垚鍒囨崲'], ['涔愭椿鎰?, '鏇存湁鍚稿紩鍔?]],
+    },
+];
+
+const PROMISES = [
+    { title: '鍗囪亴鍔犺柂', desc: '鏂规浜や粯鍍忎笓涓氬洟闃? },
+    { title: '瀹屽杽璁烘枃', desc: '缁撴瀯銆佹帓鐗堜竴娆″埌浣? },
+    { title: '涓婄彮鎽搁奔', desc: '纰庣墖鏃堕棿涔熻兘蹇€熷嚭绋? },
+];
+const USE_CASES = ['璁烘枃', '鏂规', '鍚堝悓鍗忚', '鎷涙姇鏍囨枃浠?, '浼氳绾', '浜у搧闇€姹?, '琛屾斂鏉愭枡'];
+const RIBBON_COLORS = [
+    'linear-gradient(180deg, rgba(99,102,241,0.22) 0%, rgba(99,102,241,0.08) 100%)',
+    'linear-gradient(180deg, rgba(139,92,246,0.22) 0%, rgba(139,92,246,0.08) 100%)',
+    'linear-gradient(180deg, rgba(217,70,239,0.22) 0%, rgba(217,70,239,0.08) 100%)',
+    'linear-gradient(180deg, rgba(79,70,229,0.2) 0%, rgba(236,72,153,0.1) 100%)',
+    'linear-gradient(180deg, rgba(45,212,191,0.2) 0%, rgba(99,102,241,0.08) 100%)',
+    'linear-gradient(180deg, rgba(59,130,246,0.2) 0%, rgba(168,85,247,0.1) 100%)',
+];
+
+export default function Hero({ downloadUrl }: HeroProps) {
+    const [scenarioIndex, setScenarioIndex] = useState(0);
+    const [playDirection, setPlayDirection] = useState<1 | -1>(1);
+    const scenarioCount = SCENARIOS.length;
+
+    useEffect(() => {
+        const timer = setInterval(() => {
+            setScenarioIndex((prev) => {
+                if (prev >= scenarioCount - 1) {
+                    setPlayDirection(-1);
+                    return Math.max(prev - 1, 0);
+                }
+                if (prev <= 0) {
+                    setPlayDirection(1);
+                    return Math.min(prev + 1, scenarioCount - 1);
+                }
+                return prev + playDirection;
+            });
+        }, 6200);
+
+        return () => clearInterval(timer);
+    }, [scenarioCount, playDirection]);
+
+    const activeScenario = SCENARIOS[scenarioIndex];
+
+    return (
+        <section className="relative overflow-hidden pt-8 pb-16 md:pt-10 md:pb-20 lg:pt-12 lg:pb-24">
+            <div className="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_top_left,rgba(79,70,229,0.18),transparent_34%),radial-gradient(circle_at_bottom_right,rgba(236,72,153,0.15),transparent_30%),linear-gradient(180deg,#ffffff_0%,#f8fafc_100%)]" />
+            <div className="absolute right-[8%] top-[18%] -z-10 h-56 w-56 rounded-full bg-fuchsia-200/30 blur-3xl" />
+            <div className="container relative z-10 mx-auto px-5">
+                <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[minmax(0,0.88fr)_minmax(560px,1.12fr)] lg:gap-16">
+                    <div className="max-w-[620px] space-y-6">
+                        <div className="inline-flex items-center gap-2 rounded-full border border-indigo-100 bg-white/92 px-4 py-2 text-[13px] font-semibold text-indigo-700 shadow-[0_8px_24px_rgba(79,70,229,0.08)] backdrop-blur">
+                            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse-soft" />
+                            璺冨姩鍦?Word 瀛楅噷琛岄棿鐨?AI 鏅鸿兘浣?                        </div>
+
+                        <h1 className="max-w-[760px]" style={{ lineHeight: 1.08 }}>
+                            <span className="block bg-[linear-gradient(90deg,#7c3aed_0%,#8b5cf6_22%,#b25af6_58%,#ec4899_100%)] bg-clip-text text-[40px] font-black tracking-[-0.035em] text-transparent md:text-[54px] lg:text-[66px]">
+                                鎷ユ湁灏忚淳AI
+                            </span>
+                            <span className="mt-2 block bg-[linear-gradient(90deg,#7c3aed_0%,#8b5cf6_22%,#b25af6_58%,#ec4899_100%)] bg-clip-text text-[40px] font-black tracking-[-0.035em] text-transparent sm:whitespace-nowrap md:text-[54px] lg:text-[66px]">
+                                WORD 鏂囬噰鍗撳皵涓嶇兢
+                            </span>
+                        </h1>
+
+                        <div className="max-w-[620px] rounded-[24px] border border-amber-100 bg-[linear-gradient(135deg,rgba(255,251,235,0.98),rgba(255,247,237,0.92))] px-5 py-4 text-base font-medium leading-8 text-slate-700 shadow-[0_14px_40px_rgba(245,158,11,0.08)]">
+                            涓嶆槸澶氫竴涓亰澶╂锛岃€屾槸澶氫竴涓湡鑳芥浛浣犳拺鍦洪潰鐨勬惌瀛愩€傝剳瀛愰噷鍒氭湁鎯虫硶锛學ord 閲屽氨宸茬粡寮€濮嬪儚鎴愮銆?                        </div>
+
+                        <p className="max-w-[620px] text-[17px] leading-8 text-slate-600">
+                            灏戜竴鐐规潵鍥炴惉杩愶紝灏戜竴鐐逛氦绋垮墠鎵嬪繖鑴氫贡銆傚皬璐続I 鎯冲仛鐨勬槸锛屾妸鍐欎綔杩欎欢浜嬩粠鈥滃媺寮哄畬鎴愨€濆彉鎴愨€滄嬁寰楀嚭鎵嬧€濄€?                        </p>
+
+                        <div className="grid max-w-[640px] grid-cols-1 gap-3 pt-1 sm:grid-cols-3">
+                            {PROMISES.map((item) => (
+                                <div key={item.title} className="rounded-[22px] border border-slate-200 bg-white/88 px-4 py-4 text-sm leading-6 text-slate-700 shadow-[0_12px_28px_rgba(15,23,42,0.06)]">
+                                    <span className="block h-1.5 w-10 rounded-full bg-gradient-to-r from-[#4F46E5] to-[#EC4899]" />
+                                    <span className="mt-3 block text-[20px] font-black leading-7 text-slate-900">{item.title}</span>
+                                    <span className="mt-1 block text-[15px] font-medium leading-6 text-slate-600">{item.desc}</span>
+                                </div>
+                            ))}
+                        </div>
+
+                        <div className="flex flex-col gap-3 pt-2 sm:flex-row">
+                            <a
+                                href={downloadUrl}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="glow-button inline-flex items-center justify-center gap-2 rounded-full px-8 py-3.5 text-base font-bold text-white no-underline hover:no-underline md:text-lg"
+                            >
+                                涓嬭浇灏婁韩
+                                <span className="text-lg leading-none text-amber-300" aria-hidden="true">馃憫</span>
+                            </a>
+                            <a
+                                href="/docs"
+                                className="inline-flex items-center justify-center rounded-full border border-slate-300 bg-white px-8 py-3.5 text-base font-semibold text-slate-700 shadow-sm transition-all hover:border-[#4F46E5] hover:text-[#4F46E5] md:text-lg"
+                            >
+                                鏌ョ湅瀹屾暣鑳藉姏
+                            </a>
+                        </div>
+
+                        <div className="flex flex-wrap gap-2 pt-2 text-sm text-slate-600">
+                            {USE_CASES.map((item) => (
+                                <span key={item} className="rounded-full border border-slate-200 bg-white/80 px-3.5 py-1.5 shadow-sm">
+                                    {item}
+                                </span>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="relative lg:pl-2 lg:pt-2">
+                        <div className="absolute inset-5 -z-10 rounded-[40px] bg-gradient-to-br from-indigo-200/65 via-sky-100/40 to-fuchsia-200/45 blur-3xl" />
+                        <div className="rounded-[34px] border border-slate-200/90 bg-white/94 p-5 shadow-[0_28px_90px_rgba(15,23,42,0.12)] backdrop-blur">
+                            <div className="rounded-[24px] border border-indigo-100/70 bg-[linear-gradient(180deg,rgba(249,251,255,0.95),rgba(242,246,255,0.9))] px-4 py-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.9)]">
+                                <p className="text-center text-[18px] font-semibold tracking-tight text-slate-800 md:text-[20px] lg:text-[22px] whitespace-nowrap">
+                                    {activeScenario.tab}
+                                </p>
+                            </div>
+
+                            <div className="mt-5 h-[470px] rounded-[26px] border border-indigo-100/80 bg-[linear-gradient(180deg,rgba(243,246,255,0.95),rgba(237,242,255,0.92))] p-3 shadow-[inset_0_1px_0_rgba(255,255,255,0.95)]">
+                                <div className={`flex h-full w-full gap-2 transition-all duration-700 ${playDirection < 0 ? 'flex-row-reverse' : ''}`}>
+                                    {SCENARIOS.map((scenario, index) => {
+                                        const isActive = index === scenarioIndex;
+                                        return (
+                                            <div
+                                                key={scenario.tab}
+                                                onClick={() => setScenarioIndex(index)}
+                                                className={`relative cursor-pointer overflow-hidden rounded-[22px] border border-white/60 shadow-[0_10px_28px_rgba(79,70,229,0.12)] transition-all duration-700 ease-out ${
+                                                    isActive ? 'min-w-[220px] flex-[1.8]' : 'min-w-[44px] flex-[0.42]'
+                                                }`}
+                                                style={{ background: RIBBON_COLORS[index % RIBBON_COLORS.length] }}
+                                            >
+                                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,255,255,0.58),transparent_58%)]" />
+                                                <div className="relative flex h-full flex-col items-center px-1 py-4">
+                                                    <span
+                                                        className={`[writing-mode:vertical-rl] [text-orientation:mixed] bg-[linear-gradient(180deg,#4f46e5_0%,#7c3aed_45%,#d946ef_100%)] bg-clip-text font-black tracking-[0.08em] text-transparent transition-all duration-700 ${
+                                                            isActive ? 'text-[34px] leading-[1.05]' : 'text-[22px] leading-[1.12] opacity-85'
+                                                        }`}
+                                                        style={{ fontFamily: '"STKaiti","KaiTi","DFKai-SB","FangSong","Noto Serif SC",serif' }}
+                                                    >
+                                                        {scenario.tab}
+                                                    </span>
+
+                                                    {isActive && (
+                                                        <div className="mt-auto w-full rounded-[16px] border border-white/75 bg-white/70 px-3 py-3 backdrop-blur-sm">
+                                                            <p className="text-xs font-medium leading-6 text-slate-700 line-clamp-3">{scenario.prompt}</p>
+                                                            <div className="mt-2 flex flex-wrap gap-1.5">
+                                                                {scenario.outputTags.slice(0, 2).map((tag) => (
+                                                                    <span key={tag} className="rounded-full bg-white/90 px-2 py-1 text-[11px] font-medium text-violet-700">
+                                                                        {tag}
+                                                                    </span>
+                                                                ))}
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+
+                            <div className="mt-5 rounded-[18px] border border-slate-200/90 bg-white/75 px-3 py-3">
+                                <div className="flex items-center justify-end">
+                                    <span className="text-xs font-medium text-slate-500">{scenarioIndex + 1}/{scenarioCount}</span>
+                                </div>
+                                <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-slate-200/90">
+                                    <div
+                                        className="h-full rounded-full bg-[linear-gradient(90deg,#6d4bff_0%,#8b5cf6_46%,#d946ef_100%)] transition-all duration-500 ease-out"
+                                        style={{ width: `${((scenarioIndex + 1) / scenarioCount) * 100}%` }}
+                                    />
+                                </div>
+                                <div className="mt-2 flex items-center justify-center gap-2">
+                                    {SCENARIOS.map((scenario, index) => (
+                                        <button
+                                            key={scenario.tab}
+                                            type="button"
+                                            aria-label={`切换到 ${scenario.tab}`}
+                                            onClick={() => setScenarioIndex(index)}
+                                            className={`h-2.5 w-2.5 rounded-full transition-all ${
+                                                index === scenarioIndex
+                                                    ? 'scale-110 bg-[linear-gradient(90deg,#6d4bff_0%,#d946ef_100%)] shadow-[0_0_0_3px_rgba(139,92,246,0.15)]'
+                                                    : 'bg-slate-300 hover:bg-slate-400'
+                                            }`}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    );
+}
+

@@ -1,0 +1,38 @@
+# Jarvis AI Web - Nginx Reverse Proxy Configuration
+#
+# Instructions:
+# 1. Place this file in /etc/nginx/sites-available/jarvisai
+# 2. Create a symbolic link: ln -s /etc/nginx/sites-available/jarvisai /etc/nginx/sites-enabled/
+# 3. Test configuration: sudo nginx -t
+# 4. Reload Nginx: sudo systemctl reload nginx
+# 5. Run Certbot for SSL: sudo certbot --nginx -d www.jarvisai.com.cn -d jarvisai.com.cn
+
+# --- Step 1: Initial Setup (HTTP Only) ---
+# Use this block FIRST to allow Certbot to validate your domain.
+server {
+    listen 80;
+    server_name www.jarvisai.com.cn jarvisai.com.cn;
+
+    location / {
+        proxy_pass http://localhost:3000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+    }
+}
+
+# --- Step 2: SSL Configuration (Auto-managed by Certbot) ---
+# AFTER you run 'sudo certbot --nginx', Certbot will automatically modify this file
+# and add the SSL certificate paths. Do not uncomment the block below manually
+# unless you have your own certificates.
+
+# server {
+#     listen 443 ssl http2;
+#     server_name www.jarvisai.com.cn jarvisai.com.cn;
+#     ... (Certbot will fill this in)
+# }

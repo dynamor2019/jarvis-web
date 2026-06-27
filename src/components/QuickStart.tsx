@@ -1,51 +1,50 @@
 "use client";
+import { FormattedMessage } from 'react-intl';
 import ProMonolineIcon from '@/components/ProMonolineIcon';
 type QuickFeatureIcon = 'chat';
 const steps = [
     {
         number: 1,
-        title: "选择模型套餐",
-        description: "在购买页选择模型与月付、季付或年付方案"
+        titleId: "quick.steps.1.title",
+        descriptionId: "quick.steps.1.desc"
     },
     {
         number: 2,
-        title: "支付并生成配置",
-        description: "支付成功后生成绑定设备的加密配置文件"
+        titleId: "quick.steps.2.title",
+        descriptionId: "quick.steps.2.desc"
     },
     {
         number: 3,
-        title: "下载到同一设备",
-        description: "配置文件默认 7 天有效，需在绑定设备上使用"
+        titleId: "quick.steps.3.title",
+        descriptionId: "quick.steps.3.desc"
     },
     {
         number: 4,
-        title: "启动 PC 端解密",
-        description: "本地服务验证指纹、签名和有效期后读取模型配置"
+        titleId: "quick.steps.4.title",
+        descriptionId: "quick.steps.4.desc"
     },
     {
         number: 5,
-        title: "进入 Word 工作流",
-        description: "用 AI 咒语、格式、公式、表格工具完成文档交付"
+        titleId: "quick.steps.5.title",
+        descriptionId: "quick.steps.5.desc"
     }
 ];
 
 const specialFeatures = [
     {
-        title: "遇到问题怎么办",
+        titleId: "quick.special.0.title",
         iconKey: "chat" as QuickFeatureIcon,
         color: "var(--google-blue)",
         items: [
-            { title: "下载错误", desc: "下载被拦截或提示风险时，保留 exe 安装包后继续安装" },
-            { title: "安装错误", desc: "遇到 360 拦截请放行，建议彻底卸载 360 全系产品" },
-            { title: "生成失败", desc: "检查订单 ID、登录状态和服务器错误日志" },
-            { title: "配置失效", desc: "确认配置是否过期，或重新生成后下载到同一设备" },
-            { title: "解密失败", desc: "核对设备指纹、数字签名和本地配置文件" },
-            { title: "新的需求", desc: "到需求市场提交想法，小贾会按真实使用反馈继续升级" }
+            { titleId: "quick.special.0.item.0.title", descId: "quick.special.0.item.0.desc" },
+            { titleId: "quick.special.0.item.1.title", descId: "quick.special.0.item.1.desc" },
+            { titleId: "quick.special.0.item.2.title", descId: "quick.special.0.item.2.desc" },
+            { titleId: "quick.special.0.item.3.title", descId: "quick.special.0.item.3.desc" },
+            { titleId: "quick.special.0.item.4.title", descId: "quick.special.0.item.4.desc" },
+            { titleId: "quick.special.0.item.5.title", descId: "quick.special.0.item.5.desc" }
         ]
     }
 ];
-
-import { FormattedMessage } from 'react-intl';
 
 interface QuickStartProps {
     downloadUrl: string;
@@ -90,12 +89,12 @@ export default function QuickStart({ downloadUrl }: QuickStartProps) {
                                             {step.number}
                                         </div>
                                         <div>
-                                            <h4 className="font-semibold text-lg">
-                                                <FormattedMessage id={`quick.steps.${step.number}.title`} defaultMessage={step.title} />
-                                            </h4>
-                                            <p className="text-slate-300">
-                                                <FormattedMessage id={`quick.steps.${step.number}.desc`} defaultMessage={step.description} />
-                                            </p>
+                                                <h4 className="font-semibold text-lg">
+                                                <FormattedMessage id={step.titleId} defaultMessage={step.titleId} />
+                                                </h4>
+                                                <p className="text-slate-300">
+                                                <FormattedMessage id={step.descriptionId} defaultMessage={step.descriptionId} />
+                                                </p>
                                         </div>
                                     </li>
                                 ))}
@@ -126,16 +125,16 @@ export default function QuickStart({ downloadUrl }: QuickStartProps) {
                                         <span className="text-2xl mr-3 inline-flex">
                                             <ProMonolineIcon className="h-6 w-6" variant={feature.iconKey} />
                                         </span>
-                                        <FormattedMessage id={`quick.special.${index}.title`} defaultMessage={feature.title} />
+                                        <FormattedMessage id={feature.titleId} defaultMessage={feature.titleId} />
                                     </h3>
                                     <div className="grid flex-1 grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
                                         {feature.items.map((item, i) => (
                                             <div key={i} className="flex min-h-[132px] flex-col rounded-2xl border border-white/10 bg-white/[0.08] p-4">
                                                 <h4 className="mb-3 border-b border-white/10 pb-3 text-base font-semibold text-white">
-                                                    <FormattedMessage id={`quick.special.${index}.item.${i}.title`} defaultMessage={item.title} />
+                                                    <FormattedMessage id={item.titleId} defaultMessage={item.titleId} />
                                                 </h4>
                                                 <p className="text-sm leading-6 text-slate-300">
-                                                    <FormattedMessage id={`quick.special.${index}.item.${i}.desc`} defaultMessage={item.desc} />
+                                                    <FormattedMessage id={item.descId} defaultMessage={item.descId} />
                                                 </p>
                                             </div>
                                         ))}

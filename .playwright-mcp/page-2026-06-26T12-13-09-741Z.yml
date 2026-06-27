@@ -1,0 +1,519 @@
+- generic [active] [ref=e1]:
+  - navigation [ref=e2]:
+    - generic [ref=e3]:
+      - link "小贾AI J A R V I S A I" [ref=e4] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e5]:
+          - img [ref=e7]
+          - generic [ref=e9]: 小贾AI
+        - generic [ref=e10]:
+          - generic [ref=e11]:
+            - generic [ref=e12]: J
+            - generic [ref=e13]: A
+            - generic [ref=e14]: R
+            - generic [ref=e15]: V
+            - generic [ref=e16]: I
+            - generic [ref=e17]: S
+          - generic [ref=e18]:
+            - generic [ref=e19]: A
+            - generic [ref=e20]: I
+      - generic [ref=e21]:
+        - link "核心特色" [ref=e22] [cursor=pointer]:
+          - /url: /#features
+        - link "怎么使用" [ref=e23] [cursor=pointer]:
+          - /url: /#functions
+        - link "个性化" [ref=e24] [cursor=pointer]:
+          - /url: /#themes
+        - link "技术亮点" [ref=e25] [cursor=pointer]:
+          - /url: /#tech
+        - link "使用说明" [ref=e26] [cursor=pointer]:
+          - /url: /docs
+        - link "🐔 你太美" [ref=e27] [cursor=pointer]:
+          - /url: /promo/jntm
+        - link "小贾电站" [ref=e28] [cursor=pointer]:
+          - /url: /store
+        - link "需求市场" [ref=e29] [cursor=pointer]:
+          - /url: /features
+      - generic [ref=e30]:
+        - generic [ref=e31]:
+          - generic [ref=e32]: 语言
+          - combobox [ref=e33]:
+            - option "简体中文" [selected]
+            - option "英语"
+            - option "法语"
+            - option "德语"
+            - option "西班牙语"
+        - link "注册/登录" [ref=e34] [cursor=pointer]:
+          - /url: /login
+  - main [ref=e35]:
+    - generic [ref=e37]:
+      - generic [ref=e47]:
+        - generic [ref=e48]:
+          - generic [ref=e49]: 跃动在 Word 字里行间的 AI 智能体
+          - heading "拥有小贾AI WORD 文采卓尔不群" [level=1] [ref=e51]:
+            - generic [ref=e52]: 拥有小贾AI
+            - generic [ref=e53]: WORD 文采卓尔不群
+          - generic [ref=e54]:
+            - generic [ref=e55]: 99% 功能免费
+            - generic [ref=e56]: 付费功能最低 9.9 元即可享受 100000 tokens
+            - generic [ref=e57]: 覆盖流量、订阅、买断三种模式，按需选择
+          - generic [ref=e58]:
+            - generic [ref=e59]:
+              - generic [ref=e61]: 升职加薪
+              - generic [ref=e62]: 方案交付比拼专业团队
+            - generic [ref=e63]:
+              - generic [ref=e65]: 完善论文
+              - generic [ref=e66]: 结构、排版一次到位
+            - generic [ref=e67]:
+              - generic [ref=e69]: 上班摸鱼
+              - generic [ref=e70]: 碎片时间也能快速出稿
+          - generic [ref=e71]:
+            - link "下载尊享" [ref=e72] [cursor=pointer]:
+              - /url: https://share.weiyun.com/TjhX1smm
+              - text: 下载尊享
+              - generic [ref=e73]: 👑
+            - link "查看完整能力" [ref=e74] [cursor=pointer]:
+              - /url: /docs
+          - generic [ref=e75]:
+            - generic [ref=e76]: 论文
+            - generic [ref=e77]: 方案
+            - generic [ref=e78]: 合同协议
+            - generic [ref=e79]: 招投标文件
+            - generic [ref=e80]: 会议纪要
+            - generic [ref=e81]: 产品需求
+            - generic [ref=e82]: 行政材料
+        - generic [ref=e85]:
+          - paragraph [ref=e87]: 万言文案秒成章
+          - generic [ref=e89]:
+            - button "切换到hero.ribbon.0.tab" [ref=e90] [cursor=pointer]:
+              - generic [ref=e93]:
+                - generic [ref=e94]:
+                  - paragraph [ref=e95]: 场景简介
+                  - paragraph [ref=e96]: 从提纲、扩写到润色一步完成，万言内容直接落进 Word，不再手工拼段落
+                  - generic [ref=e97]:
+                    - generic [ref=e98]: 长文一气呵成
+                    - generic [ref=e99]: 结构自动成章
+                    - generic [ref=e100]: 交付无需拼接
+                - img "hero ribbon demo" [ref=e102]
+            - button "切换到hero.ribbon.1.tab" [ref=e103] [cursor=pointer]:
+              - generic [ref=e106]: 全模通吃任意绑
+            - button "切换到hero.ribbon.2.tab" [ref=e107] [cursor=pointer]:
+              - generic [ref=e110]: 高质低价随心换
+            - button "切换到hero.ribbon.3.tab" [ref=e111] [cursor=pointer]:
+              - generic [ref=e114]: 一键提效成倍涨
+            - button "切换到hero.ribbon.4.tab" [ref=e115] [cursor=pointer]:
+              - generic [ref=e118]: 极简界面超高效
+            - button "切换到hero.ribbon.5.tab" [ref=e119] [cursor=pointer]:
+              - generic [ref=e122]: 个性装饰乐活享
+          - generic [ref=e125]: 1/6
+      - generic [ref=e133]:
+        - generic [ref=e134]:
+          - generic [ref=e135]: 能力总览
+          - heading "核心特色" [level=2] [ref=e136]
+          - paragraph [ref=e137]: 你不用在写作、排版、公式和模型配置之间来回切换，常见文档交付环节都可以在 Word 里顺着完成。
+          - generic [ref=e138]:
+            - generic [ref=e139]:
+              - generic [ref=e142]:
+                - generic [ref=e143]: "01"
+                - img [ref=e145]
+              - heading "AI 在 Word 内成稿" [level=3] [ref=e149]
+              - list [ref=e150]:
+                - listitem [ref=e151]:
+                  - generic [ref=e153]: AI 生成、改写、续写、摘要、翻译集中处理
+                - listitem [ref=e154]:
+                  - generic [ref=e156]: 主流大模型全接入，按场景选择合适能力
+            - generic [ref=e157]:
+              - generic [ref=e160]:
+                - generic [ref=e161]: "02"
+                - img [ref=e163]
+              - heading "高效格式调整" [level=3] [ref=e166]
+              - list [ref=e167]:
+                - listitem [ref=e168]:
+                  - generic [ref=e170]: 五大格式模块覆盖常见排版动作
+                - listitem [ref=e171]:
+                  - generic [ref=e173]: 正文、标题、表格、页眉页脚和目录统一收口
+            - generic [ref=e174]:
+              - generic [ref=e177]:
+                - generic [ref=e178]: "03"
+                - img [ref=e180]
+              - heading "全局 AI 输入" [level=3] [ref=e184]
+              - list [ref=e185]:
+                - listitem [ref=e186]:
+                  - generic [ref=e188]: 放飞小贾提供系统级 AI 输入
+                - listitem [ref=e189]:
+                  - generic [ref=e191]: 有输入框的地方都可以调用 AI 输入
+            - generic [ref=e192]:
+              - generic [ref=e195]:
+                - generic [ref=e196]: "04"
+                - img [ref=e198]
+              - heading "Word / WPS 全覆盖" [level=3] [ref=e201]
+              - list [ref=e202]:
+                - listitem [ref=e203]:
+                  - generic [ref=e205]: Word 和 WPS 办公场景全面支持
+                - listitem [ref=e206]:
+                  - generic [ref=e208]: 写作、排版、公式和表格能力保持一致
+        - generic [ref=e211]:
+          - generic [ref=e212]:
+            - generic [ref=e213]:
+              - generic [ref=e214]: 文档 AI 工作台
+              - generic [ref=e215]: 成稿、格式、全局输入和 Word/WPS 支持都收在一起。
+            - generic [ref=e216]: 一站式
+          - generic [ref=e217]:
+            - generic [ref=e222]: JarvisAI / Word
+            - generic [ref=e223]:
+              - generic [ref=e230]: AI 生成内容可以直接进入文档，也能在其他输入框里调用小贾继续写。
+              - generic [ref=e231]:
+                - generic [ref=e232]: AI 成稿
+                - generic [ref=e233]: 格式调整
+                - generic [ref=e234]: 全局输入
+                - generic [ref=e235]: Word/WPS
+          - generic [ref=e236]:
+            - generic [ref=e237]: 少切换
+            - generic [ref=e238]: 可复用
+            - generic [ref=e239]: 能交付
+      - generic [ref=e245]:
+        - generic [ref=e246]:
+          - generic [ref=e248]: 工作流
+          - heading "你会怎样用起来" [level=2] [ref=e249]
+          - paragraph [ref=e250]: 先免费试，再按自己的写作强度升级。小贾不强迫你理解复杂配置，而是让你先顺手用起来。
+          - generic [ref=e251]:
+            - generic [ref=e252]:
+              - generic [ref=e253]:
+                - img [ref=e255]
+                - generic [ref=e259]: "01"
+              - heading "下载安装到注册" [level=3] [ref=e260]
+              - list [ref=e261]:
+                - listitem [ref=e262]:
+                  - generic [ref=e264]: 先把小贾装进自己的办公环境
+                - listitem [ref=e265]:
+                  - generic [ref=e267]: 注册后即可开始熟悉入口和常用功能
+            - generic [ref=e268]:
+              - generic [ref=e269]:
+                - img [ref=e271]
+                - generic [ref=e273]: "02"
+              - heading "先免费试起来" [level=3] [ref=e274]
+              - list [ref=e275]:
+                - listitem [ref=e276]:
+                  - generic [ref=e278]: 小模型和全部格式能力都能先体验
+                - listitem [ref=e279]:
+                  - generic [ref=e281]: 写作、排版、公式表格先跑通一遍
+            - generic [ref=e282]:
+              - generic [ref=e283]:
+                - img [ref=e285]
+                - generic [ref=e288]: "03"
+              - heading "满意后升级服务" [level=3] [ref=e289]
+              - list [ref=e290]:
+                - listitem [ref=e291]:
+                  - generic [ref=e293]: 需要更强模型时再打开完整能力
+                - listitem [ref=e294]:
+                  - generic [ref=e296]: 更长内容、更复杂任务交给高阶服务
+            - generic [ref=e297]:
+              - generic [ref=e298]:
+                - img [ref=e300]
+                - generic [ref=e303]: "04"
+              - heading "开心使用，持续进化" [level=3] [ref=e304]
+              - list [ref=e305]:
+                - listitem [ref=e306]:
+                  - generic [ref=e308]: 稳定写作、排版、交付日常文档
+                - listitem [ref=e309]:
+                  - generic [ref=e311]: 遇到新需求可以提交给小贾继续升级
+        - generic [ref=e314]:
+          - generic [ref=e315]:
+            - generic [ref=e316]:
+              - generic [ref=e317]: Try it first, then unlock more capabilities
+              - generic [ref=e318]: From install to free trial, then into stronger services and ongoing upgrades, at your own pace.
+            - generic [ref=e319]: Windows + Word
+          - generic [ref=e320]:
+            - generic [ref=e323]:
+              - generic [ref=e324]: "01"
+              - generic [ref=e325]:
+                - generic [ref=e326]: 下载安装到注册
+                - generic [ref=e327]: 先拥有一个可随手打开的 AI 办公入口
+            - generic [ref=e330]:
+              - generic [ref=e331]: "02"
+              - generic [ref=e332]:
+                - generic [ref=e333]: 免费试起来
+                - generic [ref=e334]: 小模型和全部格式能力先完整体验
+            - generic [ref=e337]:
+              - generic [ref=e338]: "03"
+              - generic [ref=e339]:
+                - generic [ref=e340]: 满意后升级
+                - generic [ref=e341]: 需要更强模型和更长任务时再进阶
+            - generic [ref=e343]:
+              - generic [ref=e344]: "04"
+              - generic [ref=e345]:
+                - generic [ref=e346]: 开心使用
+                - generic [ref=e347]: 持续写作、交付，也把新需求交给小贾
+          - generic [ref=e348]:
+            - generic [ref=e349]: 先试用
+            - generic [ref=e350]: 再进阶
+            - generic [ref=e351]: 提需求
+      - generic [ref=e356]:
+        - generic [ref=e357]:
+          - heading "让工具更像自己" [level=2] [ref=e358]
+          - paragraph [ref=e359]: 当你每天都在 Word 里写作，入口是否顺眼、是否容易识别、是否不打断思路，会直接影响使用感。
+        - generic [ref=e360]:
+          - generic [ref=e361]:
+            - generic [ref=e362]:
+              - paragraph [ref=e364]: UI 自定义
+              - img [ref=e366]
+            - generic [ref=e372]:
+              - generic [ref=e375]: 透明悬浮
+              - generic [ref=e376]: 更轻，不挡文档
+          - generic [ref=e385]:
+            - generic [ref=e386]:
+              - generic [ref=e387]:
+                - paragraph [ref=e388]: 今天的工作入口
+                - heading "透明悬浮效果预览" [level=3] [ref=e389]
+              - generic [ref=e390]: Word 插件菜单
+            - generic [ref=e392]:
+              - generic [ref=e393]:
+                - generic [ref=e395]:
+                  - generic [ref=e396]: 胶囊入口
+                  - generic [ref=e397]: 展开 / 收起
+                - generic [ref=e399]:
+                  - generic [ref=e400]: 原生 UI 动效
+                  - generic [ref=e401]: 胶囊展开，收放自如
+              - generic [ref=e402]:
+                - generic [ref=e403]:
+                  - generic [ref=e404]:
+                    - generic [ref=e405]: "01"
+                    - paragraph [ref=e406]: 菜单皮肤
+                  - paragraph [ref=e407]: 直接改变 Word 里小贾菜单的颜色、边框和透明度
+                - generic [ref=e408]:
+                  - generic [ref=e409]:
+                    - generic [ref=e410]: "02"
+                    - paragraph [ref=e411]: 助手头像
+                  - paragraph [ref=e412]: 入口图标和桌面挂件可以跟随主题一起切换
+                - generic [ref=e413]:
+                  - generic [ref=e414]:
+                    - generic [ref=e415]: "03"
+                    - paragraph [ref=e416]: 使用状态
+                  - paragraph [ref=e417]: 常用主题可保存，换设备也能延续自己的工作习惯
+                - generic [ref=e418]:
+                  - paragraph [ref=e419]: 写作时的陪伴感
+                  - paragraph [ref=e420]: 桌面挂件会跟随主题保持统一。
+                  - img "desktop widget demo" [ref=e422]
+      - generic [ref=e427]:
+        - generic [ref=e428]:
+          - generic [ref=e429]:
+            - generic [ref=e430]: 工程底座
+            - heading "技术亮点" [level=2] [ref=e431]
+            - paragraph [ref=e432]: 这里展示小贾 AI 的真实工程底座：Web 前端、Node 服务、C# VSTO 插件、安全协议和本地配置保护协同工作。
+          - generic [ref=e433]:
+            - generic [ref=e434]: "0"
+            - generic [ref=e435]: "1"
+            - generic [ref=e436]: "2"
+        - generic [ref=e439]:
+          - generic [ref=e440]:
+            - generic [ref=e441]:
+              - generic [ref=e442]: 技术蓝图
+              - generic [ref=e443]: 三层架构独立协作，安全协议负责连接和保护。
+            - generic [ref=e444]: 架构视图
+          - generic [ref=e445]:
+            - generic [ref=e447]:
+              - generic [ref=e450]: Web
+              - generic [ref=e452]: React / TypeScript
+              - generic [ref=e453]: 把界面和交互放在浏览器里，保证首屏响应和体验一致
+              - generic [ref=e454]:
+                - generic [ref=e455]:
+                  - generic [ref=e456]:
+                    - generic [ref=e457]: React
+                    - generic [ref=e458]: tech.stack.0.role
+                  - generic [ref=e459]: tech.stack.0.desc
+                - generic [ref=e460]:
+                  - generic [ref=e461]:
+                    - generic [ref=e462]: TypeScript
+                    - generic [ref=e463]: tech.stack.1.role
+                  - generic [ref=e464]: tech.stack.1.desc
+            - generic [ref=e468]:
+              - generic [ref=e471]: Service
+              - generic [ref=e473]: Node.js / Next.js API
+              - generic [ref=e474]: 用服务层承接配置、下载和接口编排，让前后端职责清晰
+              - generic [ref=e475]:
+                - generic [ref=e476]:
+                  - generic [ref=e477]:
+                    - generic [ref=e478]: Node.js
+                    - generic [ref=e479]: tech.stack.2.role
+                  - generic [ref=e480]: tech.stack.2.desc
+                - generic [ref=e481]:
+                  - generic [ref=e482]:
+                    - generic [ref=e483]: C# VSTO
+                    - generic [ref=e484]: tech.stack.3.role
+                  - generic [ref=e485]: tech.stack.3.desc
+            - generic [ref=e489]:
+              - generic [ref=e492]: PC
+              - generic [ref=e494]: C# VSTO / 本地服务
+              - generic [ref=e495]: 本地服务负责设备、签名和密钥保护，减少云端依赖
+              - generic [ref=e496]:
+                - generic [ref=e497]:
+                  - generic [ref=e498]:
+                    - generic [ref=e499]: Security
+                    - generic [ref=e500]: tech.stack.4.role
+                  - generic [ref=e501]: tech.stack.4.desc
+                - generic [ref=e502]:
+                  - generic [ref=e503]:
+                    - generic [ref=e504]: Crypto
+                    - generic [ref=e505]: tech.stack.5.role
+                  - generic [ref=e506]: tech.stack.5.desc
+          - generic [ref=e507]:
+            - generic [ref=e508]:
+              - generic [ref=e509]: 安全协议与配置保护
+              - generic [ref=e510]:
+                - generic [ref=e511]: HTTPS 传输
+                - generic [ref=e512]: 签名校验
+                - generic [ref=e513]: 时间戳防篡改
+            - generic [ref=e514]:
+              - generic [ref=e515]: 本地可信执行
+              - generic [ref=e516]:
+                - generic [ref=e517]: 设备绑定
+                - generic [ref=e518]: 本地校验
+                - generic [ref=e519]: 有效期控制
+                - generic [ref=e520]: 错误码追踪
+      - generic [ref=e526]:
+        - generic [ref=e527]:
+          - heading "快速开始" [level=2] [ref=e528]
+          - paragraph [ref=e529]: 第一次使用时，按这条路径走就够了：选好模型、生成配置、在同一设备解密，然后回到 Word 开始写。
+          - generic [ref=e530]:
+            - list [ref=e531]:
+              - listitem [ref=e532]:
+                - generic [ref=e533]: "1"
+                - generic [ref=e534]:
+                  - heading "选择模型套餐" [level=4] [ref=e535]
+                  - paragraph [ref=e536]: 在购买页选择模型与月付、季付或年付方案
+              - listitem [ref=e537]:
+                - generic [ref=e538]: "2"
+                - generic [ref=e539]:
+                  - heading "支付并生成配置" [level=4] [ref=e540]
+                  - paragraph [ref=e541]: 支付成功后生成绑定设备的加密配置文件
+              - listitem [ref=e542]:
+                - generic [ref=e543]: "3"
+                - generic [ref=e544]:
+                  - heading "下载到同一设备" [level=4] [ref=e545]
+                  - paragraph [ref=e546]: 配置文件默认 7 天有效，需在绑定设备上使用
+              - listitem [ref=e547]:
+                - generic [ref=e548]: "4"
+                - generic [ref=e549]:
+                  - heading "启动 PC 端解密" [level=4] [ref=e550]
+                  - paragraph [ref=e551]: 本地服务验证指纹、签名和有效期后读取模型配置
+              - listitem [ref=e552]:
+                - generic [ref=e553]: "5"
+                - generic [ref=e554]:
+                  - heading "进入 Word 工作流" [level=4] [ref=e555]
+                  - paragraph [ref=e556]: 用 AI 咒语、格式、公式、表格工具完成文档交付
+            - link "立即下载 ⬇️" [ref=e557] [cursor=pointer]:
+              - /url: https://share.weiyun.com/TjhX1smm
+              - generic [ref=e558]:
+                - img [ref=e559]
+                - text: 立即下载 ⬇️
+        - generic [ref=e561]:
+          - heading "卡住时先看这里" [level=2] [ref=e562]
+          - generic [ref=e564]:
+            - heading "遇到问题怎么办" [level=3] [ref=e565]:
+              - img [ref=e567]
+              - text: 遇到问题怎么办
+            - generic [ref=e569]:
+              - generic [ref=e570]:
+                - heading "下载错误" [level=4] [ref=e571]
+                - paragraph [ref=e572]: 下载被拦截或提示风险时，保留 exe 安装包后继续安装
+              - generic [ref=e573]:
+                - heading "安装错误" [level=4] [ref=e574]
+                - paragraph [ref=e575]: 遇到 360 拦截请放行，建议彻底卸载 360 全系产品
+              - generic [ref=e576]:
+                - heading "生成失败" [level=4] [ref=e577]
+                - paragraph [ref=e578]: 检查订单 ID、登录状态和服务器错误日志
+              - generic [ref=e579]:
+                - heading "配置失效" [level=4] [ref=e580]
+                - paragraph [ref=e581]: 确认配置是否过期，或重新生成后下载到同一设备
+              - generic [ref=e582]:
+                - heading "解密失败" [level=4] [ref=e583]
+                - paragraph [ref=e584]: 核对设备指纹、数字签名和本地配置文件
+              - generic [ref=e585]:
+                - heading "新的需求" [level=4] [ref=e586]
+                - paragraph [ref=e587]: 到需求市场提交想法，小贾会按真实使用反馈继续升级
+      - generic [ref=e592]:
+        - img "Interactive tech galaxy animation" [ref=e596]
+        - generic [ref=e633]:
+          - generic [ref=e634]:
+            - generic [ref=e635]: 从选择到成稿
+            - heading "把复杂 AI 文档流程，收进一条清晰路径。" [level=2] [ref=e636]
+            - paragraph [ref=e637]: 从模型、配置到 Word 成稿，最后一屏给用户一个明确的收束感和下一步入口。
+          - generic [ref=e638]:
+            - generic [ref=e639]:
+              - generic [ref=e641]: "01"
+              - generic [ref=e643]: 选模型
+              - generic [ref=e644]: 选择适合当天任务的 AI 能力
+            - generic [ref=e645]:
+              - generic [ref=e647]: "02"
+              - generic [ref=e649]: 拿配置
+              - generic [ref=e650]: 把权益和模型连接到本机
+            - generic [ref=e651]:
+              - generic [ref=e653]: "03"
+              - generic [ref=e655]: 进 Word
+              - generic [ref=e656]: 生成、润色、排版直接完成
+            - generic [ref=e657]:
+              - generic [ref=e659]: "04"
+              - generic [ref=e661]: 可追踪
+              - generic [ref=e662]: 订单、配置、错误状态都有反馈
+        - generic [ref=e663]:
+          - generic [ref=e664]:
+            - generic [ref=e665]:
+              - generic [ref=e666]: J
+              - heading "JarvisAI" [level=2] [ref=e667]
+            - paragraph [ref=e668]: 从选择模型、生成配置到 Word 成稿，把复杂 AI 文档流程收进一条清晰路径。
+            - generic [ref=e669]:
+              - link "W" [ref=e670] [cursor=pointer]:
+                - /url: "#features"
+              - link "S" [ref=e671] [cursor=pointer]:
+                - /url: "#tech"
+              - link "?" [ref=e672] [cursor=pointer]:
+                - /url: /feedback
+          - generic [ref=e673]:
+            - heading "产品" [level=3] [ref=e674]
+            - list [ref=e675]:
+              - listitem [ref=e676]:
+                - link "先看能做什么" [ref=e677] [cursor=pointer]:
+                  - /url: "#features"
+              - listitem [ref=e678]:
+                - link "了解使用路径" [ref=e679] [cursor=pointer]:
+                  - /url: "#functions"
+              - listitem [ref=e680]:
+                - link "查看配置流程" [ref=e681] [cursor=pointer]:
+                  - /url: "#start"
+              - listitem [ref=e682]:
+                - link "进入个人中心" [ref=e683] [cursor=pointer]:
+                  - /url: /dashboard
+          - generic [ref=e684]:
+            - heading "支持" [level=3] [ref=e685]
+            - list [ref=e686]:
+              - listitem [ref=e687]:
+                - link "阅读使用说明" [ref=e688] [cursor=pointer]:
+                  - /url: /docs
+              - listitem [ref=e689]:
+                - link "提交反馈" [ref=e690] [cursor=pointer]:
+                  - /url: /feedback
+              - listitem [ref=e691]:
+                - link "查看需求市场" [ref=e692] [cursor=pointer]:
+                  - /url: /features
+              - listitem [ref=e693]:
+                - link "获取支持" [ref=e694] [cursor=pointer]:
+                  - /url: /support
+          - generic [ref=e695]:
+            - heading "法律" [level=3] [ref=e696]
+            - list [ref=e697]:
+              - listitem [ref=e698]:
+                - link "配置安全" [ref=e699] [cursor=pointer]:
+                  - /url: "#tech"
+              - listitem [ref=e700]:
+                - link "设备绑定" [ref=e701] [cursor=pointer]:
+                  - /url: "#tech"
+              - listitem [ref=e702]:
+                - link "部署说明" [ref=e703] [cursor=pointer]:
+                  - /url: "#tech"
+              - listitem [ref=e704]:
+                - link "排错路径" [ref=e705] [cursor=pointer]:
+                  - /url: "#start"
+        - generic [ref=e706]:
+          - generic [ref=e707]: © 2025 Jarvis AI. 版权所有。
+          - generic [ref=e708]: 津ICP备2026000398号-1
+  - generic [ref=e709]: 津ICP备2026000398号-1

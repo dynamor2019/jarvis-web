@@ -1,4 +1,6 @@
 "use client";
+import { FormattedMessage } from 'react-intl';
+import ProMonolineIcon from '@/components/ProMonolineIcon';
 type ModuleIcon =
     | 'ai'
     | 'text'
@@ -6,56 +8,55 @@ type ModuleIcon =
     | 'table';
 const functionModules = [
     {
-        title: "下载安装到注册",
+        titleId: "functions.list.0.title",
         iconKey: "ai" as ModuleIcon,
         color: "#4F46E5",
         items: [
-            "先把小贾装进自己的办公环境",
-            "注册后即可开始熟悉入口和常用功能",
-            "不用先理解复杂配置"
+            "functions.list.0.item.0",
+            "functions.list.0.item.1",
+            "functions.list.0.item.2",
         ]
     },
     {
-        title: "先免费试起来",
+        titleId: "functions.list.1.title",
         iconKey: "text" as ModuleIcon,
         color: "#EC4899",
         items: [
-            "小模型和全部格式能力都能先体验",
-            "写作、排版、公式表格先跑通一遍",
-            "适不适合自己，用过就知道"
+            "functions.list.1.item.0",
+            "functions.list.1.item.1",
+            "functions.list.1.item.2",
         ]
     },
     {
-        title: "满意后升级服务",
+        titleId: "functions.list.2.title",
         iconKey: "paragraph" as ModuleIcon,
         color: "#10B981",
         items: [
-            "需要更强模型时再打开完整能力",
-            "更长内容、更复杂任务交给高阶服务",
-            "从试用到进阶自然衔接"
+            "functions.list.2.item.0",
+            "functions.list.2.item.1",
+            "functions.list.2.item.2",
         ]
     },
     {
-        title: "开心使用，持续进化",
+        titleId: "functions.list.3.title",
         iconKey: "table" as ModuleIcon,
         color: "#06B6D4",
         items: [
-            "稳定写作、排版、交付日常文档",
-            "遇到新需求可以提交给小贾继续升级",
-            "工具跟着你的工作习惯一起长大"
+            "functions.list.3.item.0",
+            "functions.list.3.item.1",
+            "functions.list.3.item.2",
         ]
     }
 ];
 
 const journey = [
-    ['01', '下载安装到注册', '先拥有一个可随手打开的 AI 办公入口'],
-    ['02', '免费试起来', '小模型和全部格式能力先完整体验'],
-    ['03', '满意后升级', '需要更强模型和更长任务时再进阶'],
-    ['04', '开心使用', '持续写作、交付，也把新需求交给小贾']
+    ['01', 'functions.journey.0.title', 'functions.journey.0.desc'],
+    ['02', 'functions.journey.1.title', 'functions.journey.1.desc'],
+    ['03', 'functions.journey.2.title', 'functions.journey.2.desc'],
+    ['04', 'functions.journey.3.title', 'functions.journey.3.desc']
 ];
 
-import { FormattedMessage } from 'react-intl';
-import ProMonolineIcon from '@/components/ProMonolineIcon';
+const footerTags = ['functions.footer.0', 'functions.footer.1', 'functions.footer.2'];
 
 export default function Functions() {
     return (
@@ -74,7 +75,9 @@ export default function Functions() {
                 <div className="grid items-center gap-8 lg:grid-cols-[1.08fr_0.92fr]">
                     <div className="order-2 lg:order-2">
                         <div className="mb-4 flex w-full justify-end">
-                            <div className="w-full rounded-full border border-white/10 bg-white/8 px-4 py-2 text-center text-sm font-semibold text-cyan-100 backdrop-blur-xl sm:max-w-[468px]">工作流</div>
+                            <div className="w-full rounded-full border border-white/10 bg-white/8 px-4 py-2 text-center text-sm font-semibold text-cyan-100 backdrop-blur-xl sm:max-w-[468px]">
+                                <FormattedMessage id="functions.badge" defaultMessage="工作流" />
+                            </div>
                         </div>
                         <h2 className="mb-4 text-4xl font-black tracking-tight text-white md:text-5xl">
                             <FormattedMessage id="functions.heading.prefix" />
@@ -93,12 +96,12 @@ export default function Functions() {
                                         </span>
                                         <span className="text-sm font-black" style={{ color: module.color }}>0{index + 1}</span>
                                     </div>
-                                    <h3 className="mb-3 text-lg font-bold text-white"><FormattedMessage id={`functions.list.${index}.title`} defaultMessage={module.title} /></h3>
+                                    <h3 className="mb-3 text-lg font-bold text-white"><FormattedMessage id={module.titleId} defaultMessage={module.titleId} /></h3>
                                     <ul className="space-y-2 text-sm text-slate-300">
                                         {module.items.slice(0, 2).map((item, i) => (
                                             <li key={i} className="flex items-start gap-2.5">
                                                 <span className="mt-1.5 h-1.5 w-1.5 flex-shrink-0 rounded-full" style={{ backgroundColor: module.color }} />
-                                                <span className="leading-relaxed"><FormattedMessage id={`functions.list.${index}.item.${i}`} defaultMessage={item} /></span>
+                                                <span className="leading-relaxed"><FormattedMessage id={item} defaultMessage={item} /></span>
                                             </li>
                                         ))}
                                     </ul>
@@ -113,10 +116,16 @@ export default function Functions() {
                         <div className="relative">
                             <div className="mb-6 flex items-center justify-between gap-5">
                                 <div>
-                                    <div className="text-lg font-semibold text-cyan-100">先试顺手，再打开更多能力</div>
-                                    <div className="mt-2 text-sm leading-6 text-slate-300">从下载安装到免费体验，再到更强服务和持续升级，按自己的节奏来。</div>
+                                    <div className="text-lg font-semibold text-cyan-100">
+                                <FormattedMessage id="functions.panel.title" defaultMessage="From pick to delivery" />
+                            </div>
+                            <div className="mt-2 text-sm leading-6 text-slate-300">
+                                        <FormattedMessage id="functions.panel.subtitle" defaultMessage="From model and config to a finished Word document, the final screen gives users a clear closing moment and next step." />
+                                    </div>
                                 </div>
-                                <div className="rounded-full border border-cyan-200/20 bg-cyan-300/10 px-3 py-1 text-xs font-semibold text-cyan-100">Windows + Word</div>
+                                <div className="rounded-full border border-cyan-200/20 bg-cyan-300/10 px-3 py-1 text-xs font-semibold text-cyan-100">
+                                    <FormattedMessage id="functions.panel.badge" defaultMessage="Windows + Word" />
+                                </div>
                             </div>
 
                             <div className="grid gap-4">
@@ -124,10 +133,10 @@ export default function Functions() {
                                     <div key={step[0]} className="relative rounded-2xl border border-white/10 bg-white/[0.06] p-5">
                                         {index < journey.length - 1 && <div className="absolute left-8 top-[62px] h-7 w-px bg-gradient-to-b from-cyan-200/70 to-transparent" />}
                                         <div className="flex gap-4">
-                                            <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-cyan-300/12 text-sm font-black text-cyan-100">{step[0]}</div>
+                                    <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center rounded-2xl bg-cyan-300/12 text-sm font-black text-cyan-100">{step[0]}</div>
                                             <div>
-                                                <div className="text-lg font-semibold text-white">{step[1]}</div>
-                                                <div className="mt-1.5 text-sm leading-6 text-slate-300">{step[2]}</div>
+                                            <div className="text-lg font-semibold text-white"><FormattedMessage id={step[1]} defaultMessage={step[1]} /></div>
+                                            <div className="mt-1.5 text-sm leading-6 text-slate-300"><FormattedMessage id={step[2]} defaultMessage={step[2]} /></div>
                                             </div>
                                         </div>
                                     </div>
@@ -135,9 +144,9 @@ export default function Functions() {
                             </div>
 
                             <div className="mt-5 grid grid-cols-3 gap-3">
-                                {['先试用', '再进阶', '提需求'].map((item) => (
-                                    <div key={item} className="rounded-2xl border border-white/10 bg-white/[0.055] px-3 py-4 text-center text-sm text-slate-200">
-                                        {item}
+                                {footerTags.map((id) => (
+                                    <div key={id} className="rounded-2xl border border-white/10 bg-white/[0.055] px-3 py-4 text-center text-sm text-slate-200">
+                                        <FormattedMessage id={id} defaultMessage={id.split('.').pop() || ''} />
                                     </div>
                                 ))}
                             </div>

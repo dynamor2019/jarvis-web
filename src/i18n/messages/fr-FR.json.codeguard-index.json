@@ -1,40 +1,40 @@
 {
   "file": "src/i18n/messages/fr-FR.json",
-  "updated_at": "2026-04-21T10:55:34",
-  "line_count": 1320,
-  "file_hash": "04fae048fb26a44bc398c68a38e5f4d0c564d6739c6e031b94be3419995bdbf4",
+  "updated_at": "2026-06-26T15:59:01",
+  "line_count": 1235,
+  "file_hash": "dc0790652c5f65ae442320c992ba6be2112e3ee63cb694a44f5afa28fe5a56ef",
   "entries": [
     {
-      "feature": "Admin and user management strings",
-      "line": 1
+      "feature": "common.back",
+      "line": 2
     },
     {
-      "feature": "Feature/module management strings",
-      "line": 280
+      "feature": "features.action.view_comments",
+      "line": 178
     },
     {
-      "feature": "Broadcast and ticket strings",
-      "line": 430
+      "feature": "admin.features.filter.type",
+      "line": 354
     },
     {
-      "feature": "Auth and login strings",
-      "line": 560
+      "feature": "admin.users.stats.admin",
+      "line": 530
     },
     {
-      "feature": "Docs and help strings",
-      "line": 700
+      "feature": "quick.special.0.title",
+      "line": 706
     },
     {
-      "feature": "Dashboard profile strings",
-      "line": 900
+      "feature": "docs.section.content-tools.sub.pdf-tools.feat.2",
+      "line": 882
     },
     {
-      "feature": "Settings and API strings",
-      "line": 1080
+      "feature": "payment.order_no",
+      "line": 1058
     },
     {
-      "feature": "Store and subscription strings",
-      "line": 1180
+      "feature": "store.subscription.model_siliconflow",
+      "line": 1234
     }
   ]
 }

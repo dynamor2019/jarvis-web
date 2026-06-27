@@ -1,0 +1,417 @@
+// [CodeGuard Feature Index]
+// - splitPluginWords -> line 121
+// - toChineseName -> line 143
+// - toEnglishDescription -> line 237
+// - toEnglishGroup -> line 252
+// - hasAny -> line 299
+// - getStorePluginLocalization -> line 333
+// - ensureColumn -> line 369
+// - tableInfo -> line 398
+// [/CodeGuard Feature Index]
+
+type LocaleText = {
+  zh: string;
+  en: string;
+};
+
+type PluginLocaleEntry = {
+  name: LocaleText;
+  description: LocaleText;
+  group: LocaleText;
+};
+
+export type StoreLocale = 'zh-CN' | 'en-US';
+
+const STORE_PLUGIN_LOCALIZATION: Record<string, PluginLocaleEntry> = {
+  Screenshot: {
+    name: { zh: '屏幕截图', en: 'Screenshot' },
+    description: { zh: '截取屏幕并插入到文档', en: 'Capture the screen and insert it into the document' },
+    group: { zh: '图像工具', en: 'Image Tools' },
+  },
+  GenerateTOC: {
+    name: { zh: '生成目录', en: 'Generate TOC' },
+    description: { zh: '一键生成文档目录', en: 'Generate a table of contents in one click' },
+    group: { zh: '文档工具', en: 'Document Tools' },
+  },
+  LatexToEquation: {
+    name: { zh: 'LaTeX 公式转换', en: 'LaTeX to Equation' },
+    description: { zh: '将 LaTeX 代码转换为 Word 公式', en: 'Convert LaTeX code into Word equations' },
+    group: { zh: 'LaTeX 公式', en: 'LaTeX Formula' },
+  },
+  SignificantFigures: {
+    name: { zh: '有效数字调整', en: 'Significant Figures' },
+    description: { zh: '按指定精度统一调整表格中的数字', en: 'Adjust numeric precision in tables with one click' },
+    group: { zh: '文档工具', en: 'Document Tools' },
+  },
+  ThesisFormat: {
+    name: { zh: '毕业论文格式', en: 'Thesis Formatting' },
+    description: { zh: '一键应用毕业论文格式', en: 'Apply thesis formatting in one click' },
+    group: { zh: '文档工具', en: 'Document Tools' },
+  },
+};
+
+const WORD_TO_ZH: Record<string, string> = {
+  auto: '自动',
+  fit: '适配',
+  all: '全部',
+  table: '表格',
+  tables: '表格',
+  image: '图片',
+  images: '图片',
+  insert: '插入',
+  remove: '删除',
+  update: '更新',
+  export: '导出',
+  import: '导入',
+  compress: '压缩',
+  convert: '转换',
+  clear: '清除',
+  center: '居中',
+  repeat: '重复',
+  replace: '替换',
+  resize: '调整大小',
+  split: '拆分',
+  promote: '提升',
+  demote: '降低',
+  generate: '生成',
+  file: '文件',
+  files: '文件',
+  text: '文本',
+  lower: '小写',
+  upper: '大写',
+  title: '标题',
+  case: '格式',
+  line: '行',
+  lines: '行',
+  break: '换行',
+  paragraph: '段落',
+  paragraphs: '段落',
+  indent: '缩进',
+  spacing: '间距',
+  space: '空格',
+  spaces: '空格',
+  empty: '空',
+  header: '表头',
+  headers: '页眉',
+  footer: '页脚',
+  footers: '页脚',
+  hyperlink: '超链接',
+  hyperlinks: '超链接',
+  markdown: 'Markdown',
+  toc: '目录',
+  pdf: 'PDF',
+  document: '文档',
+  documents: '文档',
+  stats: '统计',
+  unify: '统一',
+  font: '字体',
+  open: '打开',
+  vector: '矢量',
+  simplified: '简繁',
+  traditional: '繁简',
+  smart: '智能',
+  punctuation: '标点',
+  page: '页面',
+  pages: '页面',
+  landscape: '横向',
+  first: '首',
+  second: '第二',
+};
+
+function splitPluginWords(pluginId: string) {
+  return String(pluginId || '')
+    .replace(/([a-z0-9])([A-Z])/g, '$1 $2')
+    .replace(/([A-Za-z])(\d)/g, '$1 $2')
+    .replace(/(\d)([A-Za-z])/g, '$1 $2')
+    .split(/[\s_-]+/)
+    .map((part) => part.trim())
+    .filter(Boolean);
+}
+
+function toEnglishTitle(words: string[]) {
+  return words
+    .map((word) => {
+      if (!word) return '';
+      if (/^\d+$/.test(word)) return word;
+      if (word.length <= 3 && word === word.toUpperCase()) return word;
+      return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+    })
+    .filter(Boolean)
+    .join(' ');
+}
+
+function toChineseName(pluginId: string, fallbackName: string) {
+  const lowered = String(pluginId || '').toLowerCase();
+  const exact: Record<string, string> = {
+    autofitalltables: '自动适配所有表格',
+    autofittable: '自动适配表格',
+    autoformatimages: '图片自动格式化',
+    centertable: '表格居中',
+    centerimages: '图片居中',
+    clearformatting: '清除格式',
+    compressimages: '压缩图片',
+    convertmarkdownheadings: 'Markdown 标题转换',
+    demoteheading: '降低标题级别',
+    documentstats: '文档统计',
+    exportpdf: '导出 PDF',
+    extractimages: '提取图片',
+    firstlineindent: '首行缩进',
+    generatetoc: '生成目录',
+    insertimage: '插入图片',
+    inserttable: '插入表格',
+    linebreaktoparagraph: '换行转段落',
+    linespacing15: '1.5 倍行距',
+    linespacing20: '2 倍行距',
+    openfontvector: '字体矢量化',
+    paragraphspacing: '段落间距',
+    promoteheading: '提升标题级别',
+    removeemptylines: '删除空行',
+    removefooters: '删除页脚',
+    removeheaders: '删除页眉',
+    removehyperlinks: '删除超链接',
+    removeindent: '删除缩进',
+    removespaces: '删除空格',
+    removetableindent: '取消表格缩进',
+    removelinebreaks: '删除换行符',
+    repeattableheader: '重复表头',
+    resizeimages: '调整图片大小',
+    significantfigures: '有效数字调整',
+    simplifiedtraditional: '简繁转换',
+    smartpunctuation: '智能标点',
+    splitbypage: '按页拆分',
+    tablepagebreaklandscape: '表格分页横向排版',
+    tabletotext: '表格转文本',
+    texttotable: '文本转表格',
+    threelinetable: '三线表',
+    thesisformat: '毕业论文格式',
+    tolowercase: '转换为小写',
+    totitlecase: '转换为标题大小写',
+    touppercase: '转换为大写',
+    unifyfont: '统一字体',
+    updatefields: '更新域',
+  };
+
+  if (exact[lowered]) {
+    return exact[lowered];
+  }
+
+  const words = splitPluginWords(pluginId);
+  const lowerWords = words.map((word) => word.toLowerCase());
+
+  if (lowerWords.length === 3 && lowerWords[1] === 'to') {
+    const fromWord = WORD_TO_ZH[lowerWords[0]] || words[0];
+    const toWord = WORD_TO_ZH[lowerWords[2]] || words[2];
+    return `${fromWord}转${toWord}`;
+  }
+
+  if (lowerWords.length >= 3 && lowerWords[0] === 'line' && lowerWords[1] === 'spacing' && /^\d+$/.test(lowerWords[2])) {
+    const numeric = Number(lowerWords[2]);
+    const value = numeric >= 20 && numeric % 10 === 0 ? String(numeric / 10) : `${numeric / 10}`;
+    return `${value}倍行距`;
+  }
+
+  if (lowerWords.length >= 4 && lowerWords[1] === 'page' && lowerWords[2] === 'break' && lowerWords[3] === 'landscape') {
+    const head = WORD_TO_ZH[lowerWords[0]] || words[0];
+    return `${head}分页横向排版`;
+  }
+
+  if (lowerWords.length >= 3 && lowerWords[0] === 'first' && lowerWords[1] === 'line' && lowerWords[2] === 'indent') {
+    return '首行缩进';
+  }
+
+  const translated = lowerWords
+    .map((word, index) => WORD_TO_ZH[word] || words[index] || word)
+    .join('');
+
+  return translated || fallbackName || pluginId;
+}
+
+function toChineseDescription(nameZh: string, fallbackDescription: string) {
+  const cleanFallback = String(fallbackDescription || '').trim();
+  if (cleanFallback && cleanFallback !== '暂无描述' && cleanFallback !== 'No description') {
+    return cleanFallback;
+  }
+  return `一键${nameZh}`;
+}
+
+function toEnglishDescription(nameEn: string, fallbackDescription: string) {
+  const cleanFallback = String(fallbackDescription || '').trim();
+  if (cleanFallback && cleanFallback !== '暂无描述' && cleanFallback !== 'No description') {
+    return cleanFallback;
+  }
+  return `One-click ${nameEn}`;
+}
+
+function toChineseGroup(groupValue: string) {
+  const text = String(groupValue || '').trim();
+  const canonical = normalizeGroupKey(text);
+  const explicit = GROUP_TEXT[canonical];
+  return explicit?.zh || canonical || '工具';
+}
+
+function toEnglishGroup(groupValue: string) {
+  const text = String(groupValue || '').trim();
+  const canonical = normalizeGroupKey(text);
+  const explicit = GROUP_TEXT[canonical];
+  return explicit?.en || canonical || 'Tools';
+}
+
+const GROUP_TEXT: Record<string, LocaleText> = {
+  '工具': { zh: '工具', en: 'Tools' },
+  '文本处理': { zh: '文本处理', en: 'Text Processing' },
+  '段落格式': { zh: '段落格式', en: 'Paragraph Formatting' },
+  '文档工具': { zh: '文档工具', en: 'Document Tools' },
+  '图像工具': { zh: '图像工具', en: 'Image Tools' },
+  '表格工具': { zh: '表格工具', en: 'Table Tools' },
+  'LaTeX 公式': { zh: 'LaTeX 公式', en: 'LaTeX Formula' },
+  '生产力工具': { zh: '生产力工具', en: 'Productivity Tools' },
+};
+
+const GROUP_ALIAS: Record<string, string> = {
+  tools: '工具',
+  tool: '工具',
+  'document tools': '文档工具',
+  'image tools': '图像工具',
+  'table tools': '表格工具',
+  'text tools': '文本处理',
+  'text processing': '文本处理',
+  'paragraph formatting': '段落格式',
+  'latex formula': 'LaTeX 公式',
+  'latex formulas': 'LaTeX 公式',
+  'productivity tools': '生产力工具',
+};
+
+function normalizeGroupKey(groupValue: string) {
+  const text = String(groupValue || '').trim();
+  if (!text) return '';
+  if (GROUP_TEXT[text]) return text;
+  const alias = GROUP_ALIAS[text.toLowerCase()];
+  return alias || text;
+}
+
+function inferGroupKey(pluginId: string, fallbackGroup: string, fallbackName: string) {
+  const explicitGroup = normalizeGroupKey(fallbackGroup);
+  if (explicitGroup && explicitGroup !== '工具' && GROUP_TEXT[explicitGroup]) {
+    return explicitGroup;
+  }
+
+  const haystack = `${pluginId} ${fallbackName}`.toLowerCase();
+  const hasAny = (terms: string[]) => terms.some((term) => haystack.includes(term));
+
+  if (hasAny(['screenshot', 'clipboard', 'token', 'power'])) {
+    return '生产力工具';
+  }
+  if (hasAny(['image', 'images', 'insertimage', 'extractimages', 'resizeimages', 'compressimages', 'autoformatimages', 'centerimages'])) {
+    return '图像工具';
+  }
+  if (hasAny(['table', 'tables', 'autofittable', 'autofitalltables', 'centertable', 'inserttable', 'removetableindent', 'repeattableheader', 'tablepagebreaklandscape', 'tabletotext', 'texttotable', 'threelinetable'])) {
+    return '表格工具';
+  }
+  if (hasAny(['latex', 'equation', 'formula', 'math'])) {
+    return 'LaTeX 公式';
+  }
+  if (hasAny(['thesis'])) {
+    return '文档工具';
+  }
+  if (hasAny(['toc', 'document', 'pdf', 'exportpdf', 'clearformatting', 'convertmarkdownheadings', 'documentstats', 'removeheaders', 'removefooters', 'updatefields', 'openfontvector', 'splitbypage'])) {
+    return '文档工具';
+  }
+  if (hasAny(['promoteheading', 'demoteheading', 'unifyfont'])) {
+    return '段落格式';
+  }
+  if (hasAny(['removeemptylines', 'removehyperlinks', 'removeindent', 'removespaces', 'removelinebreaks', 'tolowercase', 'touppercase', 'totitlecase', 'smartpunctuation', 'simplifiedtraditional', 'linebreaktoparagraph', 'firstlineindent', 'linespacing', 'paragraphspacing'])) {
+    return '文本处理';
+  }
+  return explicitGroup || '工具';
+}
+
+export function resolveStoreLocale(value?: string | null): StoreLocale {
+  const normalized = String(value || '').trim().toLowerCase();
+  return normalized.startsWith('zh') ? 'zh-CN' : 'en-US';
+}
+
+export function getStorePluginLocalization(
+  pluginId: string,
+  fallbackName: string,
+  fallbackDescription: string,
+  fallbackGroup = '工具',
+) {
+  const entry = STORE_PLUGIN_LOCALIZATION[pluginId];
+  const derivedNameZh = toChineseName(pluginId, fallbackName);
+  const derivedNameEn = toEnglishTitle(splitPluginWords(pluginId));
+  const nameZh = entry?.name.zh?.trim() || derivedNameZh || fallbackName || pluginId;
+  const nameEn = entry?.name.en?.trim() || derivedNameEn || fallbackName || pluginId;
+  const descriptionZh = entry?.description.zh?.trim() || toChineseDescription(nameZh, fallbackDescription);
+  const descriptionEn = entry?.description.en?.trim() || toEnglishDescription(nameEn, fallbackDescription);
+  const groupKey = inferGroupKey(pluginId, fallbackGroup, fallbackName);
+  const groupZh = entry?.group.zh?.trim() || toChineseGroup(groupKey);
+  const groupEn = entry?.group.en?.trim() || toEnglishGroup(groupKey);
+
+  return {
+    nameZh,
+    nameEn,
+    descriptionZh,
+    descriptionEn,
+    groupZh,
+    groupEn,
+  };
+}
+
+export function pickStoreLocaleText(
+  value: { zh: string; en: string },
+  locale: StoreLocale,
+  fallback: string,
+) {
+  const chosen = locale === 'zh-CN' ? value.zh : value.en;
+  return (chosen || fallback || '').trim();
+}
+
+async function ensureColumn(prisma: any, existingColumns: Set<string>, column: string, sql: string) {
+  if (existingColumns.has(column.toLowerCase())) return;
+  await prisma.$executeRawUnsafe(`ALTER TABLE "StorePlugin" ADD COLUMN ${sql}`);
+  existingColumns.add(column.toLowerCase());
+}
+
+export async function ensureStorePluginTable(prisma: any) {
+  await prisma.$executeRawUnsafe(`
+    CREATE TABLE IF NOT EXISTS "StorePlugin" (
+      "id" TEXT NOT NULL PRIMARY KEY,
+      "name" TEXT NOT NULL,
+      "nameZh" TEXT NOT NULL DEFAULT '',
+      "nameEn" TEXT NOT NULL DEFAULT '',
+      "version" TEXT NOT NULL DEFAULT '1.0.0',
+      "price" REAL NOT NULL DEFAULT 0,
+      "description" TEXT NOT NULL DEFAULT '暂无描述',
+      "descriptionZh" TEXT NOT NULL DEFAULT '',
+      "descriptionEn" TEXT NOT NULL DEFAULT '',
+      "fileName" TEXT NOT NULL,
+      "author" TEXT NOT NULL DEFAULT 'Jarvis',
+      "group" TEXT NOT NULL DEFAULT '工具',
+      "icon" TEXT NOT NULL DEFAULT '🔧',
+      "featured" BOOLEAN NOT NULL DEFAULT false,
+      "isActive" BOOLEAN NOT NULL DEFAULT true,
+      "createdAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+      "updatedAt" DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP
+    )
+  `);
+
+  const tableInfo = (await prisma.$queryRawUnsafe('PRAGMA table_info("StorePlugin")')) as Array<{ name?: string }>;
+  const existingColumns = new Set(tableInfo.map((column) => String(column?.name || '').toLowerCase()));
+
+  await ensureColumn(prisma, existingColumns, 'nameZh', '"nameZh" TEXT NOT NULL DEFAULT \'\'');
+  await ensureColumn(prisma, existingColumns, 'nameEn', '"nameEn" TEXT NOT NULL DEFAULT \'\'');
+  await ensureColumn(prisma, existingColumns, 'descriptionZh', '"descriptionZh" TEXT NOT NULL DEFAULT \'\'');
+  await ensureColumn(prisma, existingColumns, 'descriptionEn', '"descriptionEn" TEXT NOT NULL DEFAULT \'\'');
+
+  for (const [pluginId, entry] of Object.entries(STORE_PLUGIN_LOCALIZATION)) {
+    await prisma.$executeRaw`
+      UPDATE "StorePlugin"
+      SET
+        "nameZh" = CASE WHEN "nameZh" = '' THEN COALESCE(NULLIF("name", ''), ${entry.name.zh}) ELSE "nameZh" END,
+        "nameEn" = CASE WHEN "nameEn" = '' THEN ${entry.name.en} ELSE "nameEn" END,
+        "descriptionZh" = CASE WHEN "descriptionZh" = '' THEN COALESCE(NULLIF("description", ''), ${entry.description.zh}) ELSE "descriptionZh" END,
+        "descriptionEn" = CASE WHEN "descriptionEn" = '' THEN ${entry.description.en} ELSE "descriptionEn" END
+      WHERE "id" = ${pluginId}
+    `;
+  }
+}

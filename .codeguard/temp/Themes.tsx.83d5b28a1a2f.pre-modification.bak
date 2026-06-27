@@ -1,7 +1,12 @@
 // [CodeGuard Feature Index]
-// - Theme customization section and skin carousel -> line 34
-// - Theme entry animation and carousel styles -> line 78
-// - Theme preview layout and skin image display -> line 138
+// - use client -> line 12
+// - setIsSectionVisible(entry.isIntersecting -> line 52
+// - transform: scale(0.76 -> line 90
+// - will-change: transform, opacity, filter -> line 127
+// - <div> -> line 155
+// - src={activeSkin.image -> line 183
+// - <span className="rounded-full border border-white/10 bg-white... -> line 216
+// - </section> -> line 260
 // [/CodeGuard Feature Index]
 
 "use client";
@@ -25,6 +30,9 @@ const detailItems = [
     { title: "助手头像", desc: "入口图标和桌面挂件可以跟随主题一起切换" },
     { title: "使用状态", desc: "常用主题可保存，换设备也能延续自己的工作习惯" }
 ];
+
+const detailTitleIds = ['themes.detail.0.title', 'themes.detail.1.title', 'themes.detail.2.title'];
+const detailDescIds = ['themes.detail.0.desc', 'themes.detail.1.desc', 'themes.detail.2.desc'];
 
 export default function Themes() {
     const [activeSkinIndex, setActiveSkinIndex] = useState(0);
@@ -127,7 +135,8 @@ export default function Themes() {
             <div className="pointer-events-none absolute inset-0">
                 <img src="/assets/theme-workspace-bg.jpg" alt="" className="h-full w-full object-cover opacity-34 mix-blend-luminosity" />
                 <div className="absolute inset-0 bg-[radial-gradient(circle_at_14%_16%,rgba(34,211,238,0.24),transparent_31%),radial-gradient(circle_at_84%_24%,rgba(236,72,153,0.22),transparent_30%),radial-gradient(circle_at_50%_92%,rgba(79,70,229,0.16),transparent_38%),linear-gradient(180deg,rgba(5,8,22,0.78)_0%,rgba(15,23,42,0.82)_58%,rgba(17,24,39,0.88)_100%)]" />
-                <div className="absolute inset-x-8 top-20 hidden h-[420px] rounded-[44px] border border-white/8 bg-[linear-gradient(115deg,rgba(34,211,238,0.08),rgba(236,72,153,0.08),rgba(255,255,255,0.03))] shadow-[0_38px_120px_rgba(2,6,23,0.35)] lg:block" />
+                <div className="absolute left-10 right-10 top-24 hidden h-[380px] rounded-[44px] border border-cyan-200/[0.045] bg-[linear-gradient(115deg,rgba(34,211,238,0.045),rgba(236,72,153,0.035),rgba(255,255,255,0.015))] opacity-70 shadow-[inset_0_1px_0_rgba(255,255,255,0.05),0_34px_100px_rgba(2,6,23,0.22)] backdrop-blur-[2px] lg:block" />
+                <div className="absolute left-16 top-28 hidden h-px w-56 bg-gradient-to-r from-transparent via-cyan-100/20 to-transparent lg:block" />
             </div>
             <div key={replayKey} className="theme-section-enter container relative mx-auto px-4">
                 <div className="mx-auto mb-5 max-w-4xl text-center">
@@ -144,7 +153,9 @@ export default function Themes() {
                     <div className="flex h-full flex-col rounded-[30px] border border-white/12 bg-white/[0.06] p-5 shadow-[0_30px_100px_rgba(2,6,23,0.4)] backdrop-blur-2xl">
                         <div className="mb-4 flex items-center justify-between gap-4">
                             <div>
-                                <p className="text-sm font-semibold text-cyan-100">UI 自定义</p>
+                                <p className="text-sm font-semibold text-cyan-100">
+                                    <FormattedMessage id="themes.ui_custom" defaultMessage="UI 自定义" />
+                                </p>
                             </div>
                             <span className="inline-flex h-11 w-11 items-center justify-center rounded-2xl border border-white/10 bg-white/8 text-cyan-100">
                                 <ProMonolineIcon className="h-5 w-5" variant="palette" />
@@ -187,11 +198,14 @@ export default function Themes() {
                             <div className="mb-4 flex flex-wrap items-center justify-between gap-4">
                                 <div>
                                     <p className="text-sm font-semibold text-cyan-100"><FormattedMessage id="themes.preview.title" defaultMessage="今天的工作入口" /></p>
-                                    <h3 className="mt-1 text-xl font-semibold text-white">{activeSkin.name}效果预览</h3>
+                                    <h3 className="mt-1 text-xl font-semibold text-white">
+                                        {activeSkin.name}
+                                        <FormattedMessage id="themes.preview.suffix" defaultMessage="效果预览" />
+                                    </h3>
                                 </div>
                                 <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/8 px-3 py-2 text-xs text-slate-300">
                                     <span className={`h-2 w-2 rounded-full bg-gradient-to-r ${activeSkin.accent}`} />
-                                    Word 插件菜单
+                                    <FormattedMessage id="themes.word_menu" defaultMessage="Word 插件菜单" />
                                 </div>
                             </div>
 
@@ -199,8 +213,8 @@ export default function Themes() {
                                 <div className="relative min-h-[370px] overflow-hidden rounded-[28px] border border-white/10 bg-[linear-gradient(135deg,rgba(15,23,42,0.96),rgba(67,56,202,0.22),rgba(8,47,73,0.78))]">
                                     <div className="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-white/10 to-transparent" />
                                     <div className="absolute inset-x-6 top-6 flex items-center justify-between text-xs text-slate-300">
-                                        <span className="rounded-full border border-white/10 bg-white/8 px-3 py-1">胶囊入口</span>
-                                        <span className="rounded-full border border-white/10 bg-white/8 px-3 py-1">展开 / 收起</span>
+                                        <span className="rounded-full border border-white/10 bg-white/8 px-3 py-1"><FormattedMessage id="themes.capsule.entry" defaultMessage="胶囊入口" /></span>
+                                        <span className="rounded-full border border-white/10 bg-white/8 px-3 py-1"><FormattedMessage id="themes.capsule.toggle" defaultMessage="展开 / 收起" /></span>
                                     </div>
                                     <div className="absolute inset-x-8 top-1/2 -translate-y-1/2 rounded-[30px] border border-white/12 bg-white/[0.055] px-6 py-10 shadow-[0_28px_80px_rgba(2,6,23,0.42)] backdrop-blur-xl">
                                         <img
@@ -210,8 +224,8 @@ export default function Themes() {
                                         />
                                     </div>
                                     <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-3 rounded-2xl border border-white/10 bg-slate-950/58 px-4 py-3 text-sm backdrop-blur-xl">
-                                        <span className="font-semibold text-white">原生 UI 动效</span>
-                                        <span className="text-xs text-slate-400">胶囊展开，收放自如</span>
+                                        <span className="font-semibold text-white"><FormattedMessage id="themes.motion.title" defaultMessage="原生 UI 动效" /></span>
+                                        <span className="text-xs text-slate-400"><FormattedMessage id="themes.motion.subtitle" defaultMessage="胶囊展开，收放自如" /></span>
                                     </div>
                                 </div>
 
@@ -220,14 +234,14 @@ export default function Themes() {
                                         <div key={item.title} className="rounded-2xl border border-white/10 bg-white/[0.055] p-3">
                                             <div className="mb-2 flex items-center gap-3">
                                                 <span className="inline-flex h-7 w-7 items-center justify-center rounded-xl border border-white/10 bg-white/8 text-xs font-semibold text-cyan-100">0{index + 1}</span>
-                                                <p className="font-semibold text-white">{item.title}</p>
+                                                <p className="font-semibold text-white"><FormattedMessage id={detailTitleIds[index]} defaultMessage={item.title} /></p>
                                             </div>
-                                            <p className="text-sm leading-5 text-slate-300">{item.desc}</p>
+                                            <p className="text-sm leading-5 text-slate-300"><FormattedMessage id={detailDescIds[index]} defaultMessage={item.desc} /></p>
                                         </div>
                                     ))}
                                     <div className="rounded-2xl border border-cyan-200/18 bg-cyan-200/8 p-3">
                                         <p className="text-sm font-semibold text-white"><FormattedMessage id="themes.decoration.title" /></p>
-                                        <p className="mt-1 text-sm leading-5 text-slate-300">{detailItems.length ? "桌面挂件会跟随主题保持统一。" : ""}</p>
+                                        <p className="mt-1 text-sm leading-5 text-slate-300"><FormattedMessage id="themes.decoration.subtitle" defaultMessage="桌面挂件会跟随主题保持统一。" /></p>
                                         <div className="mt-2 h-16 overflow-hidden rounded-2xl bg-white/8">
                                             <img
                                                 src="/assets/desktop-widget-full.gif"

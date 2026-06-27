@@ -1,10 +1,11 @@
 // [CodeGuard Feature Index]
-// - Admin settings add custom model button and dynamic model list persistence -> line 224
+// - Admin system settings tabs and payment configuration -> line 34
+// - Admin agent upload tab and store marketplace metadata -> line 289
 // [/CodeGuard Feature Index]
 
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { useIntl, FormattedMessage } from 'react-intl';
 import Link from 'next/link';
@@ -17,13 +18,24 @@ interface CustomModelEntry {
     endpoint?: string;
 }
 
+interface PublishedPlugin {
+    id: string;
+    name: string;
+    version: string;
+    price: number;
+    description: string;
+}
+
 export default function AdminSettingsPage() {
     const intl = useIntl();
     const router = useRouter();
+    const featureFormRef = useRef<HTMLDivElement | null>(null);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [uploadingInstaller, setUploadingInstaller] = useState(false);
-    const [activeTab, setActiveTab] = useState('payment'); // payment, general, models
+    const [uploadingFeaturePackage, setUploadingFeaturePackage] = useState(false);
+    const [savingFeatureInfo, setSavingFeatureInfo] = useState(false);
+    const [activeTab, setActiveTab] = useState('payment'); // payment, general, models, featurePublish
     
     // 表单状态
     const [settings, setSettings] = useState({
@@ -75,12 +87,39 @@ export default function AdminSettingsPage() {
         platform_custom_models: '',
     });
     const [customModels, setCustomModels] = useState<CustomModelEntry[]>([]);
+    const [publishedPlugins, setPublishedPlugins] = useState<PublishedPlugin[]>([]);
+    const [editingPluginId, setEditingPluginId] = useState('');
     const [newCustomModel, setNewCustomModel] = useState({
         provider: '',
         apiKey: '',
         model: '',
         endpoint: '',
     });
+    const [newFeature, setNewFeature] = useState({
+        title: '',
+        version: '1.0.0',
+        price: '0',
+        description: '',
+        downloadUrl: '',
+    });
+
+    const fetchPublishedPlugins = useCallback(async () => {
+        try {
+            const response = await fetch('/api/store/plugins');
+            const data = await response.json();
+            if (data?.success && Array.isArray(data.plugins)) {
+                setPublishedPlugins(data.plugins.map((item: any) => ({
+                    id: String(item.id || ''),
+                    name: String(item.name || ''),
+                    version: String(item.version || '1.0.0'),
+                    price: Number(item.price || 0),
+                    description: String(item.description || ''),
+                })).filter((item: PublishedPlugin) => item.id));
+            }
+        } catch {
+            setPublishedPlugins([]);
+        }
+    }, []);
 
     const fetchSettings = useCallback(async (token: string) => {
         try {
@@ -146,7 +185,8 @@ export default function AdminSettingsPage() {
             return;
         }
         fetchSettings(token);
-    }, [router, fetchSettings]);
+        fetchPublishedPlugins();
+    }, [router, fetchSettings, fetchPublishedPlugins]);
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { name, value } = e.target;
@@ -263,6 +303,181 @@ export default function AdminSettingsPage() {
         });
     };
 
+    const uploadFeaturePackage = async (file: File, pluginId = editingPluginId, featureDraft = newFeature) => {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('请先登录管理员账号');
+            return false;
+        }
+
+        if (!featureDraft.title.trim() || !featureDraft.version.trim() || !featureDraft.description.trim()) {
+            alert('请填写智能体名称、版本号和描述');
+            return false;
+        }
+
+        const priceValue = Number(featureDraft.price);
+        if (!Number.isFinite(priceValue) || priceValue < 0) {
+            alert('费用必须是大于等于 0 的数字');
+            return false;
+        }
+
+        if (!file.name.toLowerCase().endsWith('.jarv')) {
+            alert('请上传 .jarv 功能包文件');
+            return false;
+        }
+
+        if (file.size > 1024 * 1024 * 1024) {
+            alert('.jarv 功能包不能超过 1GB');
+            return false;
+        }
+
+        setUploadingFeaturePackage(true);
+        try {
+            const formData = new FormData();
+            formData.append('featurePackage', file);
+            formData.append('name', featureDraft.title);
+            formData.append('version', featureDraft.version);
+            formData.append('price', featureDraft.price);
+            formData.append('description', featureDraft.description);
+            if (pluginId) {
+                formData.append('pluginId', pluginId);
+            }
+            const response = await fetch('/api/admin/features/upload', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: formData,
+            });
+            const data = await response.json();
+            if (!response.ok || !data?.success || !data?.url) {
+                alert(data?.error || '功能包上传失败');
+                return;
+            }
+
+            setNewFeature(prev => ({
+                ...prev,
+                downloadUrl: data.url,
+            }));
+            await fetchPublishedPlugins();
+            setEditingPluginId(data.plugin?.id || pluginId);
+            alert(pluginId ? '智能体已更新，并替换旧 jarv 文件' : '智能体已上传，并写入小贾电站智能体市场');
+            return true;
+        } catch (error) {
+            alert('功能包上传失败');
+            return false;
+        } finally {
+            setUploadingFeaturePackage(false);
+        }
+    };
+
+    const handleFeaturePackageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        try {
+            await uploadFeaturePackage(file);
+        } finally {
+            e.target.value = '';
+        }
+    };
+
+    const handleReplacePublishedPlugin = async (plugin: PublishedPlugin, e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        const draft = {
+            title: plugin.name,
+            version: plugin.version,
+            price: String(plugin.price),
+            description: plugin.description,
+            downloadUrl: `/api/store/download?pluginId=${encodeURIComponent(plugin.id)}`,
+        };
+        handleEditPublishedPlugin(plugin);
+        setNewFeature(draft);
+        try {
+            await uploadFeaturePackage(file, plugin.id, draft);
+        } finally {
+            e.target.value = '';
+        }
+    };
+
+    const handleEditPublishedPlugin = (plugin: PublishedPlugin) => {
+        setEditingPluginId(plugin.id);
+        setNewFeature({
+            title: plugin.name,
+            version: plugin.version,
+            price: String(plugin.price),
+            description: plugin.description,
+            downloadUrl: `/api/store/download?pluginId=${encodeURIComponent(plugin.id)}`,
+        });
+        window.requestAnimationFrame(() => {
+            featureFormRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        });
+    };
+
+    const handleNewPluginDraft = () => {
+        setEditingPluginId('');
+        setNewFeature({
+            title: '',
+            version: '1.0.0',
+            price: '0',
+            description: '',
+            downloadUrl: '',
+        });
+    };
+
+    const handleSaveFeatureInfo = async () => {
+        if (!editingPluginId) {
+            alert('请先选择要修改的智能体');
+            return;
+        }
+
+        if (!newFeature.title.trim() || !newFeature.version.trim() || !newFeature.description.trim()) {
+            alert('请填写智能体名称、版本号和描述');
+            return;
+        }
+
+        const priceValue = Number(newFeature.price);
+        if (!Number.isFinite(priceValue) || priceValue < 0) {
+            alert('费用必须是大于等于 0 的数字');
+            return;
+        }
+
+        const token = localStorage.getItem('token');
+        if (!token) {
+            alert('请先登录管理员账号');
+            return;
+        }
+
+        setSavingFeatureInfo(true);
+        try {
+            const response = await fetch('/api/admin/features/update', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`,
+                },
+                body: JSON.stringify({
+                    pluginId: editingPluginId,
+                    name: newFeature.title,
+                    version: newFeature.version,
+                    price: newFeature.price,
+                    description: newFeature.description,
+                }),
+            });
+            const data = await response.json();
+            if (!response.ok || !data?.success) {
+                alert(data?.error || '保存失败');
+                return;
+            }
+            await fetchPublishedPlugins();
+            alert('智能体信息已保存');
+        } catch {
+            alert('保存失败');
+        } finally {
+            setSavingFeatureInfo(false);
+        }
+    };
+
     if (loading) {
         return <div className="p-8 text-center">加载中...</div>;
     }
@@ -301,13 +516,19 @@ export default function AdminSettingsPage() {
                         >
                             通用设置
                         </button>
+                        <button
+                            className={`px-6 py-4 font-medium ${activeTab === 'featurePublish' ? 'text-blue-600 border-b-2 border-blue-600' : 'text-gray-500 hover:text-gray-700'}`}
+                            onClick={() => setActiveTab('featurePublish')}
+                        >
+                            智能体发布
+                        </button>
                     </div>
 
                     <form onSubmit={handleSubmit} className="p-6">
                         {activeTab === 'payment' && (
                             <div className="space-y-8">
                                 {/* Alipay Section */}
-                                <div>
+                                <div ref={featureFormRef}>
                                     <h3 className="text-lg font-bold mb-4 flex items-center gap-2">
                                         <span className="text-blue-500">🔵</span> 支付宝 (Alipay)
                                     </h3>
@@ -891,6 +1112,176 @@ export default function AdminSettingsPage() {
                             </div>
                         )}
 
+                        {activeTab === 'featurePublish' && (
+                            <div className="space-y-6">
+                                <div>
+                                    <div className="mb-4 flex flex-wrap items-start justify-between gap-3">
+                                        <div>
+                                            <h3 className="text-lg font-bold mb-2">{editingPluginId ? '更新智能体' : '发布智能体到小贾电站'}</h3>
+                                            <p className="text-sm text-gray-500">
+                                                {editingPluginId ? `正在修改 ${editingPluginId}，上传新的 .jarv 会替换旧文件。` : '填写智能体市场卡片信息并上传 .jarv 文件，用户会在小贾电站的智能体市场看到它。'}
+                                            </p>
+                                            {editingPluginId && (
+                                                <div className="mt-2 inline-flex rounded-full bg-blue-50 px-3 py-1 text-xs font-medium text-blue-700">
+                                                    当前编辑：{editingPluginId}
+                                                </div>
+                                            )}
+                                        </div>
+                                        {editingPluginId && (
+                                            <button
+                                                type="button"
+                                                onClick={handleNewPluginDraft}
+                                                className="px-4 py-2 rounded-lg border border-gray-200 text-gray-700 hover:bg-gray-50 transition-colors"
+                                            >
+                                                新建智能体
+                                            </button>
+                                        )}
+                                    </div>
+                                    <div className="grid gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">智能体名称</label>
+                                            <input
+                                                type="text"
+                                                value={newFeature.title}
+                                                onChange={(e) => setNewFeature(prev => ({ ...prev, title: e.target.value }))}
+                                                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                                placeholder="例如：LaTeX 公式转换"
+                                            />
+                                        </div>
+                                        <div className="grid gap-4 md:grid-cols-2">
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">版本号</label>
+                                                <input
+                                                    type="text"
+                                                    value={newFeature.version}
+                                                    onChange={(e) => setNewFeature(prev => ({ ...prev, version: e.target.value }))}
+                                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                                    placeholder="例如：1.0.0"
+                                                />
+                                            </div>
+                                            <div>
+                                                <label className="block text-sm font-medium text-gray-700 mb-1">费用</label>
+                                                <input
+                                                    type="number"
+                                                    min="0"
+                                                    step="0.01"
+                                                    value={newFeature.price}
+                                                    onChange={(e) => setNewFeature(prev => ({ ...prev, price: e.target.value }))}
+                                                    className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                                    placeholder="0 表示免费"
+                                                />
+                                            </div>
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">描述</label>
+                                            <textarea
+                                                value={newFeature.description}
+                                                onChange={(e) => setNewFeature(prev => ({ ...prev, description: e.target.value }))}
+                                                rows={5}
+                                                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                                placeholder="例如：将 LaTeX 代码转换为 Word 公式"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-1">jarv 文件</label>
+                                            <input
+                                                type="text"
+                                                value={newFeature.downloadUrl}
+                                                readOnly
+                                                className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"
+                                                placeholder="上传成功后自动生成下载地址"
+                                            />
+                                            <div className="mt-2 flex flex-wrap items-center gap-3">
+                                                <label className="inline-flex items-center px-3 py-2 rounded-lg border border-blue-200 bg-blue-50 text-blue-700 cursor-pointer hover:bg-blue-100 transition-colors">
+                                                    <input
+                                                        type="file"
+                                                        className="hidden"
+                                                        accept=".jarv"
+                                                        onChange={handleFeaturePackageUpload}
+                                                        disabled={uploadingFeaturePackage}
+                                                    />
+                                                    {uploadingFeaturePackage ? '上传中...' : '上传 jarv 文件'}
+                                                </label>
+                                                <p className="text-xs text-gray-500">{editingPluginId ? '上传后会覆盖旧 jarv 文件，并更新市场卡片信息。' : '上传后会立即写入数据库，并在小贾电站智能体市场展示。'}</p>
+                                            </div>
+                                        </div>
+                                        <div className="flex flex-wrap justify-end gap-3">
+                                            {editingPluginId && (
+                                                <button
+                                                    type="button"
+                                                    onClick={handleSaveFeatureInfo}
+                                                    disabled={savingFeatureInfo}
+                                                    className="px-6 py-2 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 disabled:opacity-50 transition-colors"
+                                                >
+                                                    {savingFeatureInfo ? '保存中...' : '保存信息'}
+                                                </button>
+                                            )}
+                                            <a
+                                                href="/store"
+                                                target="_blank"
+                                                rel="noreferrer"
+                                                className="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                                            >
+                                                查看智能体市场
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div className="border-t pt-6">
+                                    <div className="mb-4 flex items-center justify-between">
+                                        <div>
+                                            <h4 className="text-base font-bold">已发布智能体</h4>
+                                            <p className="text-sm text-gray-500">点击修改后，重新上传 .jarv 即可替换旧文件。</p>
+                                        </div>
+                                        <button
+                                            type="button"
+                                            onClick={fetchPublishedPlugins}
+                                            className="px-3 py-2 rounded-lg border border-gray-200 text-sm text-gray-700 hover:bg-gray-50"
+                                        >
+                                            刷新
+                                        </button>
+                                    </div>
+                                    <div className="grid gap-3">
+                                        {publishedPlugins.length === 0 ? (
+                                            <div className="rounded-lg border border-dashed border-gray-200 p-5 text-sm text-gray-500">暂无已发布智能体。</div>
+                                        ) : publishedPlugins.map(plugin => (
+                                            <div key={plugin.id} className={`flex flex-wrap items-center justify-between gap-4 rounded-xl border p-4 ${editingPluginId === plugin.id ? 'border-blue-300 bg-blue-50/60' : 'border-gray-200'}`}>
+                                                <div className="min-w-0">
+                                                    <div className="flex flex-wrap items-center gap-2">
+                                                        <span className="font-semibold text-gray-900">{plugin.name}</span>
+                                                        <span className="text-xs text-gray-500">v{plugin.version}</span>
+                                                        <span className="text-xs font-semibold text-blue-600">{plugin.price > 0 ? `¥${plugin.price}` : '免费'}</span>
+                                                    </div>
+                                                    <p className="mt-1 text-sm text-gray-500 line-clamp-2">{plugin.description}</p>
+                                                    <p className="mt-1 text-xs text-gray-400">ID: {plugin.id}</p>
+                                                </div>
+                                                <div className="flex flex-wrap gap-2">
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => handleEditPublishedPlugin(plugin)}
+                                                        className="px-4 py-2 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 transition-colors"
+                                                    >
+                                                        修改信息
+                                                    </button>
+                                                    <label className="px-4 py-2 rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors cursor-pointer">
+                                                        <input
+                                                            type="file"
+                                                            className="hidden"
+                                                            accept=".jarv"
+                                                            onChange={(event) => handleReplacePublishedPlugin(plugin, event)}
+                                                            disabled={uploadingFeaturePackage}
+                                                        />
+                                                        {uploadingFeaturePackage && editingPluginId === plugin.id ? '替换中...' : '选择 jarv 替换'}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab !== 'featurePublish' && (
                         <div className="mt-8 pt-6 border-t flex justify-end">
                             <button
                                 type="submit"
@@ -900,6 +1291,7 @@ export default function AdminSettingsPage() {
                                 {saving ? <FormattedMessage id="admin.settings.btn.saving" defaultMessage="保存中..." /> : <FormattedMessage id="admin.settings.btn.save" defaultMessage="保存设置" />}
                             </button>
                         </div>
+                        )}
                     </form>
                 </div>
             </div>

@@ -1,0 +1,294 @@
+using System;
+using System.Globalization;
+using System.Text.RegularExpressions;
+using System.Windows;
+using Jarvis;
+using Word = Microsoft.Office.Interop.Word;
+
+namespace Jarvis.Modules
+{
+    public class SignificantFigures
+    {
+        private static readonly Regex NumberRegex = new Regex(
+            @"(?<![\d.])[-+]?(?:(?:\d+\.\d+|\d+\.|\.\d+)(?:[eE][-+]?\d+)?|\d+[eE][-+]?\d+)%?(?![\d.])",
+            RegexOptions.Compiled);
+
+        public void Run(Word.Document doc)
+        {
+            try
+            {
+                int digits = ReadDigits();
+                Word.Table table = FindCurrentTable(doc);
+                if (table == null)
+                {
+                    MessageBox.Show("请先选中一个表格", "提示", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    return;
+                }
+
+                int modifiedCount = FormatAllCellsInTable(table, digits);
+                if (modifiedCount == 0)
+                {
+                    MessageBox.Show("未找到可调整的小数数字。", "提示", MessageBoxButton.OK, MessageBoxImage.Information);
+                }
+            }
+            catch (ArgumentException ex)
+            {
+                MessageBox.Show(ex.Message, "输入错误", MessageBoxButton.OK, MessageBoxImage.Warning);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("有效数字调整失败: " + ex.Message, "错误", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private int ReadDigits()
+        {
+            string input = "2";
+            try
+            {
+                var win = CopilotWindow.LatestInstance;
+                if (win != null) input = win.SignificantFiguresInput;
+            }
+            catch { }
+
+            int digits;
+            if (!int.TryParse((input ?? "").Trim(), out digits) || digits < 0 || digits > 15)
+            {
+                throw new ArgumentException("请输入 0 到 15 之间的小数位数。");
+            }
+
+            return digits;
+        }
+
+        private Word.Table FindCurrentTable(Word.Document doc)
+        {
+            if (doc == null || doc.Application == null) return null;
+            try
+            {
+                Word.Selection selection = doc.Application.Selection;
+                if (selection != null && selection.Tables != null && selection.Tables.Count > 0)
+                {
+                    return selection.Tables[1];
+                }
+            }
+            catch { }
+
+            return null;
+        }
+
+        private bool ContainsFormula(Word.Range range)
+        {
+            try
+            {
+                if (range.OMaths != null && range.OMaths.Count > 0) return true;
+            }
+            catch { }
+
+            try
+            {
+                if (range.Fields != null && range.Fields.Count > 0) return true;
+            }
+            catch { }
+
+            return false;
+        }
+
+        private int FormatAllCellsInTable(Word.Table table, int digits)
+        {
+            int modified = 0;
+            foreach (Word.Cell cell in table.Range.Cells)
+            {
+                try
+                {
+                    Word.Range cellRange = cell.Range;
+                    cellRange.End = cellRange.End - 1;
+                    if (ContainsFormula(cellRange)) continue;
+                    modified += FormatAllNumbersInRange(cellRange, digits);
+                }
+                catch { }
+            }
+
+            return modified;
+        }
+
+        private int FormatAllNumbersInRange(Word.Range range, int digits)
+        {
+            if (range == null) return 0;
+            string text = CleanRangeText(range.Text);
+            if (string.IsNullOrEmpty(text)) return 0;
+            if (LooksLikeDate(text)) return 0;
+            if (ContainsArithmeticOperator(text)) return 0;
+
+            MatchCollection matches = NumberRegex.Matches(text);
+            if (matches.Count == 0) return 0;
+
+            int changed = 0;
+            string updated = NumberRegex.Replace(text, match =>
+            {
+                if (ShouldSkipNumber(text, match.Index, match.Length)) return match.Value;
+                string formatted = FormatNumberToken(match.Value, digits);
+                if (!string.Equals(match.Value, formatted, StringComparison.Ordinal)) changed++;
+                return formatted;
+            });
+
+            if (changed > 0 && !string.Equals(text, updated, StringComparison.Ordinal))
+            {
+                range.Text = updated;
+            }
+
+            return changed;
+        }
+
+        private bool ContainsArithmeticOperator(string text)
+        {
+            if (string.IsNullOrWhiteSpace(text)) return false;
+            bool hasDigit = Regex.IsMatch(text, @"\d");
+            if (!hasDigit) return false;
+
+            // Skip formula-like cells: if arithmetic/comparison operators appear with numbers.
+            return Regex.IsMatch(text, @"[+\-*/=<>]");
+        }
+
+        private string CleanRangeText(string text)
+        {
+            return (text ?? "").TrimEnd('\r', '\a');
+        }
+
+        private bool LooksLikeDate(string text)
+        {
+            string trimmed = (text ?? "").Trim();
+            return Regex.IsMatch(trimmed, @"^\d{1,4}[-/年]\d{1,2}([-/月]\d{1,2}日?)?$");
+        }
+
+        private bool ShouldSkipNumber(string text, int index, int length)
+        {
+            int end = index + length;
+            if (index > 0 && text[index - 1] == '.') return true;
+            if (end < text.Length && text[end] == '.') return true;
+
+            bool leftAsciiLetter = index > 0 && IsAsciiLetter(text[index - 1]);
+            bool rightAsciiLetter = end < text.Length && IsAsciiLetter(text[end]);
+            return leftAsciiLetter || rightAsciiLetter;
+        }
+
+        private bool IsAsciiLetter(char c)
+        {
+            return (c >= 'a' && c <= 'z') || (c >= 'A' && c <= 'Z');
+        }
+
+        private string FormatNumberToken(string token, int digits)
+        {
+            bool hasPercent = token.EndsWith("%", StringComparison.Ordinal);
+            string numericToken = hasPercent ? token.Substring(0, token.Length - 1) : token;
+            string formatted = FormatDecimalPlaces(numericToken, digits);
+            return hasPercent ? formatted + "%" : formatted;
+        }
+
+        private string FormatDecimalPlaces(string originalToken, int digits)
+        {
+            int exponentIndex = originalToken.IndexOf("e", StringComparison.OrdinalIgnoreCase);
+            if (exponentIndex >= 0)
+            {
+                string mantissa = originalToken.Substring(0, exponentIndex);
+                string exponent = originalToken.Substring(exponentIndex + 1);
+                string roundedMantissa = FormatDecimalPlaces(mantissa, digits);
+                return roundedMantissa + "e" + NormalizeExponent(exponent);
+            }
+
+            string sign = "";
+            string body = originalToken;
+            if (body.StartsWith("-", StringComparison.Ordinal))
+            {
+                sign = "-";
+                body = body.Substring(1);
+            }
+            else if (body.StartsWith("+", StringComparison.Ordinal))
+            {
+                sign = "+";
+                body = body.Substring(1);
+            }
+
+            int dotIndex = body.IndexOf('.');
+            if (dotIndex < 0) return originalToken;
+
+            string integerPart = body.Substring(0, dotIndex);
+            string fractionalPart = dotIndex + 1 < body.Length ? body.Substring(dotIndex + 1) : "";
+            if (string.IsNullOrEmpty(integerPart)) integerPart = "0";
+
+            if (digits == 0)
+            {
+                bool roundUpInteger = fractionalPart.Length > 0 && fractionalPart[0] >= '5';
+                if (roundUpInteger) integerPart = AddOneToIntegerString(integerPart);
+                return sign + integerPart;
+            }
+
+            if (fractionalPart.Length < digits)
+            {
+                return sign + integerPart + "." + fractionalPart.PadRight(digits, '0');
+            }
+
+            string kept = fractionalPart.Substring(0, digits);
+            bool roundUp = fractionalPart.Length > digits && fractionalPart[digits] >= '5';
+            if (roundUp)
+            {
+                bool carryToInteger;
+                kept = AddOneToFixedDigits(kept, out carryToInteger);
+                if (carryToInteger) integerPart = AddOneToIntegerString(integerPart);
+            }
+
+            return sign + integerPart + "." + kept;
+        }
+
+        private string AddOneToFixedDigits(string digitsText, out bool carryToInteger)
+        {
+            char[] chars = digitsText.ToCharArray();
+            int i = chars.Length - 1;
+            while (i >= 0 && chars[i] == '9')
+            {
+                chars[i] = '0';
+                i--;
+            }
+
+            if (i >= 0)
+            {
+                chars[i] = (char)(chars[i] + 1);
+                carryToInteger = false;
+                return new string(chars);
+            }
+
+            carryToInteger = true;
+            return new string(chars);
+        }
+
+        private string AddOneToIntegerString(string integerPart)
+        {
+            if (string.IsNullOrEmpty(integerPart)) return "1";
+            char[] chars = integerPart.ToCharArray();
+            int i = chars.Length - 1;
+            while (i >= 0 && chars[i] == '9')
+            {
+                chars[i] = '0';
+                i--;
+            }
+
+            if (i >= 0)
+            {
+                chars[i] = (char)(chars[i] + 1);
+                return new string(chars);
+            }
+
+            return "1" + new string(chars);
+        }
+
+        private string NormalizeExponent(string exponent)
+        {
+            int exponentValue;
+            if (!int.TryParse(exponent, NumberStyles.Integer, CultureInfo.InvariantCulture, out exponentValue))
+            {
+                return exponent;
+            }
+
+            return exponentValue.ToString(CultureInfo.InvariantCulture);
+        }
+    }
+}

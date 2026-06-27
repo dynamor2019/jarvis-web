@@ -1,7 +1,35 @@
+// [CodeGuard Feature Index]
+// - StorePlugin database fallback and response shaping -> line 30
+// - Store plugin marketplace listing and jarv metadata merge -> line 46
+// - Jarv metadata parser -> line 180
+// [/CodeGuard Feature Index]
+
 import { NextResponse } from 'next/server';
 import { readdir, readFile } from 'fs/promises';
 import { join } from 'path';
 import { prisma } from '@/lib/prisma';
+import { ensureStorePluginTable as ensureStorePluginTableWithLocale, getStorePluginLocalization, pickStoreLocaleText, resolveStoreLocale } from '@/lib/storePluginLocale';
+
+type StorePluginRecord = {
+  id: string;
+  name: string;
+  nameZh?: string;
+  nameEn?: string;
+  version: string;
+  price: number;
+  description: string;
+  descriptionZh?: string;
+  descriptionEn?: string;
+  author: string;
+  group: string;
+  icon: string;
+  featured: boolean | number;
+  updatedAt: Date | string;
+};
+
+async function ensureStorePluginTable() {
+  await ensureStorePluginTableWithLocale(prisma);
+}
 
 // 插件配置
 const getPluginConfig = async () => {
@@ -15,8 +43,14 @@ const getPluginConfig = async () => {
   }
 };
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const requestUrl = new URL(request.url);
+    const cookieHeader = request.headers.get('cookie') || '';
+    const cookieLocaleMatch = cookieHeader.match(/(?:^|;\s*)(?:NEXT_LOCALE|locale)=([^;]+)/i);
+    const requestedLocale = resolveStoreLocale(
+      requestUrl.searchParams.get('locale') || cookieLocaleMatch?.[1] || request.headers.get('accept-language')
+    );
     // 确定插件目录路径
     // 1. 优先使用环境变量
     // 2. 其次尝试当前目录下的 plugins 文件夹 (部署模式)
@@ -40,10 +74,13 @@ export async function GET() {
     // 读取插件配置
     const pluginConfig = await getPluginConfig();
 
-    const dbPlugins = await prisma.storePlugin.findMany({
-      where: { isActive: true },
-      orderBy: [{ featured: 'desc' }, { updatedAt: 'desc' }],
-    });
+    await ensureStorePluginTable();
+    const dbPlugins = await prisma.$queryRaw<StorePluginRecord[]>`
+      SELECT "id", "name", "nameZh", "nameEn", "version", "price", "description", "descriptionZh", "descriptionEn", "author", "group", "icon", "featured", "updatedAt"
+      FROM "StorePlugin"
+      WHERE "isActive" = true
+      ORDER BY "featured" DESC, "updatedAt" DESC
+    `;
     const dbPluginMap = new Map(dbPlugins.map(plugin => [plugin.id, plugin]));
     const plugins = [];
 
@@ -57,15 +94,25 @@ export async function GET() {
         const pluginId = file.replace('.jarv', '');
         const config = pluginConfig[pluginId] || {};
         const dbPlugin = dbPluginMap.get(pluginId);
-        
+        const localized = getStorePluginLocalization(
+          pluginId,
+          dbPlugin?.name || metadata.name || pluginId,
+          dbPlugin?.description || metadata.description || '暂无描述',
+          dbPlugin?.group || metadata.group || config.category || '工具'
+        );
+
         plugins.push({
           id: pluginId,
-          name: dbPlugin?.name || metadata.name || pluginId,
+          name: pickStoreLocaleText({ zh: localized.nameZh, en: localized.nameEn }, requestedLocale, localized.nameZh),
+          nameZh: localized.nameZh,
+          nameEn: localized.nameEn,
           version: dbPlugin?.version || metadata.version || '1.0.0',
           price: dbPlugin?.price ?? config.price ?? 0,
-          description: dbPlugin?.description || metadata.description || '暂无描述',
+          description: pickStoreLocaleText({ zh: localized.descriptionZh, en: localized.descriptionEn }, requestedLocale, localized.descriptionZh),
+          descriptionZh: localized.descriptionZh,
+          descriptionEn: localized.descriptionEn,
           author: dbPlugin?.author || metadata.author || 'Jarvis',
-          group: dbPlugin?.group || metadata.group || config.category || '工具',
+          group: pickStoreLocaleText({ zh: localized.groupZh, en: localized.groupEn }, requestedLocale, localized.groupZh),
           icon: dbPlugin?.icon || metadata.icon || '🔧',
           featured: dbPlugin?.featured ?? config.featured ?? false,
           downloads: Math.floor(Math.random() * 1000) + 100, // 模拟下载数
@@ -90,19 +137,23 @@ export async function GET() {
       if (plugins.some(plugin => plugin.id === dbPlugin.id)) continue;
       plugins.push({
         id: dbPlugin.id,
-        name: dbPlugin.name,
+        name: pickStoreLocaleText({ zh: dbPlugin.nameZh || dbPlugin.name, en: dbPlugin.nameEn || dbPlugin.name }, requestedLocale, dbPlugin.name),
+        nameZh: dbPlugin.nameZh || dbPlugin.name,
+        nameEn: dbPlugin.nameEn || dbPlugin.name,
         version: dbPlugin.version,
         price: dbPlugin.price,
-        description: dbPlugin.description,
+        description: pickStoreLocaleText({ zh: dbPlugin.descriptionZh || dbPlugin.description, en: dbPlugin.descriptionEn || dbPlugin.description }, requestedLocale, dbPlugin.description),
+        descriptionZh: dbPlugin.descriptionZh || dbPlugin.description,
+        descriptionEn: dbPlugin.descriptionEn || dbPlugin.description,
         author: dbPlugin.author,
         group: dbPlugin.group,
         icon: dbPlugin.icon,
-        featured: dbPlugin.featured,
+        featured: Boolean(dbPlugin.featured),
         downloads: 0,
         rating: 5,
         features: [dbPlugin.description],
         fileSize: '已上传',
-        lastUpdated: dbPlugin.updatedAt.toISOString().slice(0, 10),
+        lastUpdated: new Date(dbPlugin.updatedAt).toISOString().slice(0, 10),
         compatibility: ['Word 2016+', 'Word 365'],
         tags: [dbPlugin.group, '效率', 'Word']
       });

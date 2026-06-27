@@ -38,38 +38,38 @@
     ],
     "src/components/Hero.tsx": [
       {
-        "version": 8,
-        "feature": "pre_hero_particle_interaction",
-        "timestamp": "2026-06-08T10:36:47",
-        "hash": "fd186011fb012520c726140561f5d3d588428445b119908e6a4d4ce090f4e1b9",
-        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/Hero.tsx.1cadf8397b73.v8.bak",
+        "version": 12,
+        "feature": "pre_translation",
+        "timestamp": "2026-06-26T19:53:40",
+        "hash": "ae2d3ba7d084205aee07d190298c7f1f55cee017f9faa5c55140e68600cbdac7",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/Hero.tsx.1cadf8397b73.v12.bak",
         "original_path": "C:/Jarvis/jarvis-web/src/components/Hero.tsx",
         "file_key": "src/components/Hero.tsx",
-        "reason": "baseline before adding interactive hero particles"
+        "reason": "translate hero stats labels and ribbon data"
       }
     ],
     "src/i18n/messages/fr-FR.json": [
       {
-        "version": 2,
-        "feature": "SyncCurrentState",
-        "timestamp": "2026-04-21T10:55:21",
-        "hash": "04fae048fb26a44bc398c68a38e5f4d0c564d6739c6e031b94be3419995bdbf4",
-        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/fr-FR.json.7c473dcd6a30.v2.bak",
+        "version": 8,
+        "feature": "pre_hero_ribbon_locale_keys",
+        "timestamp": "2026-06-27T06:11:24",
+        "hash": "a2dca3e3d257a9f1a3b328d5f9dc496f21d44faaf22092d2b6e0396b4b3b0046",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/fr-FR.json.7c473dcd6a30.v8.bak",
         "original_path": "C:/Jarvis/jarvis-web/src/i18n/messages/fr-FR.json",
         "file_key": "src/i18n/messages/fr-FR.json",
-        "reason": "User requested admin-user text fixes"
+        "reason": "add missing hero ribbon translations"
       }
     ],
     "src/app/store/page.tsx": [
       {
-        "version": 10,
-        "feature": "pre_agent_market_card_style",
-        "timestamp": "2026-06-10T21:09:10",
-        "hash": "eded4030cee847c78fde954086dc9f5bd35672c92ed25ba075dbb431d746151e",
-        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/page.tsx.0c5273670611.v10.bak",
+        "version": 19,
+        "feature": "pre_skill_progress_smoothing",
+        "timestamp": "2026-06-25T11:32:47",
+        "hash": "f7281843c05b5c77e3eff126f8fd2a63286e71ddae120818346348b2293b7c16",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/page.tsx.0c5273670611.v19.bak",
         "original_path": "C:/Jarvis/jarvis-web/src/app/store/page.tsx",
         "file_key": "src/app/store/page.tsx",
-        "reason": "sync before adjusting plugin marketplace card style"
+        "reason": "align current store page before smoothing skill install progress"
       }
     ],
     "scripts/process-allowlist-guard.sh": [
@@ -98,14 +98,14 @@
     ],
     "start.sh": [
       {
-        "version": 6,
-        "feature": "current_start_script_baseline",
-        "timestamp": "2026-05-07T16:20:54",
-        "hash": "56c40bcfecfe2f3f56b16964e60c17417d8e718ad85b0c694d11a80747679ee2",
-        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/start.sh.65a5db1ae8f8.v6.bak",
+        "version": 7,
+        "feature": "pre_server_probe_url_fix",
+        "timestamp": "2026-06-17T10:58:24",
+        "hash": "f6b50de4d5a25b8c000b0f131472fb3f6f1e0862284236ac3d406a62f3e0fcd3",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/start.sh.65a5db1ae8f8.v7.bak",
         "original_path": "C:/Jarvis/jarvis-web/start.sh",
         "file_key": "start.sh",
-        "reason": "Auto snapshot after confirm: user authorized refreshing start.sh baseline before cache-safe startup fix"
+        "reason": "before fixing packaged server probe base url"
       }
     ],
     ".env.local": [
@@ -134,14 +134,14 @@
     ],
     "ops/packaging/package-linux.sh": [
       {
-        "version": 1,
-        "feature": "alipay-certs-relocate",
-        "timestamp": "2026-04-21T16:08:30",
-        "hash": "97c2adcbeae52b3fc7243e1032539203a9d2757ee1d95244835d8cc5a120beb3",
-        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/package-linux.sh.d2dff368c915.v1.bak",
+        "version": 2,
+        "feature": "pre_exclude_release_artifacts",
+        "timestamp": "2026-06-25T12:00:14",
+        "hash": "ea8bacd0f2318636d464260bcfb0a0b0e5b6f6b5ab837567cfc2ace30e2f7ad0",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/package-linux.sh.d2dff368c915.v2.bak",
         "original_path": "C:/Jarvis/jarvis-web/ops/packaging/package-linux.sh",
         "file_key": "ops/packaging/package-linux.sh",
-        "reason": "Auto snapshot after confirm: linux package script copies certs/alipay cert files"
+        "reason": "align current packaging script before excluding stray release archives"
       }
     ],
     "ops/packaging/pack-web.ps1": [
@@ -239,21 +239,69 @@
         "file_key": "src/app/api/transactions/route.ts",
         "reason": "公网通过 Nginx 指向新版后确认可用，保留当前稳定状态"
       }
+    ],
+    "src/app/api/tickets/route.ts": [
+      {
+        "version": 1,
+        "feature": "support_ticket_auto_create_tables",
+        "timestamp": "2026-06-26T16:20:49",
+        "hash": "1d9eef225620c15ef18498f60162d3393a6f37f355c5e18909a661266a4879dc",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/route.ts.4e059e6b3c3d.v1.bak",
+        "original_path": "C:/Jarvis/jarvis-web/src/app/api/tickets/route.ts",
+        "file_key": "src/app/api/tickets/route.ts",
+        "reason": "Auto snapshot after confirm: 工单提交已确认成功，记录用户接口修复"
+      }
+    ],
+    "src/app/api/admin/tickets/route.ts": [
+      {
+        "version": 1,
+        "feature": "support_ticket_auto_create_tables",
+        "timestamp": "2026-06-26T16:20:49",
+        "hash": "7b3a2606c92761dd15f3f66cb198f4083e32731e73b055a0bc132dd1ef2351dd",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/route.ts.83189ed5d55a.v1.bak",
+        "original_path": "C:/Jarvis/jarvis-web/src/app/api/admin/tickets/route.ts",
+        "file_key": "src/app/api/admin/tickets/route.ts",
+        "reason": "Auto snapshot after confirm: 工单提交已确认成功，记录管理员接口修复"
+      }
+    ],
+    "src/app/admin/users/page.tsx": [
+      {
+        "version": 1,
+        "feature": "admin_users_show_registration_time",
+        "timestamp": "2026-06-26T16:20:55",
+        "hash": "a296b0b66a2bb1cad054de253291c0f045a64ddcd8c80f90facc6c5cbd6608f0",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/page.tsx.e34a447ec65e.v1.bak",
+        "original_path": "C:/Jarvis/jarvis-web/src/app/admin/users/page.tsx",
+        "file_key": "src/app/admin/users/page.tsx",
+        "reason": "Auto snapshot after confirm: 用户确认 /admin/users 注册时间列显示符合预期"
+      }
+    ],
+    "src/lib/supportTickets.ts": [
+      {
+        "version": 1,
+        "feature": "support_ticket_auto_create_tables",
+        "timestamp": "2026-06-26T16:20:57",
+        "hash": "419519a7d77b4d40b240d7da284ae3453b7539a96f933eab69e141f4a8363d9d",
+        "backup_path": "C:/Jarvis/jarvis-web/.codeguard/versions/supportTickets.ts.048e0b966a71.v1.bak",
+        "original_path": "C:/Jarvis/jarvis-web/src/lib/supportTickets.ts",
+        "file_key": "src/lib/supportTickets.ts",
+        "reason": "工单自动建表 helper 已确认成功，补充当前基线"
+      }
     ]
   },
   "last_version": {
     "src/app/api/auth/wechat/callback/route.ts": 1,
     "src/app/api/auth/wechat/status/route.ts": 1,
     "src/app/login/page.tsx": 18,
-    "src/components/Hero.tsx": 8,
-    "src/i18n/messages/fr-FR.json": 2,
-    "src/app/store/page.tsx": 10,
+    "src/components/Hero.tsx": 12,
+    "src/i18n/messages/fr-FR.json": 8,
+    "src/app/store/page.tsx": 19,
     "scripts/process-allowlist-guard.sh": 1,
     "ops/process-allowlist-guard.service": 1,
-    "start.sh": 6,
+    "start.sh": 7,
     ".env.local": 1,
     "src/app/api/payment/qrcode/route.ts": 10,
-    "ops/packaging/package-linux.sh": 1,
+    "ops/packaging/package-linux.sh": 2,
     "ops/packaging/pack-web.ps1": 1,
     "ops/packaging/package-linux-docker.ps1": 1,
     "src/lib/prisma.ts": 1,
@@ -261,7 +309,11 @@
     "src/app/dashboard/transactions/page.tsx": 2,
     "src/app/dashboard/page.tsx": 2,
     "src/app/api/admin/transactions/route.ts": 2,
-    "src/app/api/transactions/route.ts": 2
+    "src/app/api/transactions/route.ts": 2,
+    "src/app/api/tickets/route.ts": 1,
+    "src/app/api/admin/tickets/route.ts": 1,
+    "src/app/admin/users/page.tsx": 1,
+    "src/lib/supportTickets.ts": 1
   },
   "current_state": {
     "src/app/api/auth/wechat/callback/route.ts": {
@@ -289,28 +341,28 @@
       "reason": "sync state before text tweak"
     },
     "src/components/Hero.tsx": {
-      "timestamp": "2026-06-08T10:36:47",
-      "feature": "pre_hero_particle_interaction",
-      "hash": "fd186011fb012520c726140561f5d3d588428445b119908e6a4d4ce090f4e1b9",
+      "timestamp": "2026-06-26T19:53:40",
+      "feature": "pre_translation",
+      "hash": "ae2d3ba7d084205aee07d190298c7f1f55cee017f9faa5c55140e68600cbdac7",
       "path": "C:/Jarvis/jarvis-web/src/components/Hero.tsx",
       "source": "snapshot",
-      "reason": "baseline before adding interactive hero particles"
+      "reason": "translate hero stats labels and ribbon data"
     },
     "src/app/store/page.tsx": {
-      "timestamp": "2026-06-10T21:09:10",
-      "feature": "pre_agent_market_card_style",
-      "hash": "eded4030cee847c78fde954086dc9f5bd35672c92ed25ba075dbb431d746151e",
+      "timestamp": "2026-06-25T11:32:47",
+      "feature": "pre_skill_progress_smoothing",
+      "hash": "f7281843c05b5c77e3eff126f8fd2a63286e71ddae120818346348b2293b7c16",
       "path": "C:/Jarvis/jarvis-web/src/app/store/page.tsx",
       "source": "snapshot",
-      "reason": "sync before adjusting plugin marketplace card style"
+      "reason": "align current store page before smoothing skill install progress"
     },
     "src/i18n/messages/fr-FR.json": {
-      "timestamp": "2026-04-21T10:55:21",
-      "feature": "SyncCurrentState",
-      "hash": "04fae048fb26a44bc398c68a38e5f4d0c564d6739c6e031b94be3419995bdbf4",
+      "timestamp": "2026-06-27T06:11:24",
+      "feature": "pre_hero_ribbon_locale_keys",
+      "hash": "a2dca3e3d257a9f1a3b328d5f9dc496f21d44faaf22092d2b6e0396b4b3b0046",
       "path": "C:/Jarvis/jarvis-web/src/i18n/messages/fr-FR.json",
       "source": "snapshot",
-      "reason": "User requested admin-user text fixes"
+      "reason": "add missing hero ribbon translations"
     },
     "scripts/process-allowlist-guard.sh": {
       "timestamp": "2026-04-16T14:40:56",
@@ -321,12 +373,12 @@
       "reason": "Auto snapshot after confirm: 用户确认启用进程白名单守护并记录拦截日志"
     },
     "start.sh": {
-      "timestamp": "2026-05-07T16:20:54",
-      "feature": "current_start_script_baseline",
-      "hash": "56c40bcfecfe2f3f56b16964e60c17417d8e718ad85b0c694d11a80747679ee2",
+      "timestamp": "2026-06-17T10:58:24",
+      "feature": "pre_server_probe_url_fix",
+      "hash": "f6b50de4d5a25b8c000b0f131472fb3f6f1e0862284236ac3d406a62f3e0fcd3",
       "path": "C:/Jarvis/jarvis-web/start.sh",
       "source": "snapshot",
-      "reason": "Auto snapshot after confirm: user authorized refreshing start.sh baseline before cache-safe startup fix"
+      "reason": "before fixing packaged server probe base url"
     },
     "ops/process-allowlist-guard.service": {
       "timestamp": "2026-04-16T14:40:56",
@@ -361,12 +413,12 @@
       "reason": "Auto snapshot after confirm: package cert files from certs/alipay path"
     },
     "ops/packaging/package-linux.sh": {
-      "timestamp": "2026-04-21T16:08:30",
-      "feature": "alipay-certs-relocate",
-      "hash": "97c2adcbeae52b3fc7243e1032539203a9d2757ee1d95244835d8cc5a120beb3",
+      "timestamp": "2026-06-25T12:00:14",
+      "feature": "pre_exclude_release_artifacts",
+      "hash": "ea8bacd0f2318636d464260bcfb0a0b0e5b6f6b5ab837567cfc2ace30e2f7ad0",
       "path": "C:/Jarvis/jarvis-web/ops/packaging/package-linux.sh",
       "source": "snapshot",
-      "reason": "Auto snapshot after confirm: linux package script copies certs/alipay cert files"
+      "reason": "align current packaging script before excluding stray release archives"
     },
     "ops/packaging/package-linux-docker.ps1": {
       "timestamp": "2026-04-21T16:08:30",
@@ -423,6 +475,38 @@
       "path": "C:/Jarvis/jarvis-web/src/app/api/transactions/route.ts",
       "source": "snapshot",
       "reason": "公网通过 Nginx 指向新版后确认可用，保留当前稳定状态"
+    },
+    "src/app/api/tickets/route.ts": {
+      "timestamp": "2026-06-26T16:20:49",
+      "feature": "support_ticket_auto_create_tables",
+      "hash": "1d9eef225620c15ef18498f60162d3393a6f37f355c5e18909a661266a4879dc",
+      "path": "C:/Jarvis/jarvis-web/src/app/api/tickets/route.ts",
+      "source": "snapshot",
+      "reason": "Auto snapshot after confirm: 工单提交已确认成功，记录用户接口修复"
+    },
+    "src/app/api/admin/tickets/route.ts": {
+      "timestamp": "2026-06-26T16:20:49",
+      "feature": "support_ticket_auto_create_tables",
+      "hash": "7b3a2606c92761dd15f3f66cb198f4083e32731e73b055a0bc132dd1ef2351dd",
+      "path": "C:/Jarvis/jarvis-web/src/app/api/admin/tickets/route.ts",
+      "source": "snapshot",
+      "reason": "Auto snapshot after confirm: 工单提交已确认成功，记录管理员接口修复"
+    },
+    "src/app/admin/users/page.tsx": {
+      "timestamp": "2026-06-26T16:20:55",
+      "feature": "admin_users_show_registration_time",
+      "hash": "a296b0b66a2bb1cad054de253291c0f045a64ddcd8c80f90facc6c5cbd6608f0",
+      "path": "C:/Jarvis/jarvis-web/src/app/admin/users/page.tsx",
+      "source": "snapshot",
+      "reason": "Auto snapshot after confirm: 用户确认 /admin/users 注册时间列显示符合预期"
+    },
+    "src/lib/supportTickets.ts": {
+      "timestamp": "2026-06-26T16:20:57",
+      "feature": "support_ticket_auto_create_tables",
+      "hash": "419519a7d77b4d40b240d7da284ae3453b7539a96f933eab69e141f4a8363d9d",
+      "path": "C:/Jarvis/jarvis-web/src/lib/supportTickets.ts",
+      "source": "snapshot",
+      "reason": "工单自动建表 helper 已确认成功，补充当前基线"
     }
   },
   "protected_features": {
@@ -446,11 +530,18 @@
       "hero_singleline_title_stats_visual_upgrade",
       "home_lusion_light_revamp_pre",
       "pre_unify_home_style",
-      "pre_hero_particle_interaction"
+      "pre_hero_particle_interaction",
+      "homepage-v2",
+      "pre_translation"
     ],
     "src/i18n/messages/fr-FR.json": [
       "store_fr_copy_alignment",
-      "SyncCurrentState"
+      "SyncCurrentState",
+      "pre_i18n_translation",
+      "pre_fr_translation",
+      "pre_translation",
+      "pre_hero_ribbon_translation",
+      "pre_hero_ribbon_locale_keys"
     ],
     "src/app/store/page.tsx": [
       "store_badge_layout_fix",
@@ -461,7 +552,16 @@
       "store_dynamic_cache_fix_baseline",
       "model_ordering",
       "model_ordering_release",
-      "pre_agent_market_card_style"
+      "pre_agent_market_card_style",
+      "pre_fix_skill_market_install",
+      "store_locale_query",
+      "pre_store_grouping",
+      "fix_store_group_label",
+      "align_store_groups",
+      "align_store_groups_2",
+      "align_right_click_all_and_download_jarv",
+      "pre_fix_skill_install",
+      "pre_skill_progress_smoothing"
     ],
     "scripts/process-allowlist-guard.sh": [
       "process-allowlist-guard"
@@ -474,7 +574,8 @@
       "pm2-minimal-start",
       "current_start_script_baseline",
       "current_start_script_index_baseline",
-      "standalone_runtime_path_baseline"
+      "standalone_runtime_path_baseline",
+      "pre_server_probe_url_fix"
     ],
     ".env.local": [
       "alipay-certs-relocate"
@@ -492,7 +593,8 @@
       "alipay_page_pay_baseline"
     ],
     "ops/packaging/package-linux.sh": [
-      "alipay-certs-relocate"
+      "alipay-certs-relocate",
+      "pre_exclude_release_artifacts"
     ],
     "ops/packaging/pack-web.ps1": [
       "alipay-certs-relocate"
@@ -517,6 +619,18 @@
     ],
     "src/app/api/transactions/route.ts": [
       "交易记录排序修复"
+    ],
+    "src/app/api/tickets/route.ts": [
+      "support_ticket_auto_create_tables"
+    ],
+    "src/app/api/admin/tickets/route.ts": [
+      "support_ticket_auto_create_tables"
+    ],
+    "src/app/admin/users/page.tsx": [
+      "admin_users_show_registration_time"
+    ],
+    "src/lib/supportTickets.ts": [
+      "support_ticket_auto_create_tables"
     ]
   },
   "index_state": {
@@ -699,49 +813,49 @@
     },
     "src/i18n/messages/fr-FR.json": {
       "source": "sidecar",
-      "updated_at": "2026-04-21T10:55:34",
-      "file_hash": "04fae048fb26a44bc398c68a38e5f4d0c564d6739c6e031b94be3419995bdbf4",
-      "line_count": 1320,
+      "updated_at": "2026-06-26T15:59:01",
+      "file_hash": "dc0790652c5f65ae442320c992ba6be2112e3ee63cb694a44f5afa28fe5a56ef",
+      "line_count": 1235,
       "entry_signatures": [
         {
-          "feature": "Admin and user management strings",
-          "line": 1,
-          "signature": "10b51f082f85"
+          "feature": "common.back",
+          "line": 2,
+          "signature": "37c62c4a648d"
         },
         {
-          "feature": "Feature/module management strings",
-          "line": 280,
-          "signature": "55512c588ec4"
+          "feature": "features.action.view_comments",
+          "line": 178,
+          "signature": "1612c5533bd7"
         },
         {
-          "feature": "Broadcast and ticket strings",
-          "line": 430,
-          "signature": "1ce7c6ccef2f"
+          "feature": "admin.features.filter.type",
+          "line": 354,
+          "signature": "50bcc7c7eb93"
         },
         {
-          "feature": "Auth and login strings",
-          "line": 560,
-          "signature": "1f0faeb64479"
+          "feature": "admin.users.stats.admin",
+          "line": 530,
+          "signature": "09d1be4ed1fc"
         },
         {
-          "feature": "Docs and help strings",
-          "line": 700,
-          "signature": "00bce30c95a9"
+          "feature": "quick.special.0.title",
+          "line": 706,
+          "signature": "4e9e4a184910"
         },
         {
-          "feature": "Dashboard profile strings",
-          "line": 900,
-          "signature": "54dde090bef9"
+          "feature": "docs.section.content-tools.sub.pdf-tools.feat.2",
+          "line": 882,
+          "signature": "0733d586db79"
         },
         {
-          "feature": "Settings and API strings",
-          "line": 1080,
-          "signature": "a6fc6f989333"
+          "feature": "payment.order_no",
+          "line": 1058,
+          "signature": "ae1ab3ec6f3e"
         },
         {
-          "feature": "Store and subscription strings",
-          "line": 1180,
-          "signature": "264abe5f777e"
+          "feature": "store.subscription.model_siliconflow",
+          "line": 1234,
+          "signature": "184fa8f55bed"
         }
       ]
     },
@@ -831,49 +945,19 @@
     },
     "src/components/Hero.tsx": {
       "source": "inline",
-      "updated_at": "2026-04-08T16:03:16",
-      "file_hash": "0a0f6fe7f5b89db0dd0e504a48c30f93f109b283757a34df12006a85a3bd1d00",
-      "line_count": 317,
+      "updated_at": "2026-06-26T16:26:06",
+      "file_hash": "5f33c533b5b6d838f58ad91c499aef239617fde6500fdac3298464873e391bd4",
+      "line_count": 214,
       "entry_signatures": [
         {
-          "feature": "use client",
-          "line": 12,
-          "signature": "2546fad9c87c"
+          "feature": "handlePointerMove",
+          "line": 41,
+          "signature": "8c80105d7a87"
         },
         {
-          "feature": "inputLines: ['OpenAI：方案主稿', 'Claude：语气校对', 'DeepSeek：成本优化', '...",
-          "line": 46,
-          "signature": "7d681cddcc8d"
-        },
-        {
-          "feature": "providers: ['OpenAI', 'Claude', 'Kimi",
-          "line": 79,
-          "signature": "f482f4c1013c"
-        },
-        {
-          "feature": "<div className=\"max-w-[620px] space-y-6\">",
-          "line": 122,
-          "signature": "0ed4ccd3fbdb"
-        },
-        {
-          "feature": "className=\"glow-button inline-flex items-center justify-cente...",
-          "line": 160,
-          "signature": "d61a1f6abf71"
-        },
-        {
-          "feature": "<div className=\"-mt-1 h-3 w-3 rotate-45 border-b border-r bor...",
-          "line": 211,
-          "signature": "e74a9fd25fa4"
-        },
-        {
-          "feature": "<div className=\"h-20 rounded-[20px] border border-dashed bord...",
-          "line": 257,
-          "signature": "69ac7c10c683"
-        },
-        {
-          "feature": "</section>",
-          "line": 315,
-          "signature": "40b2501422d5"
+          "feature": "handlePointerLeave",
+          "line": 48,
+          "signature": "6231ce246b99"
         }
       ]
     },
@@ -1041,24 +1125,49 @@
     },
     "src/components/Themes.tsx": {
       "source": "inline",
-      "updated_at": "2026-06-12T14:57:30",
-      "file_hash": "8828c525f1bcb3a84cf51bbc86f6c5c04aa5780d7e268194b39ae652ba8debbc",
-      "line_count": 249,
+      "updated_at": "2026-06-26T19:19:05",
+      "file_hash": "deee813323a4b47c8238589ddf85e535ba0e8891fbb2adb9f77bb9ba9a3819c9",
+      "line_count": 262,
       "entry_signatures": [
         {
-          "feature": "Theme customization section and skin carousel",
-          "line": 34,
-          "signature": "a4602fe5d690"
+          "feature": "use client",
+          "line": 12,
+          "signature": "c232b2a1b0a1"
         },
         {
-          "feature": "Theme entry animation and carousel styles",
-          "line": 78,
-          "signature": "6af0a75b994a"
+          "feature": "setIsSectionVisible(entry.isIntersecting",
+          "line": 52,
+          "signature": "64f995226ea0"
         },
         {
-          "feature": "Theme preview layout and skin image display",
-          "line": 138,
-          "signature": "dffe0708e3f5"
+          "feature": "transform: scale(0.76",
+          "line": 90,
+          "signature": "1b407f18582f"
+        },
+        {
+          "feature": "will-change: transform, opacity, filter",
+          "line": 127,
+          "signature": "533b7ee52e47"
+        },
+        {
+          "feature": "<div>",
+          "line": 155,
+          "signature": "e39c5831c72c"
+        },
+        {
+          "feature": "src={activeSkin.image",
+          "line": 183,
+          "signature": "f9593d9b2fad"
+        },
+        {
+          "feature": "<span className=\"rounded-full border border-white/10 bg-white...",
+          "line": 216,
+          "signature": "543e1315b25b"
+        },
+        {
+          "feature": "</section>",
+          "line": 260,
+          "signature": "40b2501422d5"
         }
       ]
     },
@@ -1092,42 +1201,77 @@
     },
     "src/app/admin/settings/page.tsx": {
       "source": "inline",
-      "updated_at": "2026-06-12T10:19:26",
-      "file_hash": "e07fe8bc4a1bce44017f9a6d97be8e833c35a317284c006d30209e7f8913498b",
-      "line_count": 1300,
+      "updated_at": "2026-06-17T12:07:59",
+      "file_hash": "ce84d3a9996b222e4990be4525d2fcb127b1ffd8a9d4e6879f79c9c938e0112d",
+      "line_count": 1307,
       "entry_signatures": [
         {
-          "feature": "Admin system settings tabs and payment configuration",
-          "line": 34,
-          "signature": "6bbfba3a8f87"
+          "feature": "locale",
+          "line": 114,
+          "signature": "b4680771a467"
         },
         {
-          "feature": "Admin agent upload tab and store marketplace metadata",
-          "line": 289,
-          "signature": "4adff2b5f075"
+          "feature": "handleInstallerUpload",
+          "line": 206,
+          "signature": "18a1def16d8f"
+        },
+        {
+          "feature": "handleSubmit",
+          "line": 248,
+          "signature": "cda32ac5f97a"
+        },
+        {
+          "feature": "handleRemoveCustomModel",
+          "line": 286,
+          "signature": "4a77a1e7a7fe"
+        },
+        {
+          "feature": "uploadFeaturePackage",
+          "line": 313,
+          "signature": "afe87f6790b4"
+        },
+        {
+          "feature": "handleReplacePublishedPlugin",
+          "line": 391,
+          "signature": "c07b0d1eb01c"
+        },
+        {
+          "feature": "handleEditPublishedPlugin",
+          "line": 410,
+          "signature": "728014cc1a87"
+        },
+        {
+          "feature": "handleSaveFeatureInfo",
+          "line": 435,
+          "signature": "39309d07756e"
         }
       ]
     },
     "src/app/api/store/plugins/route.ts": {
       "source": "inline",
-      "updated_at": "2026-06-10T21:15:59",
-      "file_hash": "0fbddd595126f9b67921e7334d5082c81e922711baa44a673c16a1f042f7e64a",
-      "line_count": 208,
+      "updated_at": "2026-06-17T12:47:18",
+      "file_hash": "593af29205321e03e41507253c63d3b1b310e2f029ae38e78d98afdb9b2e5f0f",
+      "line_count": 224,
       "entry_signatures": [
         {
-          "feature": "Store plugin marketplace listing and jarv metadata merge",
-          "line": 7,
-          "signature": "9f94d8e4572d"
+          "feature": "ensureStorePluginTable",
+          "line": 31,
+          "signature": "bb5f059ecd8d"
         },
         {
-          "feature": "StorePlugin database fallback and response shaping",
-          "line": 22,
-          "signature": "a80c592bf7cf"
+          "feature": "getPluginConfig",
+          "line": 36,
+          "signature": "72fc1a946b90"
         },
         {
-          "feature": "Jarv metadata parser",
-          "line": 177,
-          "signature": "9f9804249461"
+          "feature": "GET",
+          "line": 47,
+          "signature": "9d7b10a2d289"
+        },
+        {
+          "feature": "parseJarvMetadata",
+          "line": 189,
+          "signature": "2b2a39bb29db"
         }
       ]
     },
@@ -1263,6 +1407,246 @@
           "feature": "getTypeLabel",
           "line": 124,
           "signature": "21ca5e0b0d18"
+        }
+      ]
+    },
+    "src/lib/storePluginLocale.ts": {
+      "source": "inline",
+      "updated_at": "2026-06-17T15:21:30",
+      "file_hash": "ebd7b265eeaaf490074a6ef076068f8bbf1161c9efb8341bfa2da3b38f5e23df",
+      "line_count": 417,
+      "entry_signatures": [
+        {
+          "feature": "splitPluginWords",
+          "line": 121,
+          "signature": "f67ebf6047c9"
+        },
+        {
+          "feature": "toChineseName",
+          "line": 143,
+          "signature": "f15ec28f3111"
+        },
+        {
+          "feature": "toEnglishDescription",
+          "line": 237,
+          "signature": "bf8a5461d0d8"
+        },
+        {
+          "feature": "toEnglishGroup",
+          "line": 252,
+          "signature": "b3f1e35edf60"
+        },
+        {
+          "feature": "hasAny",
+          "line": 299,
+          "signature": "d265dc3599f3"
+        },
+        {
+          "feature": "getStorePluginLocalization",
+          "line": 333,
+          "signature": "de83a46a2d6d"
+        },
+        {
+          "feature": "ensureColumn",
+          "line": 369,
+          "signature": "310913df4147"
+        },
+        {
+          "feature": "tableInfo",
+          "line": 398,
+          "signature": "3745f7e769ae"
+        }
+      ]
+    },
+    "src/app/store/page.tsx": {
+      "source": "inline",
+      "updated_at": "2026-06-17T15:21:30",
+      "file_hash": "cee79c4e07c20826db312eff4dff20dde7b1bd5a2f65fddad6616fe5385899e7",
+      "line_count": 2141,
+      "entry_signatures": [
+        {
+          "feature": "ProviderBrandIcon",
+          "line": 44,
+          "signature": "780982988246"
+        },
+        {
+          "feature": "logoY",
+          "line": 124,
+          "signature": "f4bceb253116"
+        },
+        {
+          "feature": "handleUserInfo",
+          "line": 379,
+          "signature": "b9f7c36b61dd"
+        },
+        {
+          "feature": "PluginList",
+          "line": 676,
+          "signature": "3a91aae51c0d"
+        },
+        {
+          "feature": "isZh",
+          "line": 828,
+          "signature": "940c62f2a0ac"
+        },
+        {
+          "feature": "expiresAtDate",
+          "line": 1235,
+          "signature": "8d20e92c7c69"
+        },
+        {
+          "feature": "loadAvailableModels",
+          "line": 1560,
+          "signature": "79ba71659cd0"
+        },
+        {
+          "feature": "FAQItem",
+          "line": 2122,
+          "signature": "f7bf631ab475"
+        }
+      ]
+    },
+    "src/i18n/messages/es-ES.json": {
+      "source": "sidecar",
+      "updated_at": "2026-06-26T15:59:01",
+      "file_hash": "98142b72237e400665a0fa16038fa9bf30bf26fc77e969fd41e5ddb2a60b350f",
+      "line_count": 1235,
+      "entry_signatures": [
+        {
+          "feature": "common.back",
+          "line": 2,
+          "signature": "f9d9182cf963"
+        },
+        {
+          "feature": "features.action.view_comments",
+          "line": 178,
+          "signature": "9c7c2b7a2e42"
+        },
+        {
+          "feature": "admin.features.filter.type",
+          "line": 354,
+          "signature": "1ff8b05053b7"
+        },
+        {
+          "feature": "admin.users.stats.admin",
+          "line": 530,
+          "signature": "e016f9b879da"
+        },
+        {
+          "feature": "quick.special.0.title",
+          "line": 706,
+          "signature": "4e23869301db"
+        },
+        {
+          "feature": "docs.section.content-tools.sub.pdf-tools.feat.2",
+          "line": 882,
+          "signature": "f542664eee05"
+        },
+        {
+          "feature": "payment.order_no",
+          "line": 1058,
+          "signature": "7c4cf4fdf18a"
+        },
+        {
+          "feature": "store.subscription.model_siliconflow",
+          "line": 1234,
+          "signature": "b5b0dcb4f690"
+        }
+      ]
+    },
+    "src/i18n/messages/de-DE.json": {
+      "source": "sidecar",
+      "updated_at": "2026-06-26T15:59:00",
+      "file_hash": "7a5a3d65dbd30c8ca71850d5747a8a818adcc6c9feab794206c53b0e4f796066",
+      "line_count": 1235,
+      "entry_signatures": [
+        {
+          "feature": "common.back",
+          "line": 2,
+          "signature": "270975aba38e"
+        },
+        {
+          "feature": "features.action.view_comments",
+          "line": 178,
+          "signature": "a0799aa1709c"
+        },
+        {
+          "feature": "admin.features.filter.type",
+          "line": 354,
+          "signature": "4274e7e6b41c"
+        },
+        {
+          "feature": "admin.users.stats.admin",
+          "line": 530,
+          "signature": "57a86138e813"
+        },
+        {
+          "feature": "quick.special.0.title",
+          "line": 706,
+          "signature": "4e87aaf08caa"
+        },
+        {
+          "feature": "docs.section.content-tools.sub.pdf-tools.feat.2",
+          "line": 882,
+          "signature": "448481e8a91a"
+        },
+        {
+          "feature": "payment.order_no",
+          "line": 1058,
+          "signature": "875cbb4c2846"
+        },
+        {
+          "feature": "store.subscription.model_siliconflow",
+          "line": 1234,
+          "signature": "4b5345c112f5"
+        }
+      ]
+    },
+    "src/i18n/messages/en-US.json": {
+      "source": "sidecar",
+      "updated_at": "2026-06-19T17:54:53",
+      "file_hash": "fa4bdf8b53f19d44164b66086416052b447d18cdb8016d7eaec44df10a07532d",
+      "line_count": 1235,
+      "entry_signatures": [
+        {
+          "feature": "common.back",
+          "line": 2,
+          "signature": "6cfc04e9eb2d"
+        },
+        {
+          "feature": "features.status.completed",
+          "line": 178,
+          "signature": "b36e2028210c"
+        },
+        {
+          "feature": "admin.features.subtitle",
+          "line": 354,
+          "signature": "536e1aa8c941"
+        },
+        {
+          "feature": "admin.users.stats.virtual",
+          "line": 530,
+          "signature": "5d229e2f7f33"
+        },
+        {
+          "feature": "quick.special.prefix",
+          "line": 706,
+          "signature": "9eef388ef4f8"
+        },
+        {
+          "feature": "docs.section.content-tools.sub.pdf-tools.feat.0",
+          "line": 882,
+          "signature": "1d5d7906c6e2"
+        },
+        {
+          "feature": "login.msg.alipay_scan_guide",
+          "line": 1058,
+          "signature": "0f19418c2ab1"
+        },
+        {
+          "feature": "store.model.siliconflow.name",
+          "line": 1234,
+          "signature": "aada5275cd67"
         }
       ]
     }
